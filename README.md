@@ -1,4 +1,4 @@
-# Velogames - Unity - Slot Game
+# Velogames - Unity - Poker Game
 
 Made with Unity 2022.3.0f1 LTS 
 
@@ -7,10 +7,10 @@ Made with Unity 2022.3.0f1 LTS
   # Sections
   <ol>
 	  <li><a href="#Introduction">Introduction</a></li>
-	  <li><a href="#Dev Log">Dev Log</a></li>
-	  <li><a href="#Known Bugs">Known Bugs</a></li>
+	  <li><a href="#DevLog">Dev Log</a></li>
+	  <li><a href="#KnownBugs">Known Bugs</a></li>
 	  <li><a href="#Videos">Videos</a></li>
-	  <li><a href="#Technical Details">Technical Details</a></li>
+	  <li><a href="#TechnicalDetails">Technical Details</a></li>
 	  <li><a href="#Acknowledgements">Acknowledgements</a></li>
   </ol>
 
@@ -27,9 +27,15 @@ More info in pdf in the root folder.
 
 Zip for the newest PC Built  "TBA".
 
+## Team Members: 
+
+Özgen Köklü : https://github.com/OzgenKoklu
+
+Ezgi Keserci : https://github.com/ezgiksrci
+
 ----------
 
-<!-- Dev Log -->
+<!-- DevLog -->
 ## Dev Log
 
 NOTES 
@@ -41,7 +47,7 @@ NOTES
 <img src="Media/????.PNG" width="900"> 
 
 ----------
-<!-- Known Bugs -->
+<!-- KnownBugs -->
 ## Known Bugs to adress for the ??.03.2024 - Final Commit: 
 
 1) 
@@ -60,7 +66,7 @@ NOTES
 
 ----------
 
-<!-- Technical Details -->
+<!-- TechnicalDetails -->
 ## Technical Details
 
 -
