@@ -36,9 +36,13 @@ Ezgi Keserci : https://github.com/ezgiksrci
 ----------
 
 <!-- DevLog -->
-## Dev Log
+## DevLog
 
-NOTES 
+GDD for the game: 
+
+https://docs.google.com/document/d/1RrYZFcERAm4OzjKxE57lmc0hMOfWjcYncdkV3LErDXQ/edit?usp=sharing
+
+NOTES
 
 NOTES
 
@@ -67,7 +71,7 @@ NOTES
 ----------
 
 <!-- TechnicalDetails -->
-## Technical Details
+## TechnicalDetails
 
 -
 
