@@ -8,6 +8,7 @@ public class CardSO : ScriptableObject
 {
     [SerializeField] private CardSuit _suit;
     [SerializeField] private CardValue _value;
-    [SerializeField] private Rect _spriteSheetRect;
+    [SerializeField] private  Rect _spriteSheetRect;
 
+    
 }

@@ -17,6 +17,6 @@ MonoBehaviour:
   _spriteSheetRect:
     serializedVersion: 2
     x: 0
-    y: 0
-    width: 0
-    height: 0
+    y: 935
+    width: 131
+    height: 185
