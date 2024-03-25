@@ -88,6 +88,24 @@ A non profit project.
 
 ## In Game Assets:
 
+Main Background:
+AI image generation. Dall-E - GPT4
+
+Playing Cards: 
+Casino Pack 1001com
+https://opengameart.org/content/casino-pack
+
+Player Avatars - Pexels Stock images: (CC0)
+Photo by Andrea Piacquadio: https://www.pexels.com/photo/closeup-photo-of-woman-with-brown-coat-and-gray-top-733872/
+Photo by Andrea Piacquadio: https://www.pexels.com/photo/woman-in-collared-shirt-774909/
+Photo by Thgusstavo Santana: https://www.pexels.com/photo/man-with-cigarette-in-mouth-1933873/
+Photo by Simon Robben: https://www.pexels.com/photo/man-in-brown-polo-shirt-614810/
+Photo by Stefan Stefancik: https://www.pexels.com/photo/man-on-gray-shirt-portrait-91227/
+Photo by Daniel Xavier: https://www.pexels.com/photo/woman-wearing-black-eyeglasses-1239291/
+Photo by Andrea Piacquadio: https://www.pexels.com/photo/man-wearing-red-sweatshirt-and-black-pants-leaning-on-the-wall-845434/
+Photo by Tuấn Kiệt Jr.: https://www.pexels.com/photo/woman-posing-for-photo-shoot-1391498/
+
+
 ## Sounds Assets: Unused
 
 ## UI Assets: 
