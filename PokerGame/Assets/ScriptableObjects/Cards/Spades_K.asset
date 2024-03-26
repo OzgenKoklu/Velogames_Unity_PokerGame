@@ -14,9 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _suit: 3
   _value: 13
-  _spriteSheetRect:
-    serializedVersion: 2
-    x: 134
-    y: 0
-    width: 132
-    height: 185
+  _cardSprite: {fileID: 26934553, guid: 5d8fad1dfad5e8c4baae69720dd04afd, type: 3}

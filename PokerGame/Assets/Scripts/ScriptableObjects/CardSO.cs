@@ -7,9 +7,9 @@ public class CardSO : ScriptableObject
 {
     [SerializeField] private CardSuit _suit;
     [SerializeField] private CardValue _value;
-    [SerializeField] private  Rect _spriteSheetRect;
+    [SerializeField] private Sprite _cardSprite;
 
     public CardSuit Suit { get => _suit; }
     public CardValue Value { get => _value; }
-    public Rect SpriteSheetRect { get => _spriteSheetRect; }
+    public Sprite CardSprite { get => _cardSprite; }
 }
