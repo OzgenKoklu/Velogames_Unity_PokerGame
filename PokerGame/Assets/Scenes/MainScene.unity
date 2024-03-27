@@ -2010,6 +2010,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CommunityCards: []
+  _playerHand: {fileID: 1199791274}
+  _aiPlayerOneHand: {fileID: 2010368667}
+  _aiPlayerTwoHand: {fileID: 276828756}
+  _aiPlayerThreeHand: {fileID: 1230832290}
+  _aiPlayerFourHand: {fileID: 264449917}
 --- !u!1 &1074086707
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,11 +11,12 @@ public class PokerDeckManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        LoadDeck();
+        ShuffleDeck();
     }
     void Start()
     {
-        LoadDeck();
-        ShuffleDeck();
+        
     }
 
     // Load all cards from DeckSO into the deck List
