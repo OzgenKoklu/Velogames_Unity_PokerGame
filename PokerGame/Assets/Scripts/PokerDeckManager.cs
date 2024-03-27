@@ -7,7 +7,11 @@ public class PokerDeckManager : MonoBehaviour
     [SerializeField] private DeckSO _deckSO;
     private List<CardSO> _pokerDeck = new List<CardSO>();
     private List<CardSO> _discardPile = new List<CardSO>();
-
+    public static PokerDeckManager Instance { get; private set; }
+    private void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         LoadDeck();
