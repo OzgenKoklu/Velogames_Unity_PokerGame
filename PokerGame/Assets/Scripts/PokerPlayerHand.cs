@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class PokerPlayerHand : MonoBehaviour, ICardParent
 {
-
     public List<CardSO> HoleCardsList; // Array to store the player's hole cards
     private int _playerHandCardLimit = 2;
     public bool? IsPlayerUs { get => _isPlayerUs; }
