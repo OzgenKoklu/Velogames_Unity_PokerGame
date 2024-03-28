@@ -36,9 +36,11 @@ public class CardBehaviour : MonoBehaviour
         }
     }
 
-    public void SetCardPostion(Vector2 position)
+    public void SetCardTransform(Transform transform)
     {
-        transform.position = position;
+        this.transform.position = transform.position;
+        this.transform.rotation = transform.rotation;
+        this.transform.localScale = transform.localScale;
     }
 
 
