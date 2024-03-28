@@ -98,5 +98,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 2047237320847703462}
+  _cardPrefab: {fileID: 3784639665395099280}
   CardSO: {fileID: 0}
   IsFaceDown: 0

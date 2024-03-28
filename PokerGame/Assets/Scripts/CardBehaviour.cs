@@ -3,8 +3,10 @@ using UnityEngine;
 public class CardBehaviour : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _spriteRenderer;
+
     public CardSO CardSO;
     public bool IsFaceDown;
+
 
     public void SetCardScriptableObject(CardSO cardSO)
     {
@@ -33,4 +35,11 @@ public class CardBehaviour : MonoBehaviour
             }
         }
     }
+
+    public void SetCardPostion(Vector2 position)
+    {
+        transform.position = position;
+    }
+
+
 }

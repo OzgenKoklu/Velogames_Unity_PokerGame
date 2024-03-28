@@ -743,9 +743,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b5528823df10244dade175049594ecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoleCards:
-  - {fileID: 0}
-  - {fileID: 0}
+  HoleCardsList: []
 --- !u!1 &271775728
 GameObject:
   m_ObjectHideFlags: 0
@@ -960,9 +958,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b5528823df10244dade175049594ecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoleCards:
-  - {fileID: 0}
-  - {fileID: 0}
+  HoleCardsList: []
 --- !u!1 &292966326
 GameObject:
   m_ObjectHideFlags: 0
@@ -1786,7 +1782,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: eb589e9fa8a242c49a3cddfd0eba5a35, type: 3}
   m_Color: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
   m_FlipX: 0
@@ -2177,12 +2173,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12f1e6772e1f55c46a20ad21892bb4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CommunityCards: []
+  _communityCards: {fileID: 1732222767}
   _playerHand: {fileID: 1199791274}
   _aiPlayerOneHand: {fileID: 2010368667}
   _aiPlayerTwoHand: {fileID: 276828756}
   _aiPlayerThreeHand: {fileID: 1230832290}
   _aiPlayerFourHand: {fileID: 264449917}
+  _cardVisualManager: {fileID: 1735356699}
 --- !u!1 &1074086707
 GameObject:
   m_ObjectHideFlags: 0
@@ -2346,9 +2343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b5528823df10244dade175049594ecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoleCards:
-  - {fileID: 0}
-  - {fileID: 0}
+  HoleCardsList: []
 --- !u!1 &1222132653
 GameObject:
   m_ObjectHideFlags: 0
@@ -2479,9 +2474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b5528823df10244dade175049594ecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoleCards:
-  - {fileID: 0}
-  - {fileID: 0}
+  HoleCardsList: []
 --- !u!1 &1333174233
 GameObject:
   m_ObjectHideFlags: 0
@@ -3050,6 +3043,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1732222766}
+  - component: {fileID: 1732222767}
   m_Layer: 0
   m_Name: CommunityCards
   m_TagString: Untagged
@@ -3077,6 +3071,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1732222767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732222765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d69a816b7317794683277bb5cef4d79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CommunityCardsList: []
 --- !u!1 &1735356697
 GameObject:
   m_ObjectHideFlags: 0
@@ -3086,8 +3093,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1735356698}
+  - component: {fileID: 1735356699}
   m_Layer: 0
-  m_Name: CardAssignmentManager
+  m_Name: CardVisualsManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3108,6 +3116,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1735356699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735356697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4742f13677d0e544bf096a73cbfc9b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cardPrefab: {fileID: 3784639665395099280, guid: b964af4c0fd4ddb41b62fa93685b6ab6, type: 3}
 --- !u!1 &1738851592
 GameObject:
   m_ObjectHideFlags: 0
@@ -3238,9 +3259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b5528823df10244dade175049594ecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoleCards:
-  - {fileID: 0}
-  - {fileID: 0}
+  HoleCardsList: []
 --- !u!1 &2037809684
 GameObject:
   m_ObjectHideFlags: 0

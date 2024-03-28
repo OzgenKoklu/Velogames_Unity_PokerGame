@@ -1,20 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class GameManager : MonoBehaviour
 {
-    public List<CardSO> CommunityCards;
-
+    [SerializeField] private CommunityCards _communityCards;
     [SerializeField] private PokerPlayerHand _playerHand;
     [SerializeField] private PokerPlayerHand _aiPlayerOneHand;
     [SerializeField] private PokerPlayerHand _aiPlayerTwoHand;
     [SerializeField] private PokerPlayerHand _aiPlayerThreeHand;
     [SerializeField] private PokerPlayerHand _aiPlayerFourHand;
+    [SerializeField] private CardVisualsManager _cardVisualManager;
     private List<PokerPlayerHand> _playerHands;
 
     private void Start()
-    {
-        CommunityCards = new List<CardSO>();
+    {     
         InitializePlayers();
         DrawInitialCommunityCards();
         DealCardsToPlayers();
@@ -22,10 +22,26 @@ public class GameManager : MonoBehaviour
 
     private void DrawInitialCommunityCards()
     {
-        //draw three community cards
-        CommunityCards.Add(DrawCardFromDeck());
-        CommunityCards.Add(DrawCardFromDeck());
-        CommunityCards.Add(DrawCardFromDeck());
+        CardSO card1 = DrawCardFromDeck();
+        CardSO card2 = DrawCardFromDeck();
+        CardSO card3 = DrawCardFromDeck();
+
+        if (card1 != null)
+        {
+            _communityCards.AddCard(card1);
+           _cardVisualManager.SpawnCardObject(card1, _communityCards.GetCardParent());
+
+        }
+        if (card2 != null)
+        {
+            _communityCards.AddCard(card2);
+            _cardVisualManager.SpawnCardObject(card2, _communityCards.GetCardParent());
+        }
+        if (card3 != null)
+        {
+            _communityCards.AddCard(card3);
+            _cardVisualManager.SpawnCardObject(card3, _communityCards.GetCardParent());
+        }
     }
 
     private void DealCardsToPlayers()
@@ -37,9 +53,12 @@ public class GameManager : MonoBehaviour
             CardSO card2 = DrawCardFromDeck(); // Draw the second card
 
             if (card1 != null)
-                hand.AddCardToHand(card1); // Add the first card to the player's hand
+                hand.AddCard(card1); // Add the first card to the player's hand
+            _cardVisualManager.SpawnCardObject(card1, hand.GetCardParent());
+                
             if (card2 != null)
-                hand.AddCardToHand(card2); // Add the second card to the player's hand
+                hand.AddCard(card2); // Add the second card to the player's hand
+            _cardVisualManager.SpawnCardObject(card2, hand.GetCardParent());
         }
     }
 
