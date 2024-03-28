@@ -10,11 +10,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PokerPlayerHand _aiPlayerTwoHand;
     [SerializeField] private PokerPlayerHand _aiPlayerThreeHand;
     [SerializeField] private PokerPlayerHand _aiPlayerFourHand;
-   
+
     private List<PokerPlayerHand> _playerHands;
 
     private void Start()
-    {     
+    {
         InitializePlayers();
         DrawInitialCommunityCards();
         DealCardsToPlayers();
@@ -29,18 +29,18 @@ public class GameManager : MonoBehaviour
         if (card1 != null)
         {
             _communityCards.AddCard(card1);
-           CardVisualsManager.Instance.SpawnCardObject(card1, _communityCards.GetCardParent());
+            CardVisualsManager.Instance.SpawnCardObject(card1, card1.CardParent);
 
         }
         if (card2 != null)
         {
             _communityCards.AddCard(card2);
-            CardVisualsManager.Instance.SpawnCardObject(card2, _communityCards.GetCardParent());
+            CardVisualsManager.Instance.SpawnCardObject(card2, card2.CardParent);
         }
         if (card3 != null)
         {
             _communityCards.AddCard(card3);
-            CardVisualsManager.Instance.SpawnCardObject(card3, _communityCards.GetCardParent());
+            CardVisualsManager.Instance.SpawnCardObject(card3, card3.CardParent);
         }
     }
 
@@ -54,11 +54,11 @@ public class GameManager : MonoBehaviour
 
             if (card1 != null)
                 hand.AddCard(card1); // Add the first card to the player's hand
-            CardVisualsManager.Instance.SpawnCardObject(card1, hand.GetCardParent());
-                
+            CardVisualsManager.Instance.SpawnCardObject(card1, card1.CardParent);
+
             if (card2 != null)
                 hand.AddCard(card2); // Add the second card to the player's hand
-            CardVisualsManager.Instance.SpawnCardObject(card2, hand.GetCardParent());
+            CardVisualsManager.Instance.SpawnCardObject(card2, card2.CardParent);
         }
     }
 

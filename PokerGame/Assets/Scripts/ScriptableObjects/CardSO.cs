@@ -12,4 +12,5 @@ public class CardSO : ScriptableObject
     public CardSuit Suit { get => _suit; }
     public CardValue Value { get => _value; }
     public Sprite CardSprite { get => _cardSprite; }
+    public ICardParent CardParent { get; set; }
 }

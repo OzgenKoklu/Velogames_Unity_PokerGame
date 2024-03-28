@@ -3,26 +3,24 @@ using UnityEngine;
 
 public class PokerDeckManager : MonoBehaviour
 {
+    public static PokerDeckManager Instance { get; private set; }
+
     //deckSO is to initialize the card deck list
     [SerializeField] private DeckSO _deckSO;
-    private List<CardSO> _pokerDeck = new List<CardSO>();
-    private List<CardSO> _discardPile = new List<CardSO>();
-    public static PokerDeckManager Instance { get; private set; }
+
+    private List<CardSO> _pokerDeck = new();
+    private List<CardSO> _discardPile = new();
     private void Awake()
     {
         Instance = this;
         LoadDeck();
         ShuffleDeck();
     }
-    void Start()
-    {
-        
-    }
 
     // Load all cards from DeckSO into the deck List
     void LoadDeck()
     {
-        foreach (CardSO card in _deckSO.Cardlist) 
+        foreach (CardSO card in _deckSO.Cardlist)
         {
             _pokerDeck.Add(card);
         }

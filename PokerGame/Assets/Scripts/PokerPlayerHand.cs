@@ -6,6 +6,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
 
     public List<CardSO> HoleCardsList; // Array to store the player's hole cards
     private int _playerHandCardLimit = 2;
+    public bool? IsPlayerUs { get => _isPlayerUs; }
     [SerializeField] private bool _isPlayerUs;
     [SerializeField] private Transform _handFollowTransform;
 
@@ -17,8 +18,9 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     {
         if (HoleCardsList.Count <= _playerHandCardLimit)
         {
-                HoleCardsList.Add(newCard); // Add the card to the hand
-        }    
+            HoleCardsList.Add(newCard); // Add the card to the hand
+            newCard.CardParent = this;
+        }
     }
 
     public void ClearCards()
@@ -29,7 +31,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     public Transform GetCardFollowTransform()
     {
         //this part needs better explanation and also I need to get rid of the "magic numbers"
-        if(_isPlayerUs)
+        if (_isPlayerUs)
         {
             Transform cardTransform = _handFollowTransform;
             cardTransform.position = new Vector2(-0.6f + (1.2f * (HoleCardsList.Count - 1)), -4);
@@ -39,20 +41,15 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
         else // if player is Ai or Online
         {
             Transform cardTransform = _handFollowTransform;
-            cardTransform.rotation = Quaternion.AngleAxis(20f *(HoleCardsList.Count-1), Vector3.forward)  ;
-            cardTransform.localScale = Vector3.one *.6f;
+            cardTransform.rotation = Quaternion.AngleAxis(20f * (HoleCardsList.Count - 1), Vector3.forward);
+            cardTransform.localScale = Vector3.one * .6f;
             return cardTransform;
         }
-        
+
     }
 
     public List<CardSO> GetCardList()
     {
         return HoleCardsList;
-    }
-
-    public ICardParent GetCardParent()
-    {
-        return this as ICardParent;
     }
 }

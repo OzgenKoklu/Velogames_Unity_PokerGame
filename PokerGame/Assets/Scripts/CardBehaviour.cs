@@ -3,10 +3,9 @@ using UnityEngine;
 public class CardBehaviour : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private SpriteRenderer _backSpriteRenderer;
 
     public CardSO CardSO;
-    public bool IsFaceDown;
-
 
     public void SetCardScriptableObject(CardSO cardSO)
     {
@@ -14,34 +13,29 @@ public class CardBehaviour : MonoBehaviour
         UpdateCardVisual();
     }
 
-    public void FlipCard()
-    {
-        IsFaceDown = !IsFaceDown;
-        UpdateCardVisual ();
-    }
-
     private void UpdateCardVisual()
     {
-        if (CardSO != null)
+        if (CardSO != null && CardSO.CardParent != null)
         {
-            if (!IsFaceDown)
+            if (CardSO.CardParent.IsPlayerUs == true)
             {
                 _spriteRenderer.sprite = CardSO.CardSprite;
             }
             else
             {
                 //facedown sprite eklenecek
-                _spriteRenderer.sprite = null;
+                _spriteRenderer.sprite = _backSpriteRenderer.sprite;
             }
+        }
+        else if (CardSO != null && CardSO.CardParent == null)
+        {
+            _spriteRenderer.sprite = CardSO.CardSprite;
         }
     }
 
     public void SetCardTransform(Transform transform)
     {
-        this.transform.position = transform.position;
-        this.transform.rotation = transform.rotation;
+        this.transform.SetPositionAndRotation(transform.position, transform.rotation);
         this.transform.localScale = transform.localScale;
     }
-
-
 }
