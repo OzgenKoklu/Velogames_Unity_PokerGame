@@ -19,6 +19,14 @@ public class PokerHandEvaluator : MonoBehaviour
         RoyalFlush
     }
 
+    public static PokerHandEvaluator Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+
     public HandRank EvaluateHand(List<CardSO> hand)
     {
         if (IsRoyalFlush(hand)) return HandRank.RoyalFlush;
@@ -31,6 +39,40 @@ public class PokerHandEvaluator : MonoBehaviour
         if (IsTwoPair(hand)) return HandRank.TwoPair;
         if (IsOnePair(hand)) return HandRank.OnePair;
         return HandRank.HighCard;
+    }
+
+    public int EvaluateAndFindWinner(List<List<CardSO>> playerHands)
+    {
+        int winnerIndex = -1;
+        HandRank bestRank = HandRank.HighCard;
+        // Additional information might be needed for tiebreakers, depending on your implementation
+
+        Debug.Log("Evaluating hands for all players...");
+
+        for (int i = 0; i < playerHands.Count; i++)
+        {
+            HandRank currentRank = EvaluateHand(playerHands[i]);
+
+            Debug.Log($"Player {i + 1} has a hand of rank: {currentRank}");
+            if (currentRank > bestRank)
+            {
+                bestRank = currentRank;
+                winnerIndex = i;
+                Debug.Log($"New best hand found! Player {i + 1} takes the lead with a {currentRank}.");
+            }
+            // Implement tiebreaker logic here if currentRank == bestRank
+        }
+
+        if (winnerIndex != -1)
+        {
+            Debug.Log($"Winner determined: Player {winnerIndex + 1} with a {bestRank}.");
+        }
+        else
+        {
+            Debug.Log("No winner could be determined.");
+        }
+
+        return winnerIndex; // Returns the index of the winning player, or -1 if not determined
     }
 
     private bool IsRoyalFlush(List<CardSO> hand)

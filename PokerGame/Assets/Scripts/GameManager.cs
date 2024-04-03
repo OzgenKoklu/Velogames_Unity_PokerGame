@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
         InitializePlayers();
         DrawInitialCommunityCards();
         DealCardsToPlayers();
+        PokerHandEvaluator.Instance.EvaluateAndFindWinner(GetAllPlayerHands());
     }
 
     private void DrawInitialCommunityCards()
@@ -76,5 +77,27 @@ public class GameManager : MonoBehaviour
             _aiPlayerThreeHand,
             _aiPlayerFourHand
         };
+    }
+
+    public List<List<CardSO>> GetAllPlayerHands()
+    {
+        List<List<CardSO>> allHands = new List<List<CardSO>>();
+        List<CardSO> communityCards = _communityCards.GetCardList();
+
+        // Add each player's combined hand to the list
+        allHands.Add(CombineHandWithCommunity(_playerHand.GetCardList(), communityCards));
+        allHands.Add(CombineHandWithCommunity(_aiPlayerOneHand.GetCardList(), communityCards));
+        allHands.Add(CombineHandWithCommunity(_aiPlayerTwoHand.GetCardList(), communityCards));
+        allHands.Add(CombineHandWithCommunity(_aiPlayerThreeHand.GetCardList(), communityCards));
+        allHands.Add(CombineHandWithCommunity(_aiPlayerFourHand.GetCardList(), communityCards));
+
+        return allHands;
+    }
+
+    private List<CardSO> CombineHandWithCommunity(List<CardSO> playerHand, List<CardSO> communityCards)
+    {
+        List<CardSO> combinedHand = new List<CardSO>(playerHand);
+        combinedHand.AddRange(communityCards);
+        return combinedHand;
     }
 }
