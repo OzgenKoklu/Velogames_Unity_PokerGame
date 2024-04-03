@@ -1,9 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
+    public Action OnGameStarted;
+
     [SerializeField] private CommunityCards _communityCards;
     [SerializeField] private PokerPlayerHand _playerHand;
     [SerializeField] private PokerPlayerHand _aiPlayerOneHand;
@@ -11,7 +16,21 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PokerPlayerHand _aiPlayerThreeHand;
     [SerializeField] private PokerPlayerHand _aiPlayerFourHand;
 
+    public List<PlayerManager> Players => _players;
+    [SerializeField] private List<PlayerManager> _players;
+
     private List<PokerPlayerHand> _playerHands;
+
+    //
+    public void OnGameStartedClick()
+    {
+        OnGameStarted?.Invoke();
+    }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
