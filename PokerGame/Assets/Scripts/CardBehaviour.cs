@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class CardBehaviour : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer _spriteRenderer;
-    [SerializeField] private SpriteRenderer _backSpriteRenderer;
+    [SerializeField] private SpriteRenderer _cardFaceSpriteRenderer;
+    [SerializeField] private SpriteRenderer _cardBackSpriteRenderer;
 
     public CardSO CardSO;
 
@@ -19,17 +19,17 @@ public class CardBehaviour : MonoBehaviour
         {
             if (CardSO.CardParent.IsPlayerUs == true)
             {
-                _spriteRenderer.sprite = CardSO.CardSprite;
+                _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
             }
             else
             {
                 //facedown sprite eklenecek
-                _spriteRenderer.sprite = _backSpriteRenderer.sprite;
+                _cardFaceSpriteRenderer.sprite = _cardBackSpriteRenderer.sprite;
             }
         }
         else if (CardSO != null && CardSO.CardParent == null)
         {
-            _spriteRenderer.sprite = CardSO.CardSprite;
+            _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
         }
     }
 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 275091356141373922}
   - component: {fileID: 6475788524605929423}
   m_Layer: 0
-  m_Name: Card Background
+  m_Name: Card Back Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 1906268410510348912}
   - component: {fileID: 5204173383747271934}
   m_Layer: 0
-  m_Name: Card Sprite
+  m_Name: Card Face Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -298,7 +298,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75f0f8aa3aa3031408654a02343eaebc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spriteRenderer: {fileID: 5204173383747271934}
-  _backSpriteRenderer: {fileID: 6475788524605929423}
+  _cardFaceSpriteRenderer: {fileID: 5204173383747271934}
+  _cardBackSpriteRenderer: {fileID: 6475788524605929423}
   CardSO: {fileID: 0}
-  IsFaceDown: 0
