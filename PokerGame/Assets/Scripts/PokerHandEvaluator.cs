@@ -45,22 +45,38 @@ public class PokerHandEvaluator : MonoBehaviour
     {
         int winnerIndex = -1;
         HandRank bestRank = HandRank.HighCard;
-        // Additional information might be needed for tiebreakers, depending on your implementation
+        List<CardSO> bestHandCards = null; // Holds the best hand cards for comparison in ties
 
         Debug.Log("Evaluating hands for all players...");
 
         for (int i = 0; i < playerHands.Count; i++)
         {
-            HandRank currentRank = EvaluateHand(playerHands[i]);
-
+            List<CardSO> currentHand = playerHands[i];
+            HandRank currentRank = EvaluateHand(currentHand);
             Debug.Log($"Player {i + 1} has a hand of rank: {currentRank}");
+
             if (currentRank > bestRank)
             {
                 bestRank = currentRank;
                 winnerIndex = i;
+                bestHandCards = currentHand; // Update the best hand cards for tiebreaker comparisons
                 Debug.Log($"New best hand found! Player {i + 1} takes the lead with a {currentRank}.");
             }
-            // Implement tiebreaker logic here if currentRank == bestRank
+            else if (currentRank == bestRank)
+            {
+                // Tiebreaker comparison needed
+                Debug.Log($"Tie detected for rank {currentRank}. Comparing hands for player {i + 1} and current best hand.");
+                if (CompareHandsForTiebreaker(bestHandCards, currentHand) < 0)
+                {
+                    Debug.Log($"Player {i + 1} wins the tiebreaker against the previous best hand.");
+                    winnerIndex = i;
+                    bestHandCards = currentHand; // Update the best hand cards after winning the tie
+                }
+                else
+                {
+                    Debug.Log($"Player {i + 1} does not win the tiebreaker. Previous best hand remains leading.");
+                }
+            }
         }
 
         if (winnerIndex != -1)
@@ -72,7 +88,53 @@ public class PokerHandEvaluator : MonoBehaviour
             Debug.Log("No winner could be determined.");
         }
 
-        return winnerIndex; // Returns the index of the winning player, or -1 if not determined
+        return winnerIndex;
+    }
+
+    private int CompareHandsForTiebreaker(List<CardSO> hand1, List<CardSO> hand2)
+    {
+        if(hand1 == null)
+        {
+            Debug.Log("Player 1 High Card is the best hand for now.");
+            return -1; // Hand 2 wins by being the only hand at hand
+        }
+        // Logging the cards in each hand
+        Debug.Log("Comparing hands for tiebreaker:");
+        Debug.Log($"Hand 1 Cards: {string.Join(", ", hand1.Select(card => $"{card.Value} of {card.Suit}"))}");
+        Debug.Log($"Hand 2 Cards: {string.Join(", ", hand2.Select(card => $"{card.Value} of {card.Suit}"))}");
+
+        // Assume CardSO has a 'Value' property that can be compared directly
+        // This loop assumes the hands are sorted in descending order of card value
+        for (int i = 0; i < hand1.Count; i++)
+        {
+            if (i >= hand2.Count)
+            {
+                Debug.Log("Hand 1 has more cards than Hand 2, automatically wins the tiebreaker.");
+                return 1; // Hand 1 wins by having more cards (in cases where hand size varies)
+            }
+
+            if (hand1[i].Value > hand2[i].Value)
+            {
+                Debug.Log($"Hand 1 wins tiebreaker with {hand1[i].Value} over {hand2[i].Value}.");
+                return 1; // Hand 1 wins the tiebreaker
+            }
+            else if (hand1[i].Value < hand2[i].Value)
+            {
+                Debug.Log($"Hand 2 wins tiebreaker with {hand2[i].Value} over {hand1[i].Value}.");
+                return -1; // Hand 2 wins the tiebreaker
+            }
+            // If the cards are equal, continue to the next card
+        }
+
+        if (hand1.Count < hand2.Count)
+        {
+            Debug.Log("Hand 2 has more cards than Hand 1, automatically wins the tiebreaker.");
+            return -1; // Hand 2 wins by having more cards
+        }
+
+        // If all compared cards are equal and the hands are of the same size, the hands tie
+        Debug.Log("Hands are equal after full comparison.");
+        return 0;
     }
 
     private bool IsRoyalFlush(List<CardSO> hand)
