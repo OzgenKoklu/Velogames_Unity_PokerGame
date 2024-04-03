@@ -45,50 +45,77 @@ public class PokerHandEvaluator : MonoBehaviour
     {
         int winnerIndex = -1;
         HandRank bestRank = HandRank.HighCard;
-        List<CardSO> bestHandCards = null; // Holds the best hand cards for comparison in ties
+        List<int> potentialWinners = new List<int>(); // To track indices of players with the highest rank
 
-        Debug.Log("Evaluating hands for all players...");
-
+        // Step 1: Evaluate each hand and determine the highest rank
         for (int i = 0; i < playerHands.Count; i++)
         {
-            List<CardSO> currentHand = playerHands[i];
-            HandRank currentRank = EvaluateHand(currentHand);
-            Debug.Log($"Player {i + 1} has a hand of rank: {currentRank}");
+            HandRank currentRank = EvaluateHand(playerHands[i]);
+            Debug.Log($"Player {i + 1}: {currentRank}");
 
             if (currentRank > bestRank)
             {
                 bestRank = currentRank;
-                winnerIndex = i;
-                bestHandCards = currentHand; // Update the best hand cards for tiebreaker comparisons
-                Debug.Log($"New best hand found! Player {i + 1} takes the lead with a {currentRank}.");
+                potentialWinners.Clear(); // Clear previous records, as a new best rank has been found
+                potentialWinners.Add(i); // Add this player as a potential winner
             }
             else if (currentRank == bestRank)
             {
-                // Tiebreaker comparison needed
-                Debug.Log($"Tie detected for rank {currentRank}. Comparing hands for player {i + 1} and current best hand.");
-                if (CompareHandsForTiebreaker(bestHandCards, currentHand) < 0)
-                {
-                    Debug.Log($"Player {i + 1} wins the tiebreaker against the previous best hand.");
-                    winnerIndex = i;
-                    bestHandCards = currentHand; // Update the best hand cards after winning the tie
-                }
-                else
-                {
-                    Debug.Log($"Player {i + 1} does not win the tiebreaker. Previous best hand remains leading.");
-                }
+                potentialWinners.Add(i); // Add this player also as a potential winner
             }
         }
 
-        if (winnerIndex != -1)
+        // Step 2: Filter by the highest rank and proceed to tiebreakers if necessary
+        if (potentialWinners.Count == 1)
         {
-            Debug.Log($"Winner determined: Player {winnerIndex + 1} with a {bestRank}.");
+            // Only one player has the highest rank, no tiebreaker needed
+            winnerIndex = potentialWinners[0];
         }
-        else
+        else if (potentialWinners.Count > 1)
         {
-            Debug.Log("No winner could be determined.");
+            // Multiple players have the highest rank, proceed to tiebreaker
+            Debug.Log("Multiple players with the highest rank. Proceeding to tiebreakers.");
+            winnerIndex = TiebreakAmongTopHands(potentialWinners, playerHands);
         }
 
+        Debug.Log($"Winner determined: Player {winnerIndex + 1}");
         return winnerIndex;
+    }
+
+    private int TiebreakAmongTopHands(List<int> potentialWinners, List<List<CardSO>> playerHands)
+    {
+        int currentBestIndex = potentialWinners[0]; // Start with the first potential winner
+        List<CardSO> currentBestHand = playerHands[currentBestIndex];
+
+        for (int i = 1; i < potentialWinners.Count; i++)
+        {
+            int currentIndex = potentialWinners[i];
+            List<CardSO> currentHand = playerHands[currentIndex];
+
+            // Compare the current best hand with the next contender
+            int comparisonResult = CompareHandsForTiebreaker(currentBestHand, currentHand);
+
+            if (comparisonResult > 0)
+            {
+                // currentBestHand is still the best, no change needed
+                Debug.Log($"Player {currentBestIndex + 1}'s hand remains the leading hand.");
+            }
+            else if (comparisonResult < 0)
+            {
+                // currentHand takes the lead as the best hand
+                Debug.Log($"Player {currentIndex + 1}'s hand takes the lead over Player {currentBestIndex + 1}.");
+                currentBestIndex = currentIndex;
+                currentBestHand = currentHand; // Update the current best hand
+            }
+            else
+            {
+                // If there's a tie, additional logic can be applied here
+                Debug.Log($"Player {currentBestIndex + 1} and Player {currentIndex + 1} are still tied.");
+                // For simplicity, this example doesn't break further ties.
+            }
+        }
+
+        return currentBestIndex; // Returns the index of the player with the best hand among the potential winners
     }
 
     private int CompareHandsForTiebreaker(List<CardSO> hand1, List<CardSO> hand2)
