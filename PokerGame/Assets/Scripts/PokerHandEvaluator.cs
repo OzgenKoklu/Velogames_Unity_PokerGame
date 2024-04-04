@@ -103,12 +103,45 @@ public class PokerHandEvaluator : MonoBehaviour
         else if (potentialWinners.Count > 1)
         {
             // Multiple players have the highest rank, proceed to tiebreaker
-            Debug.Log("Multiple players with the highest rank. Proceeding to tiebreakers.");
-            winnerIndex = TiebreakAmongTopHands(potentialWinners, playerHands);
+            Debug.Log("Multiple players with the highest rank. Proceeding to elimination through hand ranks.");
+
+            List<int> newPotentialWinners = ElliminatePotentialWinnersThroughPairRanks(potentialWinners, playerHands);
+            if (newPotentialWinners.Count == 1)
+            {
+                winnerIndex = newPotentialWinners[0];
+            }
+            else if (potentialWinners.Count > 1)
+            {
+                Debug.Log("Multiple players with the highest rank. Tiebreaker logic:");
+                winnerIndex = TiebreakAmongTopHands(newPotentialWinners, playerHands); //burasýnýn tüm indexleri bozuldu düzeltmem lazým...
+               //örneðin player 4 ve 5 giriyo tie breake. 4 kazanýyo 0 döndürüyo filan, sonra aþaðýda da player 1 kazanmýþ ilan ediliyor. Ýndexleme sorunu oluþtu. 
+            }              
         }
 
         Debug.Log($"Winner determined: Player {winnerIndex + 1}");
         return winnerIndex;
+    }
+
+    private List<int> ElliminatePotentialWinnersThroughPairRanks(List<int> potentialWinners, List<List<CardSO>> playerHands)
+    {
+        List<int> newPotentialWinners = new List<int>();
+
+        CardRank biggestCardRank = CardRank.Two; //initialize the best rank of pairs in hand
+        for (int i = 0; i < potentialWinners.Count; i++)
+        {
+            if (PlayerHandsBestCardRank[potentialWinners[i]] > biggestCardRank)
+            {
+                biggestCardRank = PlayerHandsBestCardRank[potentialWinners[i]];
+                //  currentBestIndex = potentialWinners[i];
+                newPotentialWinners.Clear(); // Clear previous records, as a new best rank has been found
+                newPotentialWinners.Add(i); // Add this player as a potential winner
+            }
+            else if ((PlayerHandsBestCardRank[potentialWinners[i]] == biggestCardRank))
+            {
+                newPotentialWinners.Add(i);
+            }
+        }
+        return newPotentialWinners;
     }
 
     private int TiebreakAmongTopHands(List<int> potentialWinners, List<List<CardSO>> playerHands)
@@ -116,6 +149,7 @@ public class PokerHandEvaluator : MonoBehaviour
         int currentBestIndex = potentialWinners[0]; // Start with the first potential winner
         List<CardSO> currentBestHand = playerHands[currentBestIndex];
 
+        //this part isnt complete yet.
         for (int i = 1; i < potentialWinners.Count; i++)
         {
             int currentIndex = potentialWinners[i];
