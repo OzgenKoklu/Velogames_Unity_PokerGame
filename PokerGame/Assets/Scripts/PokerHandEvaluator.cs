@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class PokerHandEvaluator : MonoBehaviour
@@ -19,6 +20,9 @@ public class PokerHandEvaluator : MonoBehaviour
         RoyalFlush
     }
 
+    public static Dictionary<int, CardRank> PlayerHandsBestCardRank = new Dictionary<int, CardRank>();
+    
+
     public static PokerHandEvaluator Instance { get; private set; }
 
     private void Awake()
@@ -27,17 +31,39 @@ public class PokerHandEvaluator : MonoBehaviour
     }
 
 
-    public HandRank EvaluateHand(List<CardSO> hand)
+    public HandRank EvaluateHand(List<CardSO> hand, out CardRank playerHandBestCardForBestRank)
     {
-        if (IsRoyalFlush(hand)) return HandRank.RoyalFlush;
-        if (IsStraightFlush(hand)) return HandRank.StraightFlush;
+        playerHandBestCardForBestRank = CardRank.Two;
+        if (IsRoyalFlush(hand))
+        {
+            playerHandBestCardForBestRank = CardRank.Ace;//playerHandBestCardHand esgeçilebilir, sadece bir çeþit Royal Flush var.
+            return HandRank.RoyalFlush;
+        }     
+        //Buralara eklenmeli ve temizlenmeli. 
+        if (IsStraightFlush(hand))return HandRank.StraightFlush;
         if (IsFourOfAKind(hand)) return HandRank.FourOfAKind;
         if (IsFullHouse(hand)) return HandRank.FullHouse;
         if (IsFlush(hand)) return HandRank.Flush;
         if (IsStraight(hand)) return HandRank.Straight;
-        if (IsThreeOfAKind(hand)) return HandRank.ThreeOfAKind;
-        if (IsTwoPair(hand)) return HandRank.TwoPair;
-        if (IsOnePair(hand)) return HandRank.OnePair;
+        if (IsThreeOfAKind(hand, out  playerHandBestCardForBestRank))
+        {
+            Debug.Log("Three of a kind Hand Rank: " + playerHandBestCardForBestRank.ToString());
+            return HandRank.ThreeOfAKind;
+        }
+        if (IsTwoPair(hand, out  playerHandBestCardForBestRank))
+        {
+            Debug.Log("Two Pair Hand Rank: " + playerHandBestCardForBestRank.ToString());
+            return HandRank.TwoPair;
+        }
+        if (IsOnePair(hand, out playerHandBestCardForBestRank))
+        {
+            Debug.Log("One Pair Hand Rank: " + playerHandBestCardForBestRank.ToString());
+            return HandRank.OnePair;
+        }
+        //If hand has just a high card, we should determine the best card at hand:
+        var rankGroups = hand.GroupBy(card => card.Value); //neden bunu kodda zibilyon kere yaptýrýyorum da sadece evaluation'ýn baþýnda yapmýyorum. mantýken burda yapsam ve bu þekilde fonksiyonlara yedirsem daha iyi
+        playerHandBestCardForBestRank = rankGroups.First().Key;
+        Debug.Log("High Card Hand Rank: " + playerHandBestCardForBestRank.ToString());
         return HandRank.HighCard;
     }
 
@@ -49,9 +75,10 @@ public class PokerHandEvaluator : MonoBehaviour
 
         // Step 1: Evaluate each hand and determine the highest rank
         for (int i = 0; i < playerHands.Count; i++)
-        {
-            HandRank currentRank = EvaluateHand(playerHands[i]);
-            Debug.Log($"Player {i + 1}: {currentRank}");
+        {           
+            HandRank currentRank = EvaluateHand(playerHands[i], out CardRank playerHandBestCardRank);
+            PlayerHandsBestCardRank[i] = playerHandBestCardRank;
+            Debug.Log($"Player {i + 1}: {currentRank} with a rank of {PlayerHandsBestCardRank[i]}");
 
             if (currentRank > bestRank)
             {
@@ -64,6 +91,8 @@ public class PokerHandEvaluator : MonoBehaviour
                 potentialWinners.Add(i); // Add this player also as a potential winner
             }
         }
+
+        
 
         // Step 2: Filter by the highest rank and proceed to tiebreakers if necessary
         if (potentialWinners.Count == 1)
@@ -170,7 +199,6 @@ public class PokerHandEvaluator : MonoBehaviour
     }
 
     private bool IsStraightFlush(List<CardSO> hand)
-
     {
         return IsFlush(hand) && IsStraight(hand);
     }
@@ -211,21 +239,50 @@ public class PokerHandEvaluator : MonoBehaviour
         return true;
     }
 
-    private bool IsThreeOfAKind(List<CardSO> hand)
+    private bool IsThreeOfAKind(List<CardSO> hand, out CardRank pairRank)
     {
+        pairRank = CardRank.Two; //Initializes as the least possible value
         var rankGroups = hand.GroupBy(card => card.Value);
-        return rankGroups.Any(group => group.Count() == 3);
+
+        if(rankGroups.Any(group => group.Count() == 3)){
+            pairRank = rankGroups.First(group => group.Count() == 3).Key;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    private bool IsTwoPair(List<CardSO> hand)
+    private bool IsTwoPair(List<CardSO> hand, out CardRank pairRank)
     {
+        pairRank = CardRank.Two; //Initializes as the least possible value
         var rankGroups = hand.GroupBy(card => card.Value);
-        return rankGroups.Count(group => group.Count() == 2) == 2;
+
+        if(rankGroups.Count(group => group.Count() == 2) == 2)
+        {
+            pairRank = rankGroups.First(group => group.Count() == 2).Key; // Get the rank of the pair
+            return true;
+        }else
+        {
+            return false;
+        }
     }
 
-    private bool IsOnePair(List<CardSO> hand)
+    private bool IsOnePair(List<CardSO> hand, out CardRank pairRank)
     {
+        pairRank = CardRank.Two; //Initializes as the least possible value
         var rankGroups = hand.GroupBy(card => card.Value);
-        return rankGroups.Any(group => group.Count() == 2);
+        if (rankGroups.Any(group => group.Count() == 2))
+        {
+            // Found a group with 2 cards (the pair)
+            pairRank = rankGroups.First(group => group.Count() == 2).Key; // Get the rank of the pair
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
     }
 }
