@@ -42,6 +42,32 @@ GDD for the game:
 
 https://docs.google.com/document/d/1RrYZFcERAm4OzjKxE57lmc0hMOfWjcYncdkV3LErDXQ/edit?usp=sharing
 
+## Notes on PokerHandEvaluator.cs
+
+EvaluateAndFindWinner takes a list of list of CardSO, which are a list of player hands (hole cards), combined with community cards.
+
+Loop through the players and EvaluateHand() function calculates which hand type is present and also with the best card in that pair.
+
+For example, it knows if a player has a two pair, and the best pair is a pair of Jokers. Or if player has a full house (a three of a kind and a pair), it knows the rank of the three pair.
+
+By this stage algorithm does not take track of the "kicker cards" to unnecessary computation.
+
+Then, if the best hand is beaten in EvaluateAndFindWinner()'s for loop, it resets the "Potential Winners" list, and adds new potential winners to that list only if the new player has the same hand type.
+
+Later, if the potential winners list lenght is bigger than 1, it does another check with the rank of that specific hand type, and eliminated the lower ranking hands.
+
+For example, 3 hands with One Pair, 4, 6, 6 for their pair ranks respectively, hand with pair that has 4 rank is eliminated. 
+
+After this stage, tiebreaker should work, and for that tie breaker, we will have to check the "kicker cards" that these potential winners hold.
+
+That algorithm is not present at this moment. There is a filler section, but it does not work.
+
+NOTES
+
+NOTES
+
+NOTES
+
 NOTES
 
 NOTES

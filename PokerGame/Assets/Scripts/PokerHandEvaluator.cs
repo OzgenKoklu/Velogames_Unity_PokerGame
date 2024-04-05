@@ -38,13 +38,34 @@ public class PokerHandEvaluator : MonoBehaviour
         {
             playerHandBestCardForBestRank = CardRank.Ace;//playerHandBestCardHand esgeçilebilir, sadece bir çeþit Royal Flush var.
             return HandRank.RoyalFlush;
-        }     
+        }
         //Buralara eklenmeli ve temizlenmeli. 
-        if (IsStraightFlush(hand))return HandRank.StraightFlush;
-        if (IsFourOfAKind(hand)) return HandRank.FourOfAKind;
-        if (IsFullHouse(hand)) return HandRank.FullHouse;
-        if (IsFlush(hand)) return HandRank.Flush;
-        if (IsStraight(hand)) return HandRank.Straight;
+        if (IsStraightFlush(hand, out playerHandBestCardForBestRank))
+        {
+            Debug.Log("Straigh Flush Hand Rank: " + playerHandBestCardForBestRank.ToString());
+            return HandRank.StraightFlush;
+        }
+
+        if (IsFourOfAKind(hand, out playerHandBestCardForBestRank))
+        {
+            Debug.Log("Four of a Kind Hand Rank: " + playerHandBestCardForBestRank.ToString());
+            return HandRank.FourOfAKind;
+        }
+        if (IsFullHouse(hand, out playerHandBestCardForBestRank)) 
+        {
+            Debug.Log("FullHouse Hand Rank: " + playerHandBestCardForBestRank.ToString());
+            return HandRank.FullHouse; 
+        }
+        if (IsFlush(hand, out  playerHandBestCardForBestRank))
+        {
+            Debug.Log("Flush kind Hand Rank: " + playerHandBestCardForBestRank.ToString());
+            return HandRank.Flush;
+        }
+        if (IsStraight(hand, out  playerHandBestCardForBestRank))
+        {
+            Debug.Log("Straight Hand Rank: " + playerHandBestCardForBestRank.ToString());
+            return HandRank.Straight;
+        }
         if (IsThreeOfAKind(hand, out  playerHandBestCardForBestRank))
         {
             Debug.Log("Three of a kind Hand Rank: " + playerHandBestCardForBestRank.ToString());
@@ -90,9 +111,7 @@ public class PokerHandEvaluator : MonoBehaviour
             {
                 potentialWinners.Add(i); // Add this player also as a potential winner
             }
-        }
-
-        
+        }        
 
         // Step 2: Filter by the highest rank and proceed to tiebreakers if necessary
         if (potentialWinners.Count == 1)
@@ -232,25 +251,15 @@ public class PokerHandEvaluator : MonoBehaviour
         return IsStraightFlush(hand) && hand.All(card => card.Value >= CardRank.Ten);
     }
 
+    //these bool versions will not return the rank of the hand, it is used as helper functions
     private bool IsStraightFlush(List<CardSO> hand)
     {
         return IsFlush(hand) && IsStraight(hand);
     }
 
-    private bool IsFourOfAKind(List<CardSO> hand)
-    {
-        var rankGroups = hand.GroupBy(card => card.Value);
-        return rankGroups.Any(group => group.Count() == 4);
-    }
-
-    private bool IsFullHouse(List<CardSO> hand)
-    {
-        var rankGroups = hand.GroupBy(card => card.Value);
-        return rankGroups.Any(group => group.Count() == 3) && rankGroups.Any(group => group.Count() == 2);
-    }
-
     private bool IsFlush(List<CardSO> hand)
     {
+       
         return hand.GroupBy(card => card.Suit).Count() == 1;
     }
 
@@ -271,6 +280,98 @@ public class PokerHandEvaluator : MonoBehaviour
             }
         }
         return true;
+    }
+    //these bool versions will not return the rank of the hand, it is used as helper functions
+
+    private bool IsStraightFlush(List<CardSO> hand, out CardRank pairRank)
+    {
+        pairRank = CardRank.Two;
+        if ( IsFlush(hand) && IsStraight(hand))
+        {
+            var rankGroups = hand.GroupBy(card => card.Value);
+            pairRank = rankGroups.First().Key;
+            Debug.Log("Straigh Flush Hand biggest card rank: " + pairRank.ToString());
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private bool IsFlush(List<CardSO> hand, out CardRank pairRank)
+    {
+        pairRank = CardRank.Two;
+        
+        if (hand.GroupBy(card => card.Suit).Count() == 1)
+        {
+            var rankGroups = hand.GroupBy(card => card.Value);
+            pairRank = rankGroups.First().Key;
+            Debug.Log("Flush Hand biggest card rank: " + pairRank.ToString());
+            return true;
+        }
+        else
+        {
+            return false;
+        }     
+    }
+
+    private bool IsStraight(List<CardSO> hand, out CardRank pairRank)
+    {
+        pairRank = CardRank.Two; //Initializes as the least possible value
+        var sortedRanks = hand.Select(card => (int)card.Value).OrderBy(rank => rank).ToList();
+        if (sortedRanks.Last() == (int)CardRank.Ace && sortedRanks.First() == (int)CardRank.Two)
+        {
+            pairRank = CardRank.Five; // Five is the highest card in straight
+            // Handle A-2-3-4-5 as a valid straight (wheel)
+            sortedRanks.Remove(sortedRanks.Last());
+            sortedRanks.Insert(0, 1);
+        }
+        else
+        {
+            // For other straights, the biggest value is the last element of the sorted ranks
+            pairRank = (CardRank)sortedRanks.Last();
+
+        }
+        for (int i = 1; i < sortedRanks.Count; i++)
+        {
+            if (sortedRanks[i] != sortedRanks[i - 1] + 1)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private bool IsFourOfAKind(List<CardSO> hand, out CardRank pairRank)
+    {
+        pairRank = CardRank.Two; //Initializes as the least possible value
+        var rankGroups = hand.GroupBy(card => card.Value);     
+        if (rankGroups.Any(group => group.Count() == 4))
+        {
+            pairRank = rankGroups.First(group => group.Count() == 4).Key;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private bool IsFullHouse(List<CardSO> hand, out CardRank pairRank)
+    {
+        pairRank = CardRank.Two; //Initializes as the least possible value
+        var rankGroups = hand.GroupBy(card => card.Value);
+        if(rankGroups.Any(group => group.Count() == 3) && rankGroups.Any(group => group.Count() == 2))
+        {
+            pairRank = rankGroups.First(group => group.Count() == 3).Key;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private bool IsThreeOfAKind(List<CardSO> hand, out CardRank pairRank)
