@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GameManager;
 
 public class DealerManager : MonoBehaviour
 {
@@ -14,15 +15,15 @@ public class DealerManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        GameManager.Instance.OnGameStarted += OnGameStarted;
-
         _currentDealerIndex = 0;
+        GameManager.Instance.OnGameStarted += OnGameStarted;
     }
 
     private void OnGameStarted()
     {
+        Debug.Log("Ongamestarted: dealermanager");
         SetDealerPlayer();
     }
 
@@ -49,5 +50,17 @@ public class DealerManager : MonoBehaviour
         {
             Debug.Log("GameManager instance is null or no players found");
         }
+
+        GameManager.Instance.StartPreFlop();
+    }
+
+    public PlayerManager GetDealerPlayer()
+    {
+        return GameManager.Instance.Players[_currentDealerIndex];
+    }
+
+    public int GetDealerPlayerIndex()
+    {
+        return _currentDealerIndex;
     }
 }

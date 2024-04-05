@@ -27,6 +27,12 @@ public class PlayerManager : MonoBehaviour
         OnDealerChanged(this);
     }
 
+    public void StartTurn()
+    {
+        // Enable input for this player
+        // Implement logic for their actions (bet, fold, check, etc.)
+    }
+
     private void OnDealerChanged(PlayerManager playerManager)
     {
         if (_isPlayerDealer && playerManager == this)

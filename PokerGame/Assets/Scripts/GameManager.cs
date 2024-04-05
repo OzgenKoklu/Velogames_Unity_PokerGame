@@ -1,13 +1,33 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR;
+using static UnityEditor.Experimental.GraphView.GraphView;
+
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    public event Action OnGameStarted;
+    public event Action OnPreFlop;
 
-    public Action OnGameStarted;
+    public enum GameState
+    {
+        PreFlop,        // Before the flop (first three community cards) is dealt
+        Flop,           // The flop is dealt
+        PostFlop,       // Betting round after the flop
+        Turn,           // The turn (fourth community card) is dealt
+        PostTurn,       // Betting round after the turn
+        River,          // The river (fifth community card) is dealt
+        PostRiver,      // Final betting round after the river
+        Showdown,       // Players reveal their hands to determine the winner
+        PotDistribution,// The pot is distributed to the winner(s)
+        NewRound,       // Setup for a new round of poker
+        PlayerTurn,     // A player's turn to act
+        GameOver        // The game is over
+    }
+
+    private GameState _currentState;
+    private bool _isGameStarted = false;
 
     [SerializeField] private CommunityCards _communityCards;
     [SerializeField] private PokerPlayerHand _playerHand;
@@ -15,29 +35,59 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PokerPlayerHand _aiPlayerTwoHand;
     [SerializeField] private PokerPlayerHand _aiPlayerThreeHand;
     [SerializeField] private PokerPlayerHand _aiPlayerFourHand;
+    private List<PokerPlayerHand> _playerHands;
 
     public List<PlayerManager> Players => _players;
     [SerializeField] private List<PlayerManager> _players;
 
-    private List<PokerPlayerHand> _playerHands;
-
-    //
-    public void OnGameStartedClick()
-    {
-        OnGameStarted?.Invoke();
-    }
-
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Start()
     {
         InitializePlayers();
+        StartGame();
         DrawInitialCommunityCards();
-        DealCardsToPlayers();
         PokerHandEvaluator.Instance.EvaluateAndFindWinner(GetAllPlayerHands());
+    }
+
+    public void StartGame()
+    {
+        _isGameStarted = true;
+        OnGameStarted?.Invoke();
+        Debug.Log("Ongamestarted");
+    }
+
+    public bool IsGameStarted()
+    {
+        return _isGameStarted;
+    }
+
+    public void SetState(GameState newState)
+    {
+        _currentState = newState;
+    }
+
+    public GameState GetState()
+    {
+        return _currentState;
+    }
+
+    public void StartPreFlop()
+    {
+        _currentState = GameState.PreFlop;
+        DealCardsToPlayers();
+        TurnManager.Instance.SetPlayerTurn();
     }
 
     private void DrawInitialCommunityCards()
