@@ -125,20 +125,20 @@ public class PokerHandEvaluator : MonoBehaviour
     private List<int> ElliminatePotentialWinnersThroughPairRanks(List<int> potentialWinners, List<List<CardSO>> playerHands)
     {
         List<int> newPotentialWinners = new List<int>();
-
         CardRank biggestCardRank = CardRank.Two; //initialize the best rank of pairs in hand
+
         for (int i = 0; i < potentialWinners.Count; i++)
         {
-            if (PlayerHandsBestCardRank[potentialWinners[i]] > biggestCardRank)
+            int playerIndex = potentialWinners[i]; // Get the original player index from potentialWinners
+            if (PlayerHandsBestCardRank[playerIndex] > biggestCardRank)
             {
-                biggestCardRank = PlayerHandsBestCardRank[potentialWinners[i]];
-                //  currentBestIndex = potentialWinners[i];
+                biggestCardRank = PlayerHandsBestCardRank[playerIndex];
                 newPotentialWinners.Clear(); // Clear previous records, as a new best rank has been found
-                newPotentialWinners.Add(i); // Add this player as a potential winner
+                newPotentialWinners.Add(playerIndex); // Add this player's index as a potential winner
             }
-            else if ((PlayerHandsBestCardRank[potentialWinners[i]] == biggestCardRank))
+            else if ((PlayerHandsBestCardRank[playerIndex] == biggestCardRank))
             {
-                newPotentialWinners.Add(i);
+                newPotentialWinners.Add(playerIndex);
             }
         }
         return newPotentialWinners;
