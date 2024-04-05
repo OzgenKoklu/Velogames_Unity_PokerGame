@@ -8,6 +8,7 @@ public class DealerManager : MonoBehaviour
 {
     public static DealerManager Instance { get; private set; }
     public Action<PlayerManager> OnDealerChanged;
+
     private int _currentDealerIndex;
 
     private void Awake()
@@ -62,5 +63,29 @@ public class DealerManager : MonoBehaviour
     public int GetDealerPlayerIndex()
     {
         return _currentDealerIndex;
+    }
+
+    public PlayerManager GetSmallBlind()
+    {
+        if (_currentDealerIndex + 1 >= GameManager.Instance.Players.Count)
+        {
+            return GameManager.Instance.Players[0];
+        }
+        else
+        {
+            return GameManager.Instance.Players[_currentDealerIndex + 1];
+        }
+    }
+
+    public PlayerManager GetBigBlind()
+    {
+        if (_currentDealerIndex + 2 >= GameManager.Instance.Players.Count)
+        {
+            return GameManager.Instance.Players[1];
+        }
+        else
+        {
+            return GameManager.Instance.Players[_currentDealerIndex + 2];
+        }
     }
 }

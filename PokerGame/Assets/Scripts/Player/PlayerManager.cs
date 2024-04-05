@@ -18,6 +18,13 @@ public class PlayerManager : MonoBehaviour
         set => _isPlayerDealer = value;
     }
     [SerializeField] private bool _isPlayerDealer;
+    
+    public int BetAmount
+    {
+        get => _betAmount;
+        set => _betAmount = value;
+    }
+    private int _betAmount;
 
     [SerializeField] private GameObject _dealerIcon;
 

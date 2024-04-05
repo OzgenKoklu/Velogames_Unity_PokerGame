@@ -87,6 +87,11 @@ public class GameManager : MonoBehaviour
     {
         _currentState = GameState.PreFlop;
         DealCardsToPlayers();
+
+        DealerManager.Instance.GetBigBlind().BetAmount = 5;
+        DealerManager.Instance.GetSmallBlind().BetAmount = 10;
+
+        BetManager.SetBet(DealerManager.Instance.GetDealerPlayer(), betAmount: 10);
         TurnManager.Instance.SetPlayerTurn();
     }
 
