@@ -15,3 +15,4 @@ MonoBehaviour:
   _suit: 2
   _value: 10
   _cardSprite: {fileID: -640166264, guid: 5d8fad1dfad5e8c4baae69720dd04afd, type: 3}
+  _cardCode: th

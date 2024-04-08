@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
         InitializePlayers();
         StartGame();
         DrawInitialCommunityCards();
-        //PokerHandEvaluator.Instance.EvaluateAndFindWinner(GetAllPlayerHands());
+        PokerHandEvaluator.Instance.EvaluateAndFindWinner(GetAllPlayerHands());
     }
 
     public void StartGame()
