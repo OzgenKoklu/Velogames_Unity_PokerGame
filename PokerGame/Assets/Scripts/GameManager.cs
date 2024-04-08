@@ -2,17 +2,20 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    public static event Action<GameState> OnGameStateChanged;
+
     public event Action OnGameStarted;
-    public event Action OnPreFlop;
 
     public enum GameState
     {
-        PreFlop,        // Before the flop (first three community cards) is dealt
+        NewRound,       // Setup for a new round of poker
+        PreFlop,        // Before the flop (first three community cards) is dealt. Deals two hole cards face down to each player.
         Flop,           // The flop is dealt
         PostFlop,       // Betting round after the flop
         Turn,           // The turn (fourth community card) is dealt
@@ -21,13 +24,15 @@ public class GameManager : MonoBehaviour
         PostRiver,      // Final betting round after the river
         Showdown,       // Players reveal their hands to determine the winner
         PotDistribution,// The pot is distributed to the winner(s)
-        NewRound,       // Setup for a new round of poker
         PlayerTurn,     // A player's turn to act
         GameOver        // The game is over
     }
 
-    private GameState _currentState;
+    private GameState _currentGameState;
     private bool _isGameStarted = false;
+
+    public List<PlayerManager> Players => _players;
+    [SerializeField] private List<PlayerManager> _players;
 
     [SerializeField] private CommunityCards _communityCards;
     [SerializeField] private PokerPlayerHand _playerHand;
@@ -36,9 +41,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PokerPlayerHand _aiPlayerThreeHand;
     [SerializeField] private PokerPlayerHand _aiPlayerFourHand;
     private List<PokerPlayerHand> _playerHands;
-
-    public List<PlayerManager> Players => _players;
-    [SerializeField] private List<PlayerManager> _players;
 
     private void Awake()
     {
@@ -66,6 +68,8 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         _isGameStarted = true;
+        DealCardsToPlayers();
+        StartGameRound();
         OnGameStarted?.Invoke();
         Debug.Log("Ongamestarted");
     }
@@ -75,26 +79,20 @@ public class GameManager : MonoBehaviour
         return _isGameStarted;
     }
 
-    public void SetState(GameState newState)
+    public void StartGameRound()
     {
-        _currentState = newState;
+        SetGameState(GameState.NewRound);
+    }
+
+    public void SetGameState(GameState newState)
+    {
+        _currentGameState = newState;
+        OnGameStateChanged?.Invoke(_currentGameState);
     }
 
     public GameState GetState()
     {
-        return _currentState;
-    }
-
-    public void StartPreFlop()
-    {
-        _currentState = GameState.PreFlop;
-        DealCardsToPlayers();
-
-        DealerManager.Instance.GetBigBlind().BetAmount = 5;
-        DealerManager.Instance.GetSmallBlind().BetAmount = 10;
-
-        BetManager.SetBet(DealerManager.Instance.GetDealerPlayer(), betAmount: 10);
-        TurnManager.Instance.SetPlayerTurn();
+        return _currentGameState;
     }
 
     private void DrawInitialCommunityCards()

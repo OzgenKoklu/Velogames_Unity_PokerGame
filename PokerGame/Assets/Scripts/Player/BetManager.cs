@@ -5,13 +5,37 @@ using UnityEngine;
 
 public class BetManager : MonoBehaviour
 {
-    public static void SetBet(PlayerManager player, int betAmount)
+    private GameManager.GameState _currentState;
+
+    private void Start()
     {
-        if (GameManager.Instance.GetState() == GameManager.GameState.PreFlop)
+        GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
+        DealerManager.Instance.OnDealerChanged += DealerManager_OnDealerChanged;
+    }
+    private void GameManager_OnGameStateChanged(GameManager.GameState state)
+    {
+        _currentState = state;
+    }
+
+    private void DealerManager_OnDealerChanged(PlayerManager dealerPlayer)
+    {
+        if (_currentState == GameManager.GameState.NewRound)
         {
-            // Set the bet amount for the Big Blind and Small Blind
-            player.BetAmount = betAmount;
-            Debug.Log(player.name + " bet " + betAmount);
+            SetBet(DealerManager.Instance.GetSmallBlind(), 5);
+            SetBet(DealerManager.Instance.GetBigBlind(), 10);
+            GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
         }
+    }
+
+    public void SetBet(PlayerManager player, int betAmount)
+    {
+        player.BetAmount = betAmount;
+        Debug.Log(player.name + " bet " + betAmount);
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameStateChanged -= GameManager_OnGameStateChanged;
+        DealerManager.Instance.OnDealerChanged -= DealerManager_OnDealerChanged;
     }
 }

@@ -18,7 +18,7 @@ public class PlayerManager : MonoBehaviour
         set => _isPlayerDealer = value;
     }
     [SerializeField] private bool _isPlayerDealer;
-    
+
     public int BetAmount
     {
         get => _betAmount;
@@ -31,11 +31,22 @@ public class PlayerManager : MonoBehaviour
     private void Start()
     {
         DealerManager.Instance.OnDealerChanged += OnDealerChanged;
+        TurnManager.Instance.OnPlayerTurn += TurnManager_OnPlayerTurn;
         OnDealerChanged(this);
+    }
+
+    private void TurnManager_OnPlayerTurn(PlayerManager player)
+    {
+        if (player == this)
+        {
+            StartTurn();
+        }
     }
 
     public void StartTurn()
     {
+        TimerManager.Instance.StartTimer();
+        Debug.Log("My turn: " + gameObject.name);
         // Enable input for this player
         // Implement logic for their actions (bet, fold, check, etc.)
     }

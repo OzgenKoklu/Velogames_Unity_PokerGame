@@ -22,7 +22,7 @@ public class PokerHandEvaluator : MonoBehaviour
     }
 
     public static Dictionary<int, CardRank> PlayerHandsBestCardRank = new Dictionary<int, CardRank>();
-    
+
 
     public static PokerHandEvaluator Instance { get; private set; }
 
@@ -36,20 +36,20 @@ public class PokerHandEvaluator : MonoBehaviour
     {
         string cardCodes = ConcatenateCardCodes(hand);
 
-        int cardCount = hand.Count() ;
+        int cardCount = hand.Count();
 
         var rank = -1;
-   
+
         switch (cardCount)
         {
             case 5:
-                rank = pheval.Eval.Eval5String(cardCodes);               
+                rank = pheval.Eval.Eval5String(cardCodes);
                 break;
             case 6:
-                rank = pheval.Eval.Eval6String(cardCodes);               
+                rank = pheval.Eval.Eval6String(cardCodes);
                 break;
             case 7:
-                rank = pheval.Eval.Eval7String(cardCodes);              
+                rank = pheval.Eval.Eval7String(cardCodes);
                 break;
 
             default:
@@ -83,7 +83,7 @@ public class PokerHandEvaluator : MonoBehaviour
 
             var category1 = pheval.Rank.GetCategory(currentRank);
 
-            Debug.Log($"Player {i }: Rank(smaller is better): {currentRank} with a category of {category1}");   
+            Debug.Log($"Player {i}: Rank(smaller is better): {currentRank} with a category of {category1}");
 
             if (currentRank < bestRank)
             {
@@ -94,11 +94,11 @@ public class PokerHandEvaluator : MonoBehaviour
             {
                 //tie situation
             }
-        }       
-        
+        }
+
         string winningHandDescriptionCode = pheval.Rank.DescribeRankShort(bestRank);
         string winningHandType = pheval.Rank.DescribeRank(bestRank);
-       // Debug.Log($"Winner determined: Player {winnerIndex + 1}, Cards: {winningHandDescriptionCode}, hand type:{winningHandType} ");
+        // Debug.Log($"Winner determined: Player {winnerIndex + 1}, Cards: {winningHandDescriptionCode}, hand type:{winningHandType} ");
 
         WinningHandResults winningHandResults = new WinningHandResults()
         {

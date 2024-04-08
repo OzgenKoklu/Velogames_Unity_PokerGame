@@ -10,6 +10,9 @@ public class DealerManager : MonoBehaviour
     public Action<PlayerManager> OnDealerChanged;
 
     private int _currentDealerIndex;
+    private int _smallBlindIndex;
+    private int _bigBlindIndex;
+    private int _firstPlayerIndexAfterBigBlind;
 
     private void Awake()
     {
@@ -19,30 +22,35 @@ public class DealerManager : MonoBehaviour
     private void OnEnable()
     {
         _currentDealerIndex = 0;
-        GameManager.Instance.OnGameStarted += OnGameStarted;
+        GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
 
-    private void OnGameStarted()
+    private void GameManager_OnGameStateChanged(GameState gameState)
     {
-        Debug.Log("Ongamestarted: dealermanager");
-        SetDealerPlayer();
+        if (gameState == GameState.NewRound)
+        {
+            SetDealerPlayer();
+        }
     }
 
     private void SetDealerPlayer()
     {
-        if (GameManager.Instance != null && GameManager.Instance.Players.Count > 0)
+        var players = GameManager.Instance.Players;
+
+        if (GameManager.Instance != null && players.Count > 0)
         {
             // Check if GameManager instance and Players list are valid
             Debug.Log("GameManager and Players list are valid");
 
             // Attempt to set the IsPlayerDealer property
-            GameManager.Instance.Players[_currentDealerIndex].IsPlayerDealer = true;
+            players[_currentDealerIndex].IsPlayerDealer = true;
+            SetSmallAndBigBlind();
             Debug.Log("Player set as dealer");
-            OnDealerChanged?.Invoke(GameManager.Instance.Players[_currentDealerIndex]);
+            OnDealerChanged?.Invoke(players[_currentDealerIndex]);
 
             _currentDealerIndex++;
             // Check if the current dealer index is greater than the number of players
-            if (_currentDealerIndex == GameManager.Instance.Players.Count)
+            if (_currentDealerIndex == players.Count)
             {
                 _currentDealerIndex = 0;
             }
@@ -51,8 +59,6 @@ public class DealerManager : MonoBehaviour
         {
             Debug.Log("GameManager instance is null or no players found");
         }
-
-        GameManager.Instance.StartPreFlop();
     }
 
     public PlayerManager GetDealerPlayer()
@@ -67,25 +73,46 @@ public class DealerManager : MonoBehaviour
 
     public PlayerManager GetSmallBlind()
     {
-        if (_currentDealerIndex + 1 >= GameManager.Instance.Players.Count)
-        {
-            return GameManager.Instance.Players[0];
-        }
-        else
-        {
-            return GameManager.Instance.Players[_currentDealerIndex + 1];
-        }
+        return GameManager.Instance.Players[_smallBlindIndex];
     }
 
     public PlayerManager GetBigBlind()
     {
-        if (_currentDealerIndex + 2 >= GameManager.Instance.Players.Count)
+        return GameManager.Instance.Players[_bigBlindIndex];
+    }
+
+    public void SetSmallAndBigBlind()
+    {
+        var players = GameManager.Instance.Players;
+
+        if (_currentDealerIndex + 1 >= players.Count)
         {
-            return GameManager.Instance.Players[1];
+            _smallBlindIndex = 0;
         }
         else
         {
-            return GameManager.Instance.Players[_currentDealerIndex + 2];
+            _smallBlindIndex = _currentDealerIndex + 1;
         }
+
+        if (_currentDealerIndex + 2 >= players.Count)
+        {
+            _bigBlindIndex = 1;
+            _firstPlayerIndexAfterBigBlind = _bigBlindIndex + 1;
+        }
+        else
+        {
+            _bigBlindIndex = _currentDealerIndex + 2;
+            _firstPlayerIndexAfterBigBlind = _bigBlindIndex + 1;
+        }
+    }
+
+    public int GetFirstPlayerIndexAfterBigBlind()
+    {
+        return _firstPlayerIndexAfterBigBlind;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameStateChanged -= GameManager_OnGameStateChanged;
     }
 }
