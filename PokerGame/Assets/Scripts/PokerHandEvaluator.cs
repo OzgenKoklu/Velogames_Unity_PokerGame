@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using pheval;
 using static pheval.Rank;
+using UnityEngine.UIElements;
 
 public class PokerHandEvaluator : MonoBehaviour
 {
@@ -70,7 +71,7 @@ public class PokerHandEvaluator : MonoBehaviour
     }
 
 
-    public int EvaluateAndFindWinner(List<List<CardSO>> playerHands)
+    public WinningHandResults EvaluateAndFindWinner(List<List<CardSO>> playerHands)
     {
         int winnerIndex = -1;
         int bestRank = 7462; //not a magical number, just the weakest possible hand rank
@@ -82,7 +83,7 @@ public class PokerHandEvaluator : MonoBehaviour
 
             var category1 = pheval.Rank.GetCategory(currentRank);
 
-            Debug.Log($"Player {i + 1}: rank: {currentRank} with a category of {category1}");
+            Debug.Log($"Player {i }: Rank(smaller is better): {currentRank} with a category of {category1}");   
 
             if (currentRank < bestRank)
             {
@@ -94,8 +95,26 @@ public class PokerHandEvaluator : MonoBehaviour
                 //tie situation
             }
         }       
-        Debug.Log($"Winner determined: Player {winnerIndex + 1}");
-        return winnerIndex;
+        
+        string winningHandDescriptionCode = pheval.Rank.DescribeRankShort(bestRank);
+        string winningHandType = pheval.Rank.DescribeRank(bestRank);
+       // Debug.Log($"Winner determined: Player {winnerIndex + 1}, Cards: {winningHandDescriptionCode}, hand type:{winningHandType} ");
+
+        WinningHandResults winningHandResults = new WinningHandResults()
+        {
+            WinningHandIndex = winnerIndex,
+            WinningCardCodes = winningHandDescriptionCode,
+            WinningHandType = winningHandType
+        };
+
+        return winningHandResults;
+    }
+
+    public struct WinningHandResults
+    {
+        public int WinningHandIndex;
+        public string WinningCardCodes;
+        public string WinningHandType;
     }
 
 }

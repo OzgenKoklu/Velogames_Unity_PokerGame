@@ -58,7 +58,9 @@ public class GameManager : MonoBehaviour
         InitializePlayers();
         StartGame();
         DrawInitialCommunityCards();
-        PokerHandEvaluator.Instance.EvaluateAndFindWinner(GetAllPlayerHands());
+        PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.EvaluateAndFindWinner(GetAllPlayerHands());
+        Debug.Log("Winning hand type: " + winningHandResult.WinningHandType + "- Player Index(0,1,2,3,4), 0 is the player. : " + winningHandResult.WinningHandIndex + " - Winning Hand(5Cards) Ranks: " + winningHandResult.WinningCardCodes);
+
     }
 
     public void StartGame()
