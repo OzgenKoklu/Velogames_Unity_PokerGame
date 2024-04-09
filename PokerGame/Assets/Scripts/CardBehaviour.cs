@@ -4,12 +4,14 @@ public class CardBehaviour : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _cardFaceSpriteRenderer;
     [SerializeField] private SpriteRenderer _cardBackSpriteRenderer;
+    [SerializeField] private GameObject _selectedVisualGameObject;
 
     public CardSO CardSO;
 
     public void SetCardScriptableObject(CardSO cardSO)
     {
         CardSO = cardSO;
+        cardSO.CardBehavior = this;
         UpdateCardVisual();
     }
 
@@ -37,5 +39,11 @@ public class CardBehaviour : MonoBehaviour
     {
         this.transform.SetPositionAndRotation(transform.position, transform.rotation);
         this.transform.localScale = transform.localScale;
+    }
+
+    public void SetCardAsSelected()
+    {
+        // _selectedVisualGameObject?.SetActive(true);
+        Debug.Log("Card Selected: " + CardSO.CardCode);
     }
 }

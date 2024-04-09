@@ -102,6 +102,7 @@ public class PokerHandEvaluator : MonoBehaviour
 
         WinningHandResults winningHandResults = new WinningHandResults()
         {
+            WinningCardList = playerHands[winnerIndex],
             WinningHandIndex = winnerIndex,
             WinningCardCodes = winningHandDescriptionCode,
             WinningHandType = winningHandType
@@ -112,6 +113,7 @@ public class PokerHandEvaluator : MonoBehaviour
 
     public struct WinningHandResults
     {
+        public List<CardSO> WinningCardList;
         public int WinningHandIndex;
         public string WinningCardCodes;
         public string WinningHandType;

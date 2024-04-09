@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static PokerHandEvaluator;
 
 public class PokerDeckManager : MonoBehaviour
 {
@@ -45,9 +46,25 @@ public class PokerDeckManager : MonoBehaviour
         InitializePlayers();
         DrawInitialCommunityCards();
         DealCardsToPlayers();
-        List<List<CardSO>> allPlayerCards = GetAllPlayerHands();
+
+        //aslýnda direkt tur baþýnda deðil bi tuþa basýp kýyas iþlemi baþlayýnca olmalý, hatta bu winning hand sadece 7 kard açýlýnca filan olmalý.
+        List<List<CardSO>> allPlayerCards = GetAllPlayerHands();  
         PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.EvaluateAndFindWinner(allPlayerCards);
+        HandleWinningHandResult(winningHandResult);
+    }
+
+    //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslýnda game manager'a taþýnmasý mantýklý olabilir. buradan yapýlacak þeylerin oradan yapýlmasý doðru olabilir.
+    private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
+    {
         Debug.Log("Winning hand type: " + winningHandResult.WinningHandType + "- Player Index(0,1,2,3,4), 0 is the player. : " + winningHandResult.WinningHandIndex + " - Winning Hand(5Cards) Ranks: " + winningHandResult.WinningCardCodes);
+        string winningHandType = winningHandResult.WinningHandType;
+        int winningHandPlayerIndex = winningHandResult.WinningHandIndex;
+
+        //Show ile UI'da winning hand gösterecek bi mesaj. ShowWinningHand and player Name(indexten çýkartýlýr) 
+
+        string winningHandCardCodes = winningHandResult.WinningCardCodes;
+        List<CardSO> WinningCardList = winningHandResult.WinningCardList;
+        CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes);
     }
 
     // Load all cards from DeckSO into the deck List
@@ -139,7 +156,7 @@ public class PokerDeckManager : MonoBehaviour
 
     private CardSO DrawCardFromDeck()
     {
-        return PokerDeckManager.Instance.DrawCard();
+        return DrawCard();
     }
     private void InitializePlayers()
     {

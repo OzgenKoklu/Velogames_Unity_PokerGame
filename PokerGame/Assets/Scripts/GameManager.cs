@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
-using static UnityEngine.Rendering.DebugUI;
 
 
 public class GameManager : MonoBehaviour

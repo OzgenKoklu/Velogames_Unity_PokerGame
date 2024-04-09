@@ -14,5 +14,6 @@ public class CardSO : ScriptableObject
     public CardRank Value { get => _value; }
     public Sprite CardSprite { get => _cardSprite; }
     public string CardCode { get => _cardCode; }
+    public CardBehaviour CardBehavior { get; set; }
     public ICardParent CardParent { get; set; }
 }
