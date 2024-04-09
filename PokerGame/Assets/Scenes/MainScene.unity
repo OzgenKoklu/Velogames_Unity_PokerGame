@@ -424,7 +424,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &114051009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1333,6 +1333,7 @@ GameObject:
   m_Component:
   - component: {fileID: 360711269}
   - component: {fileID: 360711268}
+  - component: {fileID: 360711270}
   m_Layer: 0
   m_Name: PokerDeckManager
   m_TagString: Untagged
@@ -1353,6 +1354,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _deckSO: {fileID: 11400000, guid: 4b488038dccfb364189c67070f6d36ba, type: 2}
+  _communityCards: {fileID: 1732222767}
+  _playerHand: {fileID: 1199791274}
+  _aiPlayerOneHand: {fileID: 264449917}
+  _aiPlayerTwoHand: {fileID: 1230832290}
+  _aiPlayerThreeHand: {fileID: 2010368667}
+  _aiPlayerFourHand: {fileID: 276828756}
 --- !u!4 &360711269
 Transform:
   m_ObjectHideFlags: 0
@@ -1368,6 +1375,18 @@ Transform:
   m_Father: {fileID: 169778092}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &360711270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360711267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1460405cbe731e149964636cf820a001, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &384630816
 GameObject:
   m_ObjectHideFlags: 0
@@ -2714,12 +2733,6 @@ MonoBehaviour:
   - {fileID: 606718410}
   - {fileID: 145876574}
   - {fileID: 292966328}
-  _communityCards: {fileID: 1732222767}
-  _playerHand: {fileID: 1199791274}
-  _aiPlayerOneHand: {fileID: 264449917}
-  _aiPlayerTwoHand: {fileID: 1230832290}
-  _aiPlayerThreeHand: {fileID: 2010368667}
-  _aiPlayerFourHand: {fileID: 276828756}
 --- !u!1 &1074086707
 GameObject:
   m_ObjectHideFlags: 0
