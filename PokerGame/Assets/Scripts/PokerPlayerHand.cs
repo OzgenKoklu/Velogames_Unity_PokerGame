@@ -61,4 +61,10 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     {
         return HoleCardsList;
     }
+
+    public List<CardSO> GetCardListWithCommunityCardsAdded()
+    {
+        List<CardSO> cardListWithCommunityCardsAdded = PokerDeckManager.Instance.CombineHandWithCommunityCards(HoleCardsList);
+        return cardListWithCommunityCardsAdded;
+    }
 }

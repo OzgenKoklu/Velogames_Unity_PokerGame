@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 
 public class CommunityCards : MonoBehaviour, ICardParent
 {
+    public static CommunityCards Instance { get; private set; }
     public List<CardSO> CommunityCardsList;
     private int _communityCardsLimit = 5;
     private int _cardPositionXLeftBoundry = -3;
@@ -15,6 +16,7 @@ public class CommunityCards : MonoBehaviour, ICardParent
     private void Awake()
     {
         CommunityCardsList = new List<CardSO>();
+        Instance = this;
     }
     public void ClearCards()
     {

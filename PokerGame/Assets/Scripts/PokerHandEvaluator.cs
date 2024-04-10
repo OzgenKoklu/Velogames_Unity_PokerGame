@@ -21,9 +21,6 @@ public class PokerHandEvaluator : MonoBehaviour
         RoyalFlush
     }
 
-    public static Dictionary<int, CardRank> PlayerHandsBestCardRank = new Dictionary<int, CardRank>();
-
-
     public static PokerHandEvaluator Instance { get; private set; }
 
     private void Awake()
@@ -71,26 +68,35 @@ public class PokerHandEvaluator : MonoBehaviour
     }
 
 
-    public WinningHandResults EvaluateAndFindWinner(List<List<CardSO>> playerHands)
+    public List<int> EvaluateHandStrengths(List<List<CardSO>> playerHands)
     {
-        int winnerIndex = -1;
-        int bestRank = 7462; //not a magical number, just the weakest possible hand rank
+        //using player ID -> handrank dictionary might be more secure to store these sort of data (for online game)
+        //on the client side, one can easily access to index of other players in this current situation.
+        List<int> handRanks = new List<int>();
 
-        // Step 1: Evaluate each hand and determine the highest rank
+        // Step 1: Evaluate each hand and write their rank in the list
         for (int i = 0; i < playerHands.Count; i++)
         {
-            int currentRank = EvaluateHandRank(playerHands[i]);
+            int handRank = EvaluateHandRank(playerHands[i]);
+            handRanks.Add(handRank);            
+        }
+     
+        return handRanks;
+    }
 
-            var category1 = pheval.Rank.GetCategory(currentRank);
+    public WinningHandResults SelectTheWinner(List<int> playerRankList)
+    {
+        int bestHandIndex = -1;
+        int bestRank = 7462; //not a magical number, just the weakest possible hand rank
 
-            Debug.Log($"Player {i}: Rank(smaller is better): {currentRank} with a category of {category1}");
-
-            if (currentRank < bestRank)
+        for (int i = 0; i < playerRankList.Count; i++)
+        {
+            if (playerRankList[i] < bestRank)
             {
-                bestRank = currentRank;
-                winnerIndex = i;
+                bestRank = playerRankList[i];
+                bestHandIndex = i;
             }
-            else if (currentRank == bestRank)
+            else if (playerRankList[i] == bestRank)
             {
                 //tie situation
             }
@@ -98,12 +104,11 @@ public class PokerHandEvaluator : MonoBehaviour
 
         string winningHandDescriptionCode = pheval.Rank.DescribeRankShort(bestRank);
         string winningHandType = pheval.Rank.DescribeRank(bestRank);
-        // Debug.Log($"Winner determined: Player {winnerIndex + 1}, Cards: {winningHandDescriptionCode}, hand type:{winningHandType} ");
 
         WinningHandResults winningHandResults = new WinningHandResults()
         {
-            WinningCardList = playerHands[winnerIndex],
-            WinningHandIndex = winnerIndex,
+            WinningCardList = PokerDeckManager.Instance.GetAllPlayerHands()[bestHandIndex],
+            WinningHandIndex = bestHandIndex,
             WinningCardCodes = winningHandDescriptionCode,
             WinningHandType = winningHandType
         };

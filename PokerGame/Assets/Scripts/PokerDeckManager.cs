@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static PokerHandEvaluator;
 
@@ -49,7 +50,13 @@ public class PokerDeckManager : MonoBehaviour
 
         //aslýnda direkt tur baþýnda deðil bi tuþa basýp kýyas iþlemi baþlayýnca olmalý, hatta bu winning hand sadece 7 kard açýlýnca filan olmalý.
         List<List<CardSO>> allPlayerCards = GetAllPlayerHands();  
-        PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.EvaluateAndFindWinner(allPlayerCards);
+
+        //evaluate etmeli ama hemen winner seçmemeli. Evaluation skorlarýna göre de player AI'larý bet fold check yapmalý.
+        List<int> playerHandRankList = PokerHandEvaluator.Instance.EvaluateHandStrengths(allPlayerCards);
+
+
+        //turdaki player aksiyonlarý sonrasý burasý olmalý.
+        PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinner(playerHandRankList);
         HandleWinningHandResult(winningHandResult);
     }
 
@@ -173,20 +180,20 @@ public class PokerDeckManager : MonoBehaviour
     public List<List<CardSO>> GetAllPlayerHands()
     {
         List<List<CardSO>> allHands = new List<List<CardSO>>();
-        List<CardSO> communityCards = _communityCards.GetCardList();
 
         // Add each player's combined hand to the list
-        allHands.Add(CombineHandWithCommunity(_playerHand.GetCardList(), communityCards));
-        allHands.Add(CombineHandWithCommunity(_aiPlayerOneHand.GetCardList(), communityCards));
-        allHands.Add(CombineHandWithCommunity(_aiPlayerTwoHand.GetCardList(), communityCards));
-        allHands.Add(CombineHandWithCommunity(_aiPlayerThreeHand.GetCardList(), communityCards));
-        allHands.Add(CombineHandWithCommunity(_aiPlayerFourHand.GetCardList(), communityCards));
+        allHands.Add(_playerHand.GetCardListWithCommunityCardsAdded());
+        allHands.Add(_aiPlayerOneHand.GetCardListWithCommunityCardsAdded());
+        allHands.Add(_aiPlayerTwoHand.GetCardListWithCommunityCardsAdded());
+        allHands.Add(_aiPlayerThreeHand.GetCardListWithCommunityCardsAdded());
+        allHands.Add(_aiPlayerFourHand.GetCardListWithCommunityCardsAdded());
 
         return allHands;
     }
 
-    private List<CardSO> CombineHandWithCommunity(List<CardSO> playerHand, List<CardSO> communityCards)
+    public List<CardSO> CombineHandWithCommunityCards(List<CardSO> playerHand)
     {
+        List<CardSO> communityCards = _communityCards.GetCardList();
         List<CardSO> combinedHand = new List<CardSO>(playerHand);
         combinedHand.AddRange(communityCards);
         return combinedHand;
