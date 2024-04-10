@@ -623,7 +623,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pokerPlayerHand: {fileID: 1230832290}
-  _playerManager: {fileID: 0}
 --- !u!1 &145876572
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,7 +688,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pokerPlayerHand: {fileID: 2010368667}
-  _playerManager: {fileID: 0}
 --- !u!1 &169778091
 GameObject:
   m_ObjectHideFlags: 0
@@ -904,6 +902,7 @@ MonoBehaviour:
   HoleCardsList: []
   _isPlayerUs: 0
   _handFollowTransform: {fileID: 264449916}
+  _aiPlayerBehavior: {fileID: 1074086710}
   initialXOffset: -0.6
   xOffsetMultiplier: 1.2
   initialRotationAngle: 15
@@ -1042,6 +1041,7 @@ MonoBehaviour:
   HoleCardsList: []
   _isPlayerUs: 0
   _handFollowTransform: {fileID: 276828755}
+  _aiPlayerBehavior: {fileID: 292966329}
   initialXOffset: -0.6
   xOffsetMultiplier: 1.2
   initialRotationAngle: 15
@@ -1114,7 +1114,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pokerPlayerHand: {fileID: 276828756}
-  _playerManager: {fileID: 0}
 --- !u!1 &299952970
 GameObject:
   m_ObjectHideFlags: 0
@@ -2843,7 +2842,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pokerPlayerHand: {fileID: 264449917}
-  _playerManager: {fileID: 0}
 --- !u!1 &1199791272
 GameObject:
   m_ObjectHideFlags: 0
@@ -2891,6 +2889,7 @@ MonoBehaviour:
   HoleCardsList: []
   _isPlayerUs: 1
   _handFollowTransform: {fileID: 1199791273}
+  _aiPlayerBehavior: {fileID: 0}
   initialXOffset: -0.6
   xOffsetMultiplier: 1.2
   initialRotationAngle: 15
@@ -2989,6 +2988,7 @@ MonoBehaviour:
   HoleCardsList: []
   _isPlayerUs: 0
   _handFollowTransform: {fileID: 1230832289}
+  _aiPlayerBehavior: {fileID: 134982087}
   initialXOffset: -0.6
   xOffsetMultiplier: 1.2
   initialRotationAngle: 15
@@ -4081,6 +4081,7 @@ MonoBehaviour:
   HoleCardsList: []
   _isPlayerUs: 0
   _handFollowTransform: {fileID: 2010368666}
+  _aiPlayerBehavior: {fileID: 145876575}
   initialXOffset: -0.6
   xOffsetMultiplier: 1.2
   initialRotationAngle: 15

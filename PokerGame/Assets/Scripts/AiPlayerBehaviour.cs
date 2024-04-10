@@ -6,7 +6,6 @@ using UnityEngine;
 public class AiPlayerBehaviour : MonoBehaviour
 {
     [SerializeField] private PokerPlayerHand _pokerPlayerHand;
-    [SerializeField] private PlayerManager _playerManager;
 
     /*Ranks from pheval library for hand strenght reference
      public static Category GetCategory(int rank)
@@ -72,7 +71,7 @@ public class AiPlayerBehaviour : MonoBehaviour
         }
     }
 
-    private HandStrength HandStrenghtCalculator(int handRank)
+    public HandStrength HandStrenghtCalculator(int handRank)
     {
         if (handRank < 322) //full house or better
         {

@@ -48,13 +48,34 @@ public class PokerDeckManager : MonoBehaviour
         DrawInitialCommunityCards();
         DealCardsToPlayers();
 
-        //aslýnda direkt tur baþýnda deðil bi tuþa basýp kýyas iþlemi baþlayýnca olmalý, hatta bu winning hand sadece 7 kard açýlýnca filan olmalý.
-        List<List<CardSO>> allPlayerCards = GetAllPlayerHands();  
+        //preflop Ai behaviour check 
+        foreach (var playerHand in _playerHands)
+        {
+            int i = _playerHands.IndexOf(playerHand);
+
+            if (_playerHands[i].IsPlayerAiBot())
+            {
+                _playerHands[i].AiBotActionPreFlop();
+            }
+        }
+
+            //bunlarýn Deck manager'da olmasý da mantýklý deðil, Deckle bi iþ yok Evaluator class'ýnda da olabilirler. 
+            //aslýnda direkt tur baþýnda deðil bi tuþa basýp kýyas iþlemi baþlayýnca olmalý, hatta bu winning hand sadece 7 kard açýlýnca filan olmalý.
+            List<List<CardSO>> allPlayerCards = GetAllPlayerHands();  
 
         //evaluate etmeli ama hemen winner seçmemeli. Evaluation skorlarýna göre de player AI'larý bet fold check yapmalý.
         List<int> playerHandRankList = PokerHandEvaluator.Instance.EvaluateHandStrengths(allPlayerCards);
 
-        
+        //postflop Ai behaviour check 
+        foreach (var playerHandRank in playerHandRankList)
+        {
+            int i = playerHandRankList.IndexOf(playerHandRank);
+
+            if (_playerHands[i].IsPlayerAiBot())
+            {
+                _playerHands[i].AiBotActionPostFlop(playerHandRank);
+            }
+        }
         //turdaki player aksiyonlarý sonrasý burasý olmalý.
         PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinner(playerHandRankList);
         HandleWinningHandResult(winningHandResult);
