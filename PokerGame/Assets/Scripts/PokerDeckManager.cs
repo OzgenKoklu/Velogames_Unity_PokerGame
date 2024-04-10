@@ -54,7 +54,7 @@ public class PokerDeckManager : MonoBehaviour
         //evaluate etmeli ama hemen winner seçmemeli. Evaluation skorlarýna göre de player AI'larý bet fold check yapmalý.
         List<int> playerHandRankList = PokerHandEvaluator.Instance.EvaluateHandStrengths(allPlayerCards);
 
-
+        
         //turdaki player aksiyonlarý sonrasý burasý olmalý.
         PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinner(playerHandRankList);
         HandleWinningHandResult(winningHandResult);

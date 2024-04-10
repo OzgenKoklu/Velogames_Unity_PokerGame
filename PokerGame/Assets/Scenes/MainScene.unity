@@ -568,6 +568,7 @@ GameObject:
   m_Component:
   - component: {fileID: 134982085}
   - component: {fileID: 134982086}
+  - component: {fileID: 134982087}
   m_Layer: 0
   m_Name: AiPlayerTwo
   m_TagString: Untagged
@@ -609,6 +610,20 @@ MonoBehaviour:
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 611473412}
+--- !u!114 &134982087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134982084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51c48daa09228124e80565e5574504d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pokerPlayerHand: {fileID: 1230832290}
+  _playerManager: {fileID: 0}
 --- !u!1 &145876572
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,6 +634,7 @@ GameObject:
   m_Component:
   - component: {fileID: 145876573}
   - component: {fileID: 145876574}
+  - component: {fileID: 145876575}
   m_Layer: 0
   m_Name: AiPlayerThree
   m_TagString: Untagged
@@ -660,6 +676,20 @@ MonoBehaviour:
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 384630816}
+--- !u!114 &145876575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145876572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51c48daa09228124e80565e5574504d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pokerPlayerHand: {fileID: 2010368667}
+  _playerManager: {fileID: 0}
 --- !u!1 &169778091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1029,6 +1059,7 @@ GameObject:
   m_Component:
   - component: {fileID: 292966327}
   - component: {fileID: 292966328}
+  - component: {fileID: 292966329}
   m_Layer: 0
   m_Name: AiPlayerFour
   m_TagString: Untagged
@@ -1070,6 +1101,20 @@ MonoBehaviour:
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 1988252620}
+--- !u!114 &292966329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292966326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51c48daa09228124e80565e5574504d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pokerPlayerHand: {fileID: 276828756}
+  _playerManager: {fileID: 0}
 --- !u!1 &299952970
 GameObject:
   m_ObjectHideFlags: 0
@@ -2743,6 +2788,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1074086708}
   - component: {fileID: 1074086709}
+  - component: {fileID: 1074086710}
   m_Layer: 0
   m_Name: AiPlayerOne
   m_TagString: Untagged
@@ -2784,6 +2830,20 @@ MonoBehaviour:
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 777249507}
+--- !u!114 &1074086710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1074086707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51c48daa09228124e80565e5574504d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pokerPlayerHand: {fileID: 264449917}
+  _playerManager: {fileID: 0}
 --- !u!1 &1199791272
 GameObject:
   m_ObjectHideFlags: 0
