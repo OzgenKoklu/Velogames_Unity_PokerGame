@@ -58,6 +58,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("Ongamestarted");
     }
 
+    private void Update()
+    {
+        //Debug.Log("Current Game State: " + _currentGameState);
+    }
+
     public bool IsGameStarted()
     {
         return _isGameStarted;

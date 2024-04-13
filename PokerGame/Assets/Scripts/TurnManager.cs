@@ -1,18 +1,26 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
+using static TurnManager;
 
 public class TurnManager : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI _playerMoveInfoText;
+    [SerializeField] private TextMeshProUGUI _playerTimerText;
     public event Action<PlayerManager> OnPlayerTurn;
+    private List<PlayerAction> _aiPlayerActionsForTurn;
 
     public static TurnManager Instance { get; private set; }
     public PlayerManager CurrentPlayer { get; private set; }
     private int _currentPlayerIndex;
+    public enum PlayerAction { Fold, Check, Bet, Raise }
 
     private void Awake()
     {
         Instance = this;
+        _aiPlayerActionsForTurn = new List<PlayerAction>();
     }
 
     private void OnEnable()
@@ -24,15 +32,43 @@ public class TurnManager : MonoBehaviour
     {
         if (state == GameManager.GameState.PreFlop)
         {
-            //finding all the ai player actions, maybe should keep them in the list for further usage
-            PreFlopAiPlayerActionGeneration();
-
-            //burada kullancaz action'larý muhtemelen.
+            //keeping ai player actions in a list
+            _aiPlayerActionsForTurn = PreFlopAiPlayerActionGeneration();
+          
             SetFirstPlayer();
+
+            //PlayerAksiyonlarý ile oyun loopunu devam ettireceðiz
+
+            Debug.Log(CurrentPlayer.name + "'s turn!");
             return;
         }
 
-        if(state == GameManager.GameState.PostFlop)
+        if (state == GameManager.GameState.PlayerTurn)
+        {
+            OnPlayerTurn?.Invoke(CurrentPlayer);
+          
+            if(_currentPlayerIndex != 2)
+            {
+                //player is AI
+                PlayerAction playerAction = _aiPlayerActionsForTurn[_currentPlayerIndex];
+
+                Debug.Log("Ai turn, index: " + _currentPlayerIndex + " Move: " + playerAction);
+
+                //logic to write things on UI and also virtually elongating the process (like timer on screen etc)
+
+                //check if player is last in this turn or not, if last, change state to flop, else, change player turn
+                ChangePlayerTurn();
+            }else if(_currentPlayerIndex == 2)
+            {
+                //if player is our player, set on UI objects for player input.
+                Debug.Log("Our Tern, index: " + _currentPlayerIndex + " Select your Move: ");
+                //check if player is last in this turn or not, if last, change state to flop, else, change player turn
+               
+            }
+            return;
+        }
+
+        if (state == GameManager.GameState.PostFlop)
         {
             List<List<CardSO>> allPlayerCards = PokerDeckManager.Instance.GetAllPlayerHands();
 
@@ -42,7 +78,7 @@ public class TurnManager : MonoBehaviour
             PostFlopAiPlayerActionGeneration(playerHandRankList);
 
             //sonraki aþama içni setFirstPlayer tarzý bir fonksiyon kullanmalý, ve aldýðýmýz actionlar orada Ai botlar için kullanýlmalý.
-
+            SetFirstPlayer();
 
             return;
         }
@@ -59,11 +95,7 @@ public class TurnManager : MonoBehaviour
             HandleWinningHandResult(winningHandResult);
         }
 
-        if (state == GameManager.GameState.PlayerTurn)
-        {
-            OnPlayerTurn?.Invoke(CurrentPlayer);
-            return;
-        }
+
     }
 
     private void SetFirstPlayer()
@@ -74,8 +106,7 @@ public class TurnManager : MonoBehaviour
         CurrentPlayer = players[_currentPlayerIndex];
         CurrentPlayer.IsPlayerTurn = true;
         GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
-
-        Debug.Log(CurrentPlayer.name + "'s turn!");
+    
         return;
     }
 
@@ -108,9 +139,10 @@ public class TurnManager : MonoBehaviour
         // ...
     }
 
-    private void PreFlopAiPlayerActionGeneration()
+    private List<PlayerAction> PreFlopAiPlayerActionGeneration()
     {
         List<PokerPlayerHand> playerHands = PokerDeckManager.Instance.GetPlayerHands();
+        List<PlayerAction> playerActions = new List<PlayerAction>();
         //preflop Ai behaviour check 
         foreach (var playerHand in playerHands)
         {
@@ -118,10 +150,17 @@ public class TurnManager : MonoBehaviour
 
             if (playerHands[i].IsPlayerAiBot())
             {
-                //returns AiPlayerBehaviour.PlayerAction enum
-                playerHands[i].AiBotActionPreFlop();
+                // Adds the AI bot's pre-flop action to the list
+                playerActions.Add(playerHand.AiBotActionPreFlop());
+            }
+            else
+            {
+                // If player is human, assume default action or handle differently
+                playerActions.Add(PlayerAction.Fold);
             }
         }
+
+        return playerActions;
     }
 
     private void PostFlopAiPlayerActionGeneration(List<int> playerHandRankList)

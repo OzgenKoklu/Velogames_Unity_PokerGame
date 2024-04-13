@@ -21,53 +21,53 @@ public class AiPlayerBehaviour : MonoBehaviour
            return Category.StraightFlush;                    //   10 straight-flushes
     }*/
     public enum HandStrength { Amazing, Strong, Medium, WeakPlus, Weak }
-    public enum PlayerAction { Fold, Check, Bet, Raise }
+   
 
     //5-7 card Decision making (post flop), maybe it should take bluffs into account, like if the earlier player bets, the player will become likely to fold or something. 
-    public PlayerAction DecidePostFlop(HandStrength handStrength)
+    public TurnManager.PlayerAction DecidePostFlop(HandStrength handStrength)
     {
         if (handStrength == HandStrength.Amazing)
         {
-            return UnityEngine.Random.Range(0, 4) <= 2 ? PlayerAction.Check : PlayerAction.Bet;
+            return UnityEngine.Random.Range(0, 4) <= 2 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet;
         }
         else if (handStrength == HandStrength.Strong)
         {
-            return UnityEngine.Random.Range(0, 5) <= 2 ? PlayerAction.Check : PlayerAction.Bet;
+            return UnityEngine.Random.Range(0, 5) <= 2 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet;
         }
         else if (handStrength == HandStrength.Medium)
         {
-            return UnityEngine.Random.Range(0, 4) < 1 ? PlayerAction.Check : PlayerAction.Bet;
+            return UnityEngine.Random.Range(0, 4) < 1 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet;
         }
         else if (handStrength == HandStrength.WeakPlus)
         {
-            return UnityEngine.Random.Range(0, 3) <= 1 ? PlayerAction.Check : PlayerAction.Fold;
+            return UnityEngine.Random.Range(0, 3) <= 1 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Fold;
         }
         else 
         {
-            return UnityEngine.Random.Range(0, 3) <= 1 ? PlayerAction.Check : PlayerAction.Fold;
+            return UnityEngine.Random.Range(0, 3) <= 1 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Fold;
         }
     }
 
 
 
     // for prefold stage only, (for 2 cards) 
-    public PlayerAction DecidePreFlop()
+    public TurnManager.PlayerAction DecidePreFlop()
     {
         var handStrength = TwoCardHandEvaluator(_pokerPlayerHand.GetCardList());
 
         if (handStrength == HandStrength.Strong)
         {
-            return PlayerAction.Bet; // Check or raise maybe?
+            return TurnManager.PlayerAction.Bet; // Check or raise maybe?
         }
         else if (handStrength == HandStrength.Medium)
         {
             // Randomly decide to check or bet with medium strength hands
-            return UnityEngine.Random.Range(0, 3) <= 1 ? PlayerAction.Check : PlayerAction.Bet;
+            return UnityEngine.Random.Range(0, 3) <= 1 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet;
         }
         else // Weak hand
         {
             // Occasionally bluff with a weak hand
-            return UnityEngine.Random.Range(0, 10) <= 4 ? PlayerAction.Bet : PlayerAction.Fold;
+            return UnityEngine.Random.Range(0, 10) <= 4 ? TurnManager.PlayerAction.Bet : TurnManager.PlayerAction.Fold;
         }
     }
 

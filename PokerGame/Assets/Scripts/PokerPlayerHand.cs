@@ -75,18 +75,18 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
         return _aiPlayerBehavior != null;
     }
 
-    public AiPlayerBehaviour.PlayerAction AiBotActionPreFlop()
+    public TurnManager.PlayerAction AiBotActionPreFlop()
     {
-        AiPlayerBehaviour.PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop();
+        TurnManager.PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop();
 
-        Debug.Log("Pre flop - Player with hole cards" + HoleCardsList[0] + "&" + HoleCardsList[1] +  "made the decision to:  " + playerAction);
+       // Debug.Log("Pre flop - Player with hole cards" + HoleCardsList[0] + "&" + HoleCardsList[1] +  "made the decision to:  " + playerAction);
         return playerAction;
     }
 
-    public AiPlayerBehaviour.PlayerAction AiBotActionPostFlop(int playerHandRank)
+    public TurnManager.PlayerAction AiBotActionPostFlop(int playerHandRank)
     {
         AiPlayerBehaviour.HandStrength handStrength= _aiPlayerBehavior.HandStrenghtCalculator(playerHandRank);
-        AiPlayerBehaviour.PlayerAction playerAction =_aiPlayerBehavior.DecidePostFlop(handStrength); ;
+        TurnManager.PlayerAction playerAction =_aiPlayerBehavior.DecidePostFlop(handStrength); ;
         Debug.Log("Post flop - Player with hand rank: " + playerHandRank + " made the decision to:  " + playerAction);
         return playerAction;
     }

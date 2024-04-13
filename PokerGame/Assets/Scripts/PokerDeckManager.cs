@@ -175,10 +175,10 @@ public class PokerDeckManager : MonoBehaviour
     private void InitializePlayers()
     {
         _playerHands = new List<PokerPlayerHand>
-        {
-            _playerHand,
+        {        
             _aiPlayerOneHand,
             _aiPlayerTwoHand,
+            _playerHand, // Index 2 = player
             _aiPlayerThreeHand,
             _aiPlayerFourHand
         };
@@ -194,9 +194,10 @@ public class PokerDeckManager : MonoBehaviour
         List<List<CardSO>> allHands = new List<List<CardSO>>();
 
         // Add each player's combined hand to the list
-        allHands.Add(_playerHand.GetCardListWithCommunityCardsAdded());
+
         allHands.Add(_aiPlayerOneHand.GetCardListWithCommunityCardsAdded());
-        allHands.Add(_aiPlayerTwoHand.GetCardListWithCommunityCardsAdded());
+        allHands.Add(_aiPlayerTwoHand.GetCardListWithCommunityCardsAdded()); 
+        allHands.Add(_playerHand.GetCardListWithCommunityCardsAdded()); // index 2
         allHands.Add(_aiPlayerThreeHand.GetCardListWithCommunityCardsAdded());
         allHands.Add(_aiPlayerFourHand.GetCardListWithCommunityCardsAdded());
 
