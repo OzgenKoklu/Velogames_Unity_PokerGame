@@ -1,3 +1,4 @@
+using pheval;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -26,6 +27,7 @@ public class PokerDeckManager : MonoBehaviour
     {
         Instance = this;
         LoadDeck();
+        InitializePlayers();
         ShuffleDeck();
     }
 
@@ -37,62 +39,37 @@ public class PokerDeckManager : MonoBehaviour
     private void GameManager_OnGameStateChanged(GameManager.GameState obj)
     {
         if(obj == GameManager.GameState.NewRound)
-        {
-            OnGameStart();
-        }
-    }
-
-    private void OnGameStart()
-    {
-        InitializePlayers();
-        DrawInitialCommunityCards();
-        DealCardsToPlayers();
-
-        //preflop Ai behaviour check 
-        foreach (var playerHand in _playerHands)
-        {
-            int i = _playerHands.IndexOf(playerHand);
-
-            if (_playerHands[i].IsPlayerAiBot())
-            {
-                _playerHands[i].AiBotActionPreFlop();
-            }
+        {        
+            DealCardsToPlayers();
+            //bu yaklaþým sýkýntýlý çünkü diðer scriptlerdeki "newRound'da olmasý gereken iþlemlerin tamamlandýðýna emin olmadan state'i ilerletiyor. 
+            //Preflop'a geçiren aþama BetManager'dayken buradaki kart daðýtým iþlemleri olmadan ilerliyordu. Belki courotine baþlatýlmalý ve böylece paralel olarak ilerlemeli bazý iþlemler.
+            GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
+            return;
         }
 
-            //bunlarýn Deck manager'da olmasý da mantýklý deðil, Deckle bi iþ yok Evaluator class'ýnda da olabilirler. 
-            //aslýnda direkt tur baþýnda deðil bi tuþa basýp kýyas iþlemi baþlayýnca olmalý, hatta bu winning hand sadece 7 kard açýlýnca filan olmalý.
-            List<List<CardSO>> allPlayerCards = GetAllPlayerHands();  
-
-        //evaluate etmeli ama hemen winner seçmemeli. Evaluation skorlarýna göre de player AI'larý bet fold check yapmalý.
-        List<int> playerHandRankList = PokerHandEvaluator.Instance.EvaluateHandStrengths(allPlayerCards);
-
-        //postflop Ai behaviour check 
-        foreach (var playerHandRank in playerHandRankList)
+        if(obj == GameManager.GameState.PreFlop)
         {
-            int i = playerHandRankList.IndexOf(playerHandRank);
-
-            if (_playerHands[i].IsPlayerAiBot())
-            {
-                _playerHands[i].AiBotActionPostFlop(playerHandRank);
-            }
+            DrawInitialCommunityCards();
+            return;
         }
-        //turdaki player aksiyonlarý sonrasý burasý olmalý.
-        PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinner(playerHandRankList);
-        HandleWinningHandResult(winningHandResult);
-    }
 
-    //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslýnda game manager'a taþýnmasý mantýklý olabilir. buradan yapýlacak þeylerin oradan yapýlmasý doðru olabilir.
-    private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
-    {
-        Debug.Log("Winning hand type: " + winningHandResult.WinningHandType + "- Player Index(0,1,2,3,4), 0 is the player. : " + winningHandResult.WinningHandIndex + " - Winning Hand(5Cards) Ranks: " + winningHandResult.WinningCardCodes);
-        string winningHandType = winningHandResult.WinningHandType;
-        int winningHandPlayerIndex = winningHandResult.WinningHandIndex;
+        if(obj == GameManager.GameState.Turn)
+        {
+            //draw 4th card for community cards
+            DrawOneMoreCommunityCard();
+        }
 
-        //Show ile UI'da winning hand gösterecek bi mesaj. ShowWinningHand and player Name(indexten çýkartýlýr) 
+        if (obj == GameManager.GameState.River)
+        {
+            //draw 5th card for community cards
+            DrawOneMoreCommunityCard();
+        }
 
-        string winningHandCardCodes = winningHandResult.WinningCardCodes;
-        List<CardSO> WinningCardList = winningHandResult.WinningCardList;
-        CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes);
+        if (obj == GameManager.GameState.GameOver)
+        {
+            //reset the deck
+            ResetDeck();
+        }
     }
 
     // Load all cards from DeckSO into the deck List
@@ -163,12 +140,21 @@ public class PokerDeckManager : MonoBehaviour
             CardVisualsManager.Instance.SpawnCardObject(card3, card3.CardParent);
         }
     }
+    private void DrawOneMoreCommunityCard()
+    {
+        CardSO card = DrawCardFromDeck();
+        if (card != null)
+        {
+            _communityCards.AddCard(card);
+            CardVisualsManager.Instance.SpawnCardObject(card, card.CardParent);
+        }
+    }
 
     private void DealCardsToPlayers()
     {
         //Draws 2 cards for each player. 
         foreach (PokerPlayerHand hand in _playerHands)
-        {
+        {            
             CardSO card1 = DrawCardFromDeck(); // Draw the first card
             CardSO card2 = DrawCardFromDeck(); // Draw the second card
 
@@ -196,6 +182,11 @@ public class PokerDeckManager : MonoBehaviour
             _aiPlayerThreeHand,
             _aiPlayerFourHand
         };
+    }
+
+    public List<PokerPlayerHand> GetPlayerHands()
+    {
+        return _playerHands;
     }
 
     public List<List<CardSO>> GetAllPlayerHands()

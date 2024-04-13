@@ -84,7 +84,7 @@ public class PokerHandEvaluator : MonoBehaviour
         return handRanks;
     }
 
-    public WinningHandResults SelectTheWinner(List<int> playerRankList)
+    public WinningHandResults SelectTheWinnerForTheShowdown(List<int> playerRankList)
     {
         int bestHandIndex = -1;
         int bestRank = 7462; //not a magical number, just the weakest possible hand rank

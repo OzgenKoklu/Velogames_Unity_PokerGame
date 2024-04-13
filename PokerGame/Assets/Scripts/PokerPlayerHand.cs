@@ -77,7 +77,6 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
 
     public AiPlayerBehaviour.PlayerAction AiBotActionPreFlop()
     {
-        
         AiPlayerBehaviour.PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop();
 
         Debug.Log("Pre flop - Player with hole cards" + HoleCardsList[0] + "&" + HoleCardsList[1] +  "made the decision to:  " + playerAction);

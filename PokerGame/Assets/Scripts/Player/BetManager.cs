@@ -23,7 +23,7 @@ public class BetManager : MonoBehaviour
         {
             SetBet(DealerManager.Instance.GetSmallBlind(), 5);
             SetBet(DealerManager.Instance.GetBigBlind(), 10);
-            GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
+            
         }
     }
 
