@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 using static TurnManager;
 
 public class TurnManager : MonoBehaviour
 {
+    public Slider timeBar; // Reference to the UI slider
+    public float maxThinkTime = 10f; // Maximum time for the AI's thinking
+
     [SerializeField] private TextMeshProUGUI _playerMoveInfoText;
     [SerializeField] private TextMeshProUGUI _playerTimerText;
     public event Action<PlayerManager> OnPlayerTurn;
@@ -45,21 +48,21 @@ public class TurnManager : MonoBehaviour
         if (state == GameManager.GameState.PlayerTurn)
         {
             OnPlayerTurn?.Invoke(CurrentPlayer);
-          
-            if(_currentPlayerIndex != 2)
-            {         
+
+            if (_currentPlayerIndex != 2)
+            {
                 StartCoroutine(AiBotMoveWithRandomWait());
-       
+
                 //check if player is last in this turn or not, if last, change state to flop, else, change player turn
 
             }
-            else if(_currentPlayerIndex == 2)
+            else if (_currentPlayerIndex == 2)
             {
                 //if player is our player, set on UI objects for player input.
                 Debug.Log("Our Turn, index: " + _currentPlayerIndex + " Select your Move: ");
                 //check if player is last in this turn or not, if last, change state to flop, else, change player turn
-               
-            }        
+
+            }
             return;
         }
 
@@ -104,32 +107,56 @@ public class TurnManager : MonoBehaviour
         }
 
     }
+
     IEnumerator AiBotMoveWithRandomWait()
     {
-        while (true)
+        // Generate a random wait time between 0 to 10 seconds
+        float waitTime = UnityEngine.Random.Range(0f, maxThinkTime);
+        Debug.Log("Player's wait time: " + waitTime);
+        float startTime = Time.time;
+        Debug.Log("Start time: " + startTime);
+
+
+        // Initialize the timebar
+        timeBar.maxValue = maxThinkTime;
+        timeBar.value = maxThinkTime;
+
+        while (Time.time - startTime < waitTime)
         {
-            float waitTime = UnityEngine.Random.Range(3f, 10f);
-
-            float remainingTime = waitTime;
-            float displayTimer = 10f;
-
-            while (remainingTime > 0)
-            {
-                displayTimer -= Time.deltaTime;
-                _playerTimerText.text = "Remaining: " + Mathf.CeilToInt(displayTimer).ToString() + "s";
-                remainingTime -= Time.deltaTime; // Reduce by the time passed since last frame
-                yield return null; // Wait until the next frame
-            }
-            _playerTimerText.text = "0s";
-
-            ExecuteAIMove();
+            // Update the timebar
+            timeBar.value = maxThinkTime - (Time.time - startTime);
+            yield return null; // Wait until next frame
         }
+
+        // AI bot makes a move after the random wait time
+        ExecuteAIMove();
     }
+    //IEnumerator AiBotMoveWithRandomWait()
+    //{
+    //    while (true)
+    //    {
+    //        float waitTime = UnityEngine.Random.Range(3f, 10f);
+
+    //        float remainingTime = waitTime;
+    //        float displayTimer = 10f;
+
+    //        while (remainingTime > 0)
+    //        {
+    //            displayTimer -= Time.deltaTime;
+    //            _playerTimerText.text = "Remaining: " + Mathf.CeilToInt(displayTimer).ToString() + "s";
+    //            remainingTime -= Time.deltaTime; // Reduce by the time passed since last frame
+    //            yield return null; // Wait until the next frame
+    //        }
+    //        _playerTimerText.text = "0s";
+
+    //        ExecuteAIMove();
+    //    }
+    //}
 
     void ExecuteAIMove()
     {
         // Placeholder for AI move logic
-        _playerMoveInfoText.text =  CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
+        _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
         // Optionally change the player's turn
         ChangePlayerTurn();
     }
@@ -143,7 +170,7 @@ public class TurnManager : MonoBehaviour
         CurrentPlayer = players[_currentPlayerIndex];
         CurrentPlayer.IsPlayerTurn = true;
         GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
-    
+
         return;
     }
 

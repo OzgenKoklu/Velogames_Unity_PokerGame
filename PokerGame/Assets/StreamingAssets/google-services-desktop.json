@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "258301516641",
+    "project_id": "texas-holdem-poker-velo",
+    "storage_bucket": "texas-holdem-poker-velo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258301516641:android:212a1f2ff3adb85ccd4320",
+        "android_client_info": {
+          "package_name": "com.velo.task.texasholdempoker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "258301516641-fi03uhoiinlpth73i8on0ak9nr3ni7h7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDB26OmVZj9N-RJ_OJ100uyHEd-R6y1KNw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "258301516641-fi03uhoiinlpth73i8on0ak9nr3ni7h7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

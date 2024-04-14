@@ -8,8 +8,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     public static event Action<GameState> OnGameStateChanged;
 
-    public event Action OnGameStarted;
-
     public enum GameState
     {
         NewRound,       // Setup for a new round of poker
@@ -46,7 +44,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start()
-    {    
+    {
         StartGame();
     }
 
@@ -54,13 +52,6 @@ public class GameManager : MonoBehaviour
     {
         _isGameStarted = true;
         StartGameRound();
-        OnGameStarted?.Invoke();
-        Debug.Log("Ongamestarted");
-    }
-
-    private void Update()
-    {
-        //Debug.Log("Current Game State: " + _currentGameState);
     }
 
     public bool IsGameStarted()
