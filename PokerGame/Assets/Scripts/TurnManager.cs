@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 using static TurnManager;
 
 public class TurnManager : MonoBehaviour
@@ -32,12 +34,9 @@ public class TurnManager : MonoBehaviour
     {
         if (state == GameManager.GameState.PreFlop)
         {
-            //keeping ai player actions in a list
-            _aiPlayerActionsForTurn = PreFlopAiPlayerActionGeneration();
-          
-            SetFirstPlayer();
+            SetAiPlayerActions();
 
-            //PlayerAksiyonlarý ile oyun loopunu devam ettireceðiz
+            SetFirstPlayer();
 
             Debug.Log(CurrentPlayer.name + "'s turn!");
             return;
@@ -48,23 +47,19 @@ public class TurnManager : MonoBehaviour
             OnPlayerTurn?.Invoke(CurrentPlayer);
           
             if(_currentPlayerIndex != 2)
-            {
-                //player is AI
-                PlayerAction playerAction = _aiPlayerActionsForTurn[_currentPlayerIndex];
-
-                Debug.Log("Ai turn, index: " + _currentPlayerIndex + " Move: " + playerAction);
-
-                //logic to write things on UI and also virtually elongating the process (like timer on screen etc)
-
+            {         
+                StartCoroutine(AiBotMoveWithRandomWait());
+       
                 //check if player is last in this turn or not, if last, change state to flop, else, change player turn
-                ChangePlayerTurn();
-            }else if(_currentPlayerIndex == 2)
+
+            }
+            else if(_currentPlayerIndex == 2)
             {
                 //if player is our player, set on UI objects for player input.
-                Debug.Log("Our Tern, index: " + _currentPlayerIndex + " Select your Move: ");
+                Debug.Log("Our Turn, index: " + _currentPlayerIndex + " Select your Move: ");
                 //check if player is last in this turn or not, if last, change state to flop, else, change player turn
                
-            }
+            }        
             return;
         }
 
@@ -97,6 +92,48 @@ public class TurnManager : MonoBehaviour
 
 
     }
+
+    private void SetAiPlayerActions()
+    {
+        //keeping ai player actions in a list
+        _aiPlayerActionsForTurn = PreFlopAiPlayerActionGeneration();
+        foreach (PlayerAction action in _aiPlayerActionsForTurn)
+        {
+            int i = _aiPlayerActionsForTurn.IndexOf(action);
+            GameManager.Instance.Players[i].PlayerAction = action;
+        }
+
+    }
+    IEnumerator AiBotMoveWithRandomWait()
+    {
+        while (true)
+        {
+            float waitTime = UnityEngine.Random.Range(3f, 10f);
+
+            float remainingTime = waitTime;
+            float displayTimer = 10f;
+
+            while (remainingTime > 0)
+            {
+                displayTimer -= Time.deltaTime;
+                _playerTimerText.text = "Remaining: " + Mathf.CeilToInt(displayTimer).ToString() + "s";
+                remainingTime -= Time.deltaTime; // Reduce by the time passed since last frame
+                yield return null; // Wait until the next frame
+            }
+            _playerTimerText.text = "0s";
+
+            ExecuteAIMove();
+        }
+    }
+
+    void ExecuteAIMove()
+    {
+        // Placeholder for AI move logic
+        _playerMoveInfoText.text =  CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
+        // Optionally change the player's turn
+        ChangePlayerTurn();
+    }
+
 
     private void SetFirstPlayer()
     {

@@ -610,6 +610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerName: Scarlet (P2)
+  _playerAction: 0
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 611473412}
@@ -675,6 +677,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerName: Otto (P4)
+  _playerAction: 0
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 384630816}
@@ -1236,6 +1240,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerName: Richard (P5)
+  _playerAction: 0
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 1988252620}
@@ -1919,6 +1925,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerName: Player (P3)
+  _playerAction: 0
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 786410615}
@@ -2108,7 +2116,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &683005810
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2964,6 +2972,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerName: Catherina (P1)
+  _playerAction: 0
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _dealerIcon: {fileID: 777249507}

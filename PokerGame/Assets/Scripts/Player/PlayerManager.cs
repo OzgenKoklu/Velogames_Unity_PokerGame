@@ -5,6 +5,20 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    public string PlayerName
+    {
+        get => _playerName;
+        set => _playerName = value; 
+    }
+    [SerializeField] private string _playerName;
+
+    public TurnManager.PlayerAction PlayerAction
+    {
+        get => _playerAction;
+        set => _playerAction = value;
+    }
+    [SerializeField] private TurnManager.PlayerAction _playerAction;
+
     public bool IsPlayerTurn
     {
         get => _isPlayerTurn;
