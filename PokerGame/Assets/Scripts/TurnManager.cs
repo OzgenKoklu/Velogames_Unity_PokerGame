@@ -1,19 +1,15 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
-using static TurnManager;
 
 public class TurnManager : MonoBehaviour
 {
-    public Slider timeBar; // Reference to the UI slider
     public float maxThinkTime = 10f; // Maximum time for the AI's thinking
 
     [SerializeField] private TextMeshProUGUI _playerMoveInfoText;
-    [SerializeField] private TextMeshProUGUI _playerTimerText;
     public event Action<PlayerManager> OnPlayerTurn;
     private List<PlayerAction> _aiPlayerActionsForTurn;
 
@@ -45,23 +41,27 @@ public class TurnManager : MonoBehaviour
             return;
         }
 
+        //// !!!!
+        /// Big Blind son hamleyi yapacak kisidir. Kontrol etmeyi unutma!!! Daha sonra Flop state'ine gecilmelidir...
+
         if (state == GameManager.GameState.PlayerTurn)
         {
             OnPlayerTurn?.Invoke(CurrentPlayer);
 
-            if (_currentPlayerIndex != 2)
+            if (CurrentPlayer != GameManager.Instance.MainPlayer)
             {
                 StartCoroutine(AiBotMoveWithRandomWait());
 
                 //check if player is last in this turn or not, if last, change state to flop, else, change player turn
 
             }
-            else if (_currentPlayerIndex == 2)
+            else if (CurrentPlayer == GameManager.Instance.MainPlayer)
             {
                 //if player is our player, set on UI objects for player input.
+
+                StartCoroutine(TenSecondTimer());
                 Debug.Log("Our Turn, index: " + _currentPlayerIndex + " Select your Move: ");
                 //check if player is last in this turn or not, if last, change state to flop, else, change player turn
-
             }
             return;
         }
@@ -70,30 +70,28 @@ public class TurnManager : MonoBehaviour
         {
             List<List<CardSO>> allPlayerCards = PokerDeckManager.Instance.GetAllPlayerHands();
 
-            //evaluate etmeli ama hemen winner seçmemeli. Evaluation skorlarýna göre de player AI'larý bet fold check yapmalý.
+            //evaluate etmeli ama hemen winner seÃ§memeli. Evaluation skorlarina gÃ¶re de player AI'lari bet fold check yapmali.
             List<int> playerHandRankList = PokerHandEvaluator.Instance.EvaluateHandStrengths(allPlayerCards);
 
             PostFlopAiPlayerActionGeneration(playerHandRankList);
 
-            //sonraki aþama içni setFirstPlayer tarzý bir fonksiyon kullanmalý, ve aldýðýmýz actionlar orada Ai botlar için kullanýlmalý.
+            //sonraki asama icin setFirstPlayer tarzi bir fonksiyon kullanmali, ve aldigimiz actionlar orada Ai botlar iÃ§in kullanilmali.
             SetFirstPlayer();
 
             return;
         }
 
-        //showdown'a katýlmadan önce post floptan alýnan oyuncu listeleri güncellenmeli, ona göre oyundan çýkmamýþ en yüksek el winning hand seçilmeli.
+        //showdown'a katilmadan Ã¶nce post floptan alinan oyuncu listeleri gÃ¼ncellenmeli, ona gÃ¶re oyundan Ã§ikmamiÅŸ en yÃ¼ksek el winning hand seÃ§ilmeli.
         if (state == GameManager.GameState.Showdown)
         {
-            //cok bloat var, playerHandRankList muhtemelen gameManager'da tutulmalý ve setter/getter'larý olmalý.
+            //cok bloat var, playerHandRankList muhtemelen gameManager'da tutulmali ve setter/getter'lari olmali.
 
             List<List<CardSO>> allPlayerCards = PokerDeckManager.Instance.GetAllPlayerHands();
             List<int> playerHandRankList = PokerHandEvaluator.Instance.EvaluateHandStrengths(allPlayerCards);
-            //turdaki player aksiyonlarý sonrasý burasý olmalý. Sadece ShowDown'da hesap etmeli.
+            //turdaki player aksiyonlari sonrasi burasi olmalÃ½. Sadece ShowDown'da hesap etmeli.
             PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(playerHandRankList);
             HandleWinningHandResult(winningHandResult);
         }
-
-
     }
 
     private void SetAiPlayerActions()
@@ -105,62 +103,57 @@ public class TurnManager : MonoBehaviour
             int i = _aiPlayerActionsForTurn.IndexOf(action);
             GameManager.Instance.Players[i].PlayerAction = action;
         }
-
     }
 
     IEnumerator AiBotMoveWithRandomWait()
     {
         // Generate a random wait time between 0 to 10 seconds
-        float waitTime = UnityEngine.Random.Range(0f, maxThinkTime);
+        float waitTime = UnityEngine.Random.Range(2f, maxThinkTime);
         Debug.Log("Player's wait time: " + waitTime);
         float startTime = Time.time;
         Debug.Log("Start time: " + startTime);
 
-
+        Slider timebar = CurrentPlayer.GetTimerSlider();
         // Initialize the timebar
-        timeBar.maxValue = maxThinkTime;
-        timeBar.value = maxThinkTime;
+        timebar.maxValue = maxThinkTime;
+        timebar.value = maxThinkTime;
 
         while (Time.time - startTime < waitTime)
         {
             // Update the timebar
-            timeBar.value = maxThinkTime - (Time.time - startTime);
+            timebar.value = maxThinkTime - (Time.time - startTime);
             yield return null; // Wait until next frame
         }
 
         // AI bot makes a move after the random wait time
         ExecuteAIMove();
     }
-    //IEnumerator AiBotMoveWithRandomWait()
-    //{
-    //    while (true)
-    //    {
-    //        float waitTime = UnityEngine.Random.Range(3f, 10f);
 
-    //        float remainingTime = waitTime;
-    //        float displayTimer = 10f;
+    IEnumerator TenSecondTimer()
+    {
+        float startTime = Time.time;
+        Debug.Log("Start time: " + startTime);
 
-    //        while (remainingTime > 0)
-    //        {
-    //            displayTimer -= Time.deltaTime;
-    //            _playerTimerText.text = "Remaining: " + Mathf.CeilToInt(displayTimer).ToString() + "s";
-    //            remainingTime -= Time.deltaTime; // Reduce by the time passed since last frame
-    //            yield return null; // Wait until the next frame
-    //        }
-    //        _playerTimerText.text = "0s";
+        Slider timebar = CurrentPlayer.GetTimerSlider();
+        // Initialize the timebar
+        timebar.maxValue = maxThinkTime;
+        timebar.value = maxThinkTime;
 
-    //        ExecuteAIMove();
-    //    }
-    //}
+        while (Time.time - startTime < maxThinkTime)
+        {
+            // Update the timebar
+            timebar.value = maxThinkTime - (Time.time - startTime);
+            yield return null; // Wait until next frame
+        }
+    }
 
-    void ExecuteAIMove()
+    private void ExecuteAIMove()
     {
         // Placeholder for AI move logic
         _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
         // Optionally change the player's turn
         ChangePlayerTurn();
     }
-
 
     private void SetFirstPlayer()
     {
@@ -244,14 +237,14 @@ public class TurnManager : MonoBehaviour
 
     }
 
-    //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslýnda game manager'a taþýnmasý mantýklý olabilir. buradan yapýlacak þeylerin oradan yapýlmasý doðru olabilir.
+    //bu fonksiyonun deck'Le bi ilgisi yok o yÃ¼zden aslinda game manager'a tasinmasÄ± mantikli olabilir. buradan yapilacak seylerin oradan yapilmasÄ± dogru olabilir.
     private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
     {
         Debug.Log("Winning hand type: " + winningHandResult.WinningHandType + "- Player Index(0,1,2,3,4), 0 is the player. : " + winningHandResult.WinningHandIndex + " - Winning Hand(5Cards) Ranks: " + winningHandResult.WinningCardCodes);
         string winningHandType = winningHandResult.WinningHandType;
         int winningHandPlayerIndex = winningHandResult.WinningHandIndex;
 
-        //Show ile UI'da winning hand gösterecek bi mesaj. ShowWinningHand and player Name(indexten çýkartýlýr) 
+        //Show ile UI'da winning hand gÃ¶sterecek bi mesaj. ShowWinningHand and player Name(indexten Ã§ikartilir) 
 
         string winningHandCardCodes = winningHandResult.WinningCardCodes;
         List<CardSO> WinningCardList = winningHandResult.WinningCardList;

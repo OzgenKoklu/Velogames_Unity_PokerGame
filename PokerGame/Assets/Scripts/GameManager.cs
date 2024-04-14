@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour
     public List<PlayerManager> Players => _players;
     [SerializeField] private List<PlayerManager> _players;
 
+    public PlayerManager MainPlayer => _mainPlayer;
+    [SerializeField] private PlayerManager _mainPlayer;
+
     private void Awake()
     {
         if (Instance == null)

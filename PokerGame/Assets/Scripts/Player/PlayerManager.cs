@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
     public string PlayerName
     {
         get => _playerName;
-        set => _playerName = value; 
+        set => _playerName = value;
     }
     [SerializeField] private string _playerName;
 
@@ -21,8 +22,20 @@ public class PlayerManager : MonoBehaviour
 
     public bool IsPlayerTurn
     {
-        get => _isPlayerTurn;
-        set => _isPlayerTurn = value;
+        get { return _isPlayerTurn; }
+        set
+        {
+            _isPlayerTurn = value;
+
+            if (value == true)
+            {
+                _timebar.gameObject.SetActive(true);
+            }
+            else
+            {
+                _timebar.gameObject.SetActive(false);
+            }
+        }
     }
     [SerializeField] private bool _isPlayerTurn;
 
@@ -39,6 +52,8 @@ public class PlayerManager : MonoBehaviour
         set => _betAmount = value;
     }
     private int _betAmount;
+
+    [SerializeField] private Slider _timebar;
 
     [SerializeField] private GameObject _dealerIcon;
 
@@ -76,5 +91,10 @@ public class PlayerManager : MonoBehaviour
             _isPlayerDealer = false;
             _dealerIcon.SetActive(false);
         }
+    }
+
+    public Slider GetTimerSlider()
+    {
+        return _timebar;
     }
 }
