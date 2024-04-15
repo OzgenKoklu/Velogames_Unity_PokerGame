@@ -554,7 +554,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51bab4ebed83c564b80c89eaafabe386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxThinkTime: 10
   _playerMoveInfoText: {fileID: 190807543}
 --- !u!1 &114051008
 GameObject:
@@ -622,7 +621,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &127637873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -756,6 +755,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxThinkTime: 10
   _playerName: Scarlet (P2)
   _playerAction: 0
   _playerHand: {fileID: 1230832290}
@@ -775,6 +775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c48daa09228124e80565e5574504d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerManager: {fileID: 134982086}
   _pokerPlayerHand: {fileID: 1230832290}
 --- !u!1 &135933204
 GameObject:
@@ -1037,6 +1038,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxThinkTime: 10
   _playerName: Otto (P4)
   _playerAction: 0
   _playerHand: {fileID: 2010368667}
@@ -1056,6 +1058,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c48daa09228124e80565e5574504d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerManager: {fileID: 145876574}
   _pokerPlayerHand: {fileID: 2010368667}
 --- !u!1 &165511586
 GameObject:
@@ -1645,6 +1648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxThinkTime: 10
   _playerName: Richard (P5)
   _playerAction: 0
   _playerHand: {fileID: 276828756}
@@ -1664,6 +1668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c48daa09228124e80565e5574504d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerManager: {fileID: 292966328}
   _pokerPlayerHand: {fileID: 276828756}
 --- !u!1 &299952970
 GameObject:
@@ -2468,6 +2473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxThinkTime: 10
   _playerName: Player (P3)
   _playerAction: 0
   _playerHand: {fileID: 1199791274}
@@ -4007,7 +4013,7 @@ MonoBehaviour:
   - {fileID: 606718410}
   - {fileID: 145876574}
   - {fileID: 292966328}
-  _mainPlayer: {fileID: 0}
+  _mainPlayer: {fileID: 606718410}
 --- !u!1 &1067180967
 GameObject:
   m_ObjectHideFlags: 0
@@ -4268,6 +4274,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxThinkTime: 10
   _playerName: Catherina (P1)
   _playerAction: 0
   _playerHand: {fileID: 264449917}
@@ -4287,6 +4294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c48daa09228124e80565e5574504d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerManager: {fileID: 1074086709}
   _pokerPlayerHand: {fileID: 264449917}
 --- !u!1 &1083059687
 GameObject:

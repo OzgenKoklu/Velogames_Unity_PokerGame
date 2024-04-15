@@ -76,21 +76,21 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
         return _aiPlayerBehavior != null;
     }
 
-    public TurnManager.PlayerAction AiBotActionPreFlop()
+    public PlayerAction AiBotActionPreFlop()
     {
         var handStrength = PokerHandEvaluator.Instance.HandStrengthCalculatorFor2Cards(GetCardList());
 
-        TurnManager.PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop(handStrength);
+        PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop(handStrength);
 
         return playerAction;
     }
 
-    public TurnManager.PlayerAction AiBotActionPostFlop()
+    public PlayerAction AiBotActionPostFlop()
     {
         int handRank = PokerHandEvaluator.Instance.EvaluateHandRank(GetCardListWithCommunityCardsAdded());
         AiPlayerBehaviour.HandStrength handStrength = PokerHandEvaluator.Instance.HandStrenghtCalculator(handRank);
 
-        TurnManager.PlayerAction playerAction = _aiPlayerBehavior.DecidePostFlop(handStrength);
+        PlayerAction playerAction = _aiPlayerBehavior.DecidePostFlop(handStrength);
 
         return playerAction;
     }

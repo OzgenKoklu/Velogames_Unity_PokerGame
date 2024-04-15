@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class TurnManager : MonoBehaviour
 {
-    public float maxThinkTime = 10f; // Maximum time for the AI's thinking
-
     [SerializeField] private TextMeshProUGUI _playerMoveInfoText;
     public event Action<PlayerManager> OnPlayerTurn;
     private List<PlayerAction> _aiPlayerActionsForTurn;
@@ -17,7 +15,6 @@ public class TurnManager : MonoBehaviour
     public PlayerManager CurrentPlayer { get; private set; }
     private int _currentPlayerIndex;
     private PlayerAction? _previousPlayerAction = null;
-    public enum PlayerAction { Fold, Check, Bet, Raise, Call }
 
     private void Awake()
     {
@@ -32,124 +29,48 @@ public class TurnManager : MonoBehaviour
 
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
-        if (state == GameManager.GameState.PreFlop)
+        switch (state)
         {
-            SetFirstPlayer();
+            case GameManager.GameState.PreFlop:
+                SetFirstPlayer();
+                break;
+            case GameManager.GameState.PlayerTurn:
+                OnPlayerTurn?.Invoke(CurrentPlayer);
+                break;
+            case GameManager.GameState.Flop:
+                break;
+            case GameManager.GameState.PostFlop:
+                break;
+            case GameManager.GameState.Turn:
+                break;
+            case GameManager.GameState.PostTurn:
+                break;
+            case GameManager.GameState.River:
+                break;
+            case GameManager.GameState.PostRiver:
+                break;
+            case GameManager.GameState.Showdown:
+                //showdown'a katilmadan önce post floptan alinan oyuncu listeleri güncellenmeli, ona göre oyundan çikmamiş en yüksek el winning hand seçilmeli.
+                // int handRank = PokerHandEvaluator.Instance.EvaluateHandRank(GetCardListWithCommunityCardsAdded()); şu şekil CardSO listeleri için handrank alınabiliyo.
 
-            Debug.Log(CurrentPlayer.name + "'s turn!");
-            return;
+                List<int> handRanksOfPlayersWhoAreStillinTheGame; //= PokerDeckManager.Instance.GetAllPlayerHands();
+
+                // Aşağıdaki şekilde de bir liste içindeki kazanan el belirlenip winning hand result döndürülüyo.
+
+                //PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(playerHandRankList);
+                //HandleWinningHandResult(winningHandResult);
+                break;
+            case GameManager.GameState.PotDistribution:
+                break;
+            case GameManager.GameState.GameOver:
+                break;
+            default:
+                break;
         }
-
-        //// !!!!
-        /// Big Blind son hamleyi yapacak kisidir. Kontrol etmeyi unutma!!! Daha sonra Flop state'ine gecilmelidir...
-
-        if (state == GameManager.GameState.PlayerTurn)
-        {
-            OnPlayerTurn?.Invoke(CurrentPlayer);
-
-            if (CurrentPlayer != GameManager.Instance.MainPlayer)
-            {
-                StartCoroutine(AiBotMoveWithRandomWait());
-
-                //check if player is last in this turn or not, if last, change state to flop, else, change player turn
-
-            }
-            else if (CurrentPlayer == GameManager.Instance.MainPlayer)
-            {
-                //if player is our player, set on UI objects for player input.
-
-                StartCoroutine(TenSecondTimer());
-
-                //Burada previous Action'ı bizim playerın actionına eşitlememiz lazım
-                // _previousPlayerAction = CurrentPlayer.PlayerAction;
-                Debug.Log("Our Turn, index: " + _currentPlayerIndex + " Select your Move: ");
-                //check if player is last in this turn or not, if last, change state to flop, else, change player turn
-            }
-            return;
-        }
-
-        if (state == GameManager.GameState.PostFlop)
-        {
-            SetFirstPlayer();
-
-            //burda set first player olacak sonra gene player turn olacak. 
-            //ExecuteAIMovePostFlop() ile iş halledilebilir. belki player turn'ün içindeki AiBotMoveWithRandomWait'in içine condition konur post flop veya preflop olduğuna dair.
-
-
-            return;
-        }
-
-        //showdown'a katilmadan önce post floptan alinan oyuncu listeleri güncellenmeli, ona göre oyundan çikmamiş en yüksek el winning hand seçilmeli.
-        if (state == GameManager.GameState.Showdown)
-        {
-
-            // int handRank = PokerHandEvaluator.Instance.EvaluateHandRank(GetCardListWithCommunityCardsAdded()); şu şekil CardSO listeleri için handrank alınabiliyo.
-
-            List<int> handRanksOfPlayersWhoAreStillinTheGame; //= PokerDeckManager.Instance.GetAllPlayerHands();
-
-
-
-            // Aşağıdaki şekilde de bir liste içindeki kazanan el belirlenip winning hand result döndürülüyo.
-
-            //PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(playerHandRankList);
-            //HandleWinningHandResult(winningHandResult);
-        }
-    }
-    IEnumerator AiBotMoveWithRandomWait()
-    {
-        // Generate a random wait time between 0 to 10 seconds
-        float waitTime = UnityEngine.Random.Range(2f, maxThinkTime);
-        Debug.Log("Player's wait time: " + waitTime);
-        float startTime = Time.time;
-        Debug.Log("Start time: " + startTime);
-
-        Slider timebar = CurrentPlayer.GetTimerSlider();
-        // Initialize the timebar
-        timebar.maxValue = maxThinkTime;
-        timebar.value = maxThinkTime;
-
-        while (Time.time - startTime < waitTime)
-        {
-            // Update the timebar
-            timebar.value = maxThinkTime - (Time.time - startTime);
-            yield return null; // Wait until next frame
-        }
-
-        // AI bot makes a move after the random wait time
-        ExecuteAIMove();
-    }
-
-    IEnumerator TenSecondTimer()
-    {
-        float startTime = Time.time;
-        Debug.Log("Start time: " + startTime);
-
-        Slider timebar = CurrentPlayer.GetTimerSlider();
-        // Initialize the timebar
-        timebar.maxValue = maxThinkTime;
-        timebar.value = maxThinkTime;
-
-        while (Time.time - startTime < maxThinkTime)
-        {
-            // Update the timebar
-            timebar.value = maxThinkTime - (Time.time - startTime);
-            yield return null; // Wait until next frame
-        }
-    }
-
-    private void ExecuteAIMove()
-    {
-        Debug.Log("Previous Action: " + _previousPlayerAction);
-        CurrentPlayer.PlayerAction = CurrentPlayer.PlayerHand.AiBotActionPreFlop();
-        _previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
-        _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
-
-        ChangePlayerTurn();
     }
 
     private void ExecuteAIMovePostFlop()
     {
-        Debug.Log("Previous Action: " + _previousPlayerAction);
         CurrentPlayer.PlayerAction = CurrentPlayer.PlayerHand.AiBotActionPostFlop();
         _previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
         _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
@@ -181,7 +102,6 @@ public class TurnManager : MonoBehaviour
             CurrentPlayer.IsPlayerTurn = true;
             GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
 
-            Debug.Log(CurrentPlayer.name + "'s turn!");
             return;
         }
 
@@ -190,8 +110,6 @@ public class TurnManager : MonoBehaviour
         CurrentPlayer = players[_currentPlayerIndex];
         CurrentPlayer.IsPlayerTurn = true;
         GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
-
-        Debug.Log(CurrentPlayer.name + "'s turn!");
 
         // Wait for player to make a move for a while
         // ...

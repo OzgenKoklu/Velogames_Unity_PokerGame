@@ -37,14 +37,14 @@ public class BetManager : MonoBehaviour
         {
             SetBet(DealerManager.Instance.GetSmallBlind(), 5);
             SetBet(DealerManager.Instance.GetBigBlind(), 10);
-
+            _currentHighestBetAmount = DealerManager.Instance.GetBigBlind().BetAmount;
         }
     }
 
     public void SetBet(PlayerManager player, int betAmount)
     {
-        player.BetAmount = betAmount;
-        Debug.Log(player.name + " bet " + betAmount);
+        player.BetAmount += betAmount;
+        //Debug.Log(player.name + " bet " + betAmount);
     }
 
     private void OnDisable()

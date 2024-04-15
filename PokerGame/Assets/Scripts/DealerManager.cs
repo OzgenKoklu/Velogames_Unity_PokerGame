@@ -40,12 +40,12 @@ public class DealerManager : MonoBehaviour
         if (GameManager.Instance != null && players.Count > 0)
         {
             // Check if GameManager instance and Players list are valid
-            Debug.Log("GameManager and Players list are valid");
+            // Debug.Log("GameManager and Players list are valid");
 
             // Attempt to set the IsPlayerDealer property
             players[_currentDealerIndex].IsPlayerDealer = true;
             SetSmallAndBigBlind();
-            Debug.Log("Player set as dealer");
+            //Debug.Log("Player set as dealer");
             OnDealerChanged?.Invoke(players[_currentDealerIndex]);
 
             _currentDealerIndex++;
