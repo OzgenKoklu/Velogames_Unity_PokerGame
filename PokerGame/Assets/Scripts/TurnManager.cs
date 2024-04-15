@@ -16,8 +16,8 @@ public class TurnManager : MonoBehaviour
     public static TurnManager Instance { get; private set; }
     public PlayerManager CurrentPlayer { get; private set; }
     private int _currentPlayerIndex;
-    private PlayerAction _previousPlayerAction = PlayerAction.Fold;
-    public enum PlayerAction { Fold, Check, Bet, Raise, Call}
+    private PlayerAction? _previousPlayerAction = null;
+    public enum PlayerAction { Fold, Check, Bet, Raise, Call }
 
     private void Awake()
     {
@@ -69,7 +69,7 @@ public class TurnManager : MonoBehaviour
         }
 
         if (state == GameManager.GameState.PostFlop)
-        {          
+        {
             SetFirstPlayer();
 
             //burda set first player olacak sonra gene player turn olacak. 
@@ -84,11 +84,11 @@ public class TurnManager : MonoBehaviour
         {
 
             // int handRank = PokerHandEvaluator.Instance.EvaluateHandRank(GetCardListWithCommunityCardsAdded()); şu şekil CardSO listeleri için handrank alınabiliyo.
-            
+
             List<int> handRanksOfPlayersWhoAreStillinTheGame; //= PokerDeckManager.Instance.GetAllPlayerHands();
-           
-           
-            
+
+
+
             // Aşağıdaki şekilde de bir liste içindeki kazanan el belirlenip winning hand result döndürülüyo.
 
             //PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(playerHandRankList);
@@ -140,10 +140,10 @@ public class TurnManager : MonoBehaviour
     private void ExecuteAIMove()
     {
         Debug.Log("Previous Action: " + _previousPlayerAction);
-        CurrentPlayer.PlayerAction = CurrentPlayer.PlayerHand.AiBotActionPreFlop(_previousPlayerAction);
+        CurrentPlayer.PlayerAction = CurrentPlayer.PlayerHand.AiBotActionPreFlop();
         _previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
         _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
-        
+
         ChangePlayerTurn();
     }
 

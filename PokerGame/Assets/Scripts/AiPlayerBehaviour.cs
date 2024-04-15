@@ -1,6 +1,7 @@
 using UnityEngine;
 public class AiPlayerBehaviour : MonoBehaviour
 {
+    [SerializeField] private PlayerManager _playerManager;
     [SerializeField] private PokerPlayerHand _pokerPlayerHand;
 
     /*Ranks from pheval library for hand strenght reference
@@ -18,7 +19,11 @@ public class AiPlayerBehaviour : MonoBehaviour
     }*/
     public enum HandStrength { Amazing, Strong, Medium, WeakPlus, Weak }
 
-
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Need to refactoring !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // *** POSTFLOP DECISIONS ***
+    // **************************
     //5-7 card Decision making (post flop), maybe it should take bluffs into account, like if the earlier player bets, the player will become likely to fold or something. 
     public TurnManager.PlayerAction DecidePostFlop(HandStrength handStrength, TurnManager.PlayerAction? previousPlayersAction = null)
     {
@@ -30,7 +35,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             }
             else if (handStrength == HandStrength.Strong)
             {
-                return UnityEngine.Random.Range(0, 5) <= 2 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet; 
+                return UnityEngine.Random.Range(0, 5) <= 2 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet;
             }
             else if (handStrength == HandStrength.Medium)
             {
@@ -83,78 +88,42 @@ public class AiPlayerBehaviour : MonoBehaviour
         return TurnManager.PlayerAction.Fold; // Default action
     }
 
-
+    // *** PREFLOP DECISIONS ***
+    // *************************
+    // 2 card Decision making (pre flop), maybe it should take bluffs into account, like if the earlier player bets, the player will become likely to fold or something.
     // for prefold stage only, (for 2 cards) Weak hands still have more chance to check at this stage, no WeakPlus or Amazing hands.
-    public TurnManager.PlayerAction DecidePreFlop(HandStrength handStrength, TurnManager.PlayerAction? previousPlayersAction = null)
+    public TurnManager.PlayerAction DecidePreFlop(HandStrength handStrength)
     {
-        //if previous player folds or the player is the first player, hence, previousPlayerAction is null.
-
-        if (previousPlayersAction == null || previousPlayersAction == TurnManager.PlayerAction.Fold)
+        if (_playerManager.BetAmount < BetManager.Instance.CurrentHighestBetAmount)
         {
             if (handStrength == HandStrength.Strong)
             {
-                return UnityEngine.Random.Range(0, 3) < 2 ? TurnManager.PlayerAction.Bet : TurnManager.PlayerAction.Check;// 66% Bet, 33% Check
+                return UnityEngine.Random.Range(0, 4) < 2 ? TurnManager.PlayerAction.Call : TurnManager.PlayerAction.Raise; // 50% Call, 50% Raise
             }
             else if (handStrength == HandStrength.Medium)
             {
-                return UnityEngine.Random.Range(0, 3) < 2 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet;// 66% Check, 33% Bet
+                return UnityEngine.Random.Range(0, 10) < 9 ? TurnManager.PlayerAction.Call : TurnManager.PlayerAction.Raise; // 90% Call, 10% Raise
             }
             else
             {
-                return UnityEngine.Random.Range(0, 4) < 2 ? TurnManager.PlayerAction.Fold : TurnManager.PlayerAction.Check;// 50% Fold, 50% Check
+                return UnityEngine.Random.Range(0, 10) < 7 ? TurnManager.PlayerAction.Call : TurnManager.PlayerAction.Fold; // 70% Call , 30% Fold
             }
         }
-        else
+        else if (_playerManager.BetAmount == BetManager.Instance.CurrentHighestBetAmount)
         {
-            // Logic depending on the previous player's action if not first to act
-            switch (previousPlayersAction.Value)
+            if (handStrength == HandStrength.Strong)
             {
-                //takes the same action for raise or bet
-                case TurnManager.PlayerAction.Bet:
-                case TurnManager.PlayerAction.Raise:
-                    if (handStrength == HandStrength.Strong)
-                    {
-                        return UnityEngine.Random.Range(0, 10) < 7 ? TurnManager.PlayerAction.Raise : TurnManager.PlayerAction.Call;// 70% Raise, 30% Call
-                    }
-                    else if (handStrength == HandStrength.Medium)
-                    {
-                        return UnityEngine.Random.Range(0, 10) < 8 ? TurnManager.PlayerAction.Call : TurnManager.PlayerAction.Fold; // 80% Call, 20% Fold
-                    }
-                    else
-                    {
-                        return UnityEngine.Random.Range(0, 10) < 3 ? TurnManager.PlayerAction.Fold : TurnManager.PlayerAction.Call;  // 30%  Fold, 70% Call
-                    }
-                case TurnManager.PlayerAction.Check:
-                    if (handStrength == HandStrength.Strong)
-                    {
-                        return UnityEngine.Random.Range(0, 4) < 3 ? TurnManager.PlayerAction.Bet : TurnManager.PlayerAction.Check; // 75% chance to Bet, 25% chance to Check
-                    }
-                    else if (handStrength == HandStrength.Medium)
-                    {
-
-                        return UnityEngine.Random.Range(0, 2) == 0 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet; // Equally likely to Check or Bet
-                    }
-                    else
-                    {
-                        return UnityEngine.Random.Range(0, 10) < 3 ? TurnManager.PlayerAction.Fold : TurnManager.PlayerAction.Check; // 30% Fold, 70% Check
-                    }
-                case TurnManager.PlayerAction.Call:
-                    if (handStrength == HandStrength.Strong)
-                    {
-                        return UnityEngine.Random.Range(0, 4) < 3 ? TurnManager.PlayerAction.Raise : TurnManager.PlayerAction.Bet; // 75% Raise, 25% Bet
-                    }
-                    else if (handStrength == HandStrength.Medium)
-                    {
-                        return UnityEngine.Random.Range(0, 3) < 2 ? TurnManager.PlayerAction.Bet : TurnManager.PlayerAction.Check;// 66% Bet, 33% Check
-                    }
-                    else
-                    {
-                        return UnityEngine.Random.Range(0, 10) < 7 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Fold;  // 70% Check, 30% Fold
-                    }
+                return UnityEngine.Random.Range(0, 10) < 9 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet; // 90% Check, 10% Bet
+            }
+            else if (handStrength == HandStrength.Medium)
+            {
+                return UnityEngine.Random.Range(0, 20) < 19 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet; // 95% Check, 5% Bet
+            }
+            else
+            {
+                return UnityEngine.Random.Range(0, 20) < 19 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Fold; // 95% Check, 5% Fold
             }
         }
-
         return TurnManager.PlayerAction.Fold; // Default fallback action
     }
-
 }

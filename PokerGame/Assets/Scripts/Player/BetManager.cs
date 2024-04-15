@@ -5,7 +5,21 @@ using UnityEngine;
 
 public class BetManager : MonoBehaviour
 {
+    public static BetManager Instance { get; private set; }
+
+    public int CurrentHighestBetAmount
+    {
+        get => _currentHighestBetAmount;
+        set => _currentHighestBetAmount = value;
+    }
+    private int _currentHighestBetAmount;
+
     private GameManager.GameState _currentState;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -23,7 +37,7 @@ public class BetManager : MonoBehaviour
         {
             SetBet(DealerManager.Instance.GetSmallBlind(), 5);
             SetBet(DealerManager.Instance.GetBigBlind(), 10);
-            
+
         }
     }
 
