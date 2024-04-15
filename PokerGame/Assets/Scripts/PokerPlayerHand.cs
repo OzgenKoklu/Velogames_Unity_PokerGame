@@ -78,18 +78,20 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
    
     public TurnManager.PlayerAction AiBotActionPreFlop(TurnManager.PlayerAction? previousPlayerAction = null)
     {
-        var handStrength = PokerHandEvaluator.Instance.TwoCardHandEvaluator(GetCardList());
+        var handStrength = PokerHandEvaluator.Instance.HandStrengthCalculatorFor2Cards(GetCardList());
 
         TurnManager.PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop(handStrength, previousPlayerAction);
        
         return playerAction;
     }
 
-    public TurnManager.PlayerAction AiBotActionPostFlop(int playerHandRank)
+    public TurnManager.PlayerAction AiBotActionPostFlop()
     {
-        AiPlayerBehaviour.HandStrength handStrength= _aiPlayerBehavior.HandStrenghtCalculator(playerHandRank);
-        TurnManager.PlayerAction playerAction =_aiPlayerBehavior.DecidePostFlop(handStrength); ;
-        Debug.Log("Post flop - Player with hand rank: " + playerHandRank + " made the decision to:  " + playerAction);
+        int handRank = PokerHandEvaluator.Instance.EvaluateHandRank(GetCardListWithCommunityCardsAdded());
+        AiPlayerBehaviour.HandStrength handStrength= PokerHandEvaluator.Instance.HandStrenghtCalculator(handRank);
+
+        TurnManager.PlayerAction playerAction =_aiPlayerBehavior.DecidePostFlop(handStrength); 
+       
         return playerAction;
     }
 }

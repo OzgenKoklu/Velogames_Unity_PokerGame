@@ -69,16 +69,12 @@ public class TurnManager : MonoBehaviour
         }
 
         if (state == GameManager.GameState.PostFlop)
-        {
-            List<List<CardSO>> allPlayerCards = PokerDeckManager.Instance.GetAllPlayerHands();
-
-            //evaluate etmeli ama hemen winner seçmemeli. Evaluation skorlarina göre de player AI'lari bet fold check yapmali.
-            List<int> playerHandRankList = PokerHandEvaluator.Instance.EvaluateHandStrengths(allPlayerCards);
-
-            PostFlopAiPlayerActionGeneration(playerHandRankList);
-
-            //sonraki asama icin setFirstPlayer tarzi bir fonksiyon kullanmali, ve aldigimiz actionlar orada Ai botlar için kullanilmali.
+        {          
             SetFirstPlayer();
+
+            //burda set first player olacak sonra gene player turn olacak. 
+            //ExecuteAIMovePostFlop() ile iş halledilebilir. belki player turn'ün içindeki AiBotMoveWithRandomWait'in içine condition konur post flop veya preflop olduğuna dair.
+
 
             return;
         }
@@ -86,13 +82,17 @@ public class TurnManager : MonoBehaviour
         //showdown'a katilmadan önce post floptan alinan oyuncu listeleri güncellenmeli, ona göre oyundan çikmamiş en yüksek el winning hand seçilmeli.
         if (state == GameManager.GameState.Showdown)
         {
-            //cok bloat var, playerHandRankList muhtemelen gameManager'da tutulmali ve setter/getter'lari olmali.
 
-            List<List<CardSO>> allPlayerCards = PokerDeckManager.Instance.GetAllPlayerHands();
-            List<int> playerHandRankList = PokerHandEvaluator.Instance.EvaluateHandStrengths(allPlayerCards);
-            //turdaki player aksiyonlari sonrasi burasi olmalý. Sadece ShowDown'da hesap etmeli.
-            PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(playerHandRankList);
-            HandleWinningHandResult(winningHandResult);
+            // int handRank = PokerHandEvaluator.Instance.EvaluateHandRank(GetCardListWithCommunityCardsAdded()); şu şekil CardSO listeleri için handrank alınabiliyo.
+            
+            List<int> handRanksOfPlayersWhoAreStillinTheGame; //= PokerDeckManager.Instance.GetAllPlayerHands();
+           
+           
+            
+            // Aşağıdaki şekilde de bir liste içindeki kazanan el belirlenip winning hand result döndürülüyo.
+
+            //PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(playerHandRankList);
+            //HandleWinningHandResult(winningHandResult);
         }
     }
     IEnumerator AiBotMoveWithRandomWait()
@@ -147,6 +147,16 @@ public class TurnManager : MonoBehaviour
         ChangePlayerTurn();
     }
 
+    private void ExecuteAIMovePostFlop()
+    {
+        Debug.Log("Previous Action: " + _previousPlayerAction);
+        CurrentPlayer.PlayerAction = CurrentPlayer.PlayerHand.AiBotActionPostFlop();
+        _previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
+        _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
+
+        ChangePlayerTurn();
+    }
+
     private void SetFirstPlayer()
     {
         var players = GameManager.Instance.Players;
@@ -186,23 +196,6 @@ public class TurnManager : MonoBehaviour
         // Wait for player to make a move for a while
         // ...
         // ...
-    }
-
-    private void PostFlopAiPlayerActionGeneration(List<int> playerHandRankList)
-    {
-        List<PokerPlayerHand> playerHands = PokerDeckManager.Instance.GetPlayerHands();
-
-        foreach (var playerHandRank in playerHandRankList)
-        {
-            int i = playerHandRankList.IndexOf(playerHandRank);
-
-            if (playerHands[i].IsPlayerAiBot())
-            {
-                //returns AiPlayerBehaviour.PlayerAction enum
-                playerHands[i].AiBotActionPostFlop(playerHandRank);
-            }
-        }
-
     }
 
     //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.

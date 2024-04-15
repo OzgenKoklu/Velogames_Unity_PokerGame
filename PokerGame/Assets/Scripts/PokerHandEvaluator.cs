@@ -5,6 +5,7 @@ using pheval;
 using static pheval.Rank;
 using UnityEngine.UIElements;
 using static AiPlayerBehaviour;
+using static PokerHandEvaluator;
 
 public class PokerHandEvaluator : MonoBehaviour
 {
@@ -67,24 +68,6 @@ public class PokerHandEvaluator : MonoBehaviour
 
         return concatenatedCodes;
     }
-
-
-    public List<int> EvaluateHandStrengths(List<List<CardSO>> playerHands)
-    {
-        //using player ID -> handrank dictionary might be more secure to store these sort of data (for online game)
-        //on the client side, one can easily access to index of other players in this current situation.
-        List<int> handRanks = new List<int>();
-
-        // Step 1: Evaluate each hand and write their rank in the list
-        for (int i = 0; i < playerHands.Count; i++)
-        {
-            int handRank = EvaluateHandRank(playerHands[i]);
-            handRanks.Add(handRank);            
-        }
-     
-        return handRanks;
-    }
-
     public WinningHandResults SelectTheWinnerForTheShowdown(List<int> playerRankList)
     {
         int bestHandIndex = -1;
@@ -125,7 +108,7 @@ public class PokerHandEvaluator : MonoBehaviour
         public string WinningHandType;
     }
 
-    public HandStrength TwoCardHandEvaluator(List<CardSO> holeCards)
+    public HandStrength HandStrengthCalculatorFor2Cards(List<CardSO> holeCards)
     {
         bool isSuited = holeCards[0].Suit == holeCards[1].Suit;
         int card1Rank = (int)holeCards[0].Value; //2 = 2, Ace = 14
@@ -166,5 +149,29 @@ public class PokerHandEvaluator : MonoBehaviour
         }
 
         return HandStrength.Weak;
+    }
+
+    public HandStrength HandStrenghtCalculator(int handRank)
+    {
+        if (handRank < 322) //full house or better
+        {
+            return HandStrength.Amazing;
+        }
+        else if (handRank < 2467) // three of a kind or bettter 
+        {
+            return HandStrength.Strong;
+        }
+        else if (handRank < 6185) //two pair hand, still rare somewhat
+        {
+            return HandStrength.Medium;
+        }
+        else if (handRank < 3325) //One Pair Hand
+        {
+            return HandStrength.WeakPlus;
+        }
+        else // high card Hand
+        {
+            return HandStrength.Weak;
+        }
     }
 }
