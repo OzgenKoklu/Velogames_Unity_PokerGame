@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static AiPlayerBehaviour;
 
 public class PokerPlayerHand : MonoBehaviour, ICardParent
 {
@@ -74,12 +75,13 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     {
         return _aiPlayerBehavior != null;
     }
-
-    public TurnManager.PlayerAction AiBotActionPreFlop()
+   
+    public TurnManager.PlayerAction AiBotActionPreFlop(TurnManager.PlayerAction? previousPlayerAction = null)
     {
-        TurnManager.PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop();
+        var handStrength = PokerHandEvaluator.Instance.TwoCardHandEvaluator(GetCardList());
 
-       // Debug.Log("Pre flop - Player with hole cards" + HoleCardsList[0] + "&" + HoleCardsList[1] +  "made the decision to:  " + playerAction);
+        TurnManager.PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop(handStrength, previousPlayerAction);
+       
         return playerAction;
     }
 

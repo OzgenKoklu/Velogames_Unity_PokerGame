@@ -4,6 +4,7 @@ using UnityEngine;
 using pheval;
 using static pheval.Rank;
 using UnityEngine.UIElements;
+using static AiPlayerBehaviour;
 
 public class PokerHandEvaluator : MonoBehaviour
 {
@@ -124,4 +125,46 @@ public class PokerHandEvaluator : MonoBehaviour
         public string WinningHandType;
     }
 
+    public HandStrength TwoCardHandEvaluator(List<CardSO> holeCards)
+    {
+        bool isSuited = holeCards[0].Suit == holeCards[1].Suit;
+        int card1Rank = (int)holeCards[0].Value; //2 = 2, Ace = 14
+        int card2Rank = (int)holeCards[1].Value; //2 = 2, Ace = 14
+
+        // High pairs
+        if (card1Rank == card2Rank && card1Rank >= 10) // TT and above
+        {
+            return HandStrength.Strong;
+        }
+
+        // High suited connectors or AK
+        if (isSuited && ((card1Rank >= 10 && card2Rank >= 10) || (card1Rank == 14 || card2Rank == 14)))
+        {
+            return HandStrength.Strong;
+        }
+        else if (!isSuited && ((card1Rank == 14 && card2Rank >= 10) || (card2Rank == 14 && card1Rank >= 10)))
+        {
+            return HandStrength.Strong;
+        }
+
+        // Medium pairs
+        if (card1Rank == card2Rank && card1Rank >= 7 && card1Rank <= 9)
+        {
+            return HandStrength.Medium;
+        }
+
+        // Suited connectors
+        if (isSuited && Mathf.Abs(card1Rank - card2Rank) == 1)
+        {
+            return HandStrength.Medium;
+        }
+
+        // High unsuited connectors
+        if (!isSuited && ((card1Rank >= 10 && card2Rank >= 10) || (card1Rank == 14 || card2Rank == 14)))
+        {
+            return HandStrength.Medium;
+        }
+
+        return HandStrength.Weak;
+    }
 }

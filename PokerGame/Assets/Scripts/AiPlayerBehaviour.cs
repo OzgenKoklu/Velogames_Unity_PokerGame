@@ -1,7 +1,9 @@
 using pheval;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static AiPlayerBehaviour;
 
 public class AiPlayerBehaviour : MonoBehaviour
 {
@@ -48,27 +50,79 @@ public class AiPlayerBehaviour : MonoBehaviour
         }
     }
 
-
+   
 
     // for prefold stage only, (for 2 cards) 
-    public TurnManager.PlayerAction DecidePreFlop()
-    {
-        var handStrength = TwoCardHandEvaluator(_pokerPlayerHand.GetCardList());
+    public TurnManager.PlayerAction DecidePreFlop(HandStrength handStrength, TurnManager.PlayerAction? previousPlayersAction = null)
+    { 
+        //if previous player folds or the player is the first player, hence, previousPlayerAction is null.
 
-        if (handStrength == HandStrength.Strong)
+        if (previousPlayersAction == null || previousPlayersAction == TurnManager.PlayerAction.Fold)
         {
-            return TurnManager.PlayerAction.Bet; // Check or raise maybe?
+            if (handStrength == HandStrength.Strong)
+            {               
+                return UnityEngine.Random.Range(0, 3) < 2 ? TurnManager.PlayerAction.Bet : TurnManager.PlayerAction.Check;// 66% Bet, 33% Check
+            }
+            else if (handStrength == HandStrength.Medium)
+            {       
+                return UnityEngine.Random.Range(0, 3) < 2 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet;// 66% Check, 33% Bet
+            }
+            else
+            {
+                return UnityEngine.Random.Range(0, 4) < 3 ? TurnManager.PlayerAction.Fold : TurnManager.PlayerAction.Check;// 75% Fold, 25% Check
+            }
         }
-        else if (handStrength == HandStrength.Medium)
+        else
         {
-            // Randomly decide to check or bet with medium strength hands
-            return UnityEngine.Random.Range(0, 3) <= 1 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet;
+            // Logic depending on the previous player's action if not first to act
+            switch (previousPlayersAction.Value)
+            {
+                //takes the same action for raise or bet
+                case TurnManager.PlayerAction.Bet:
+                case TurnManager.PlayerAction.Raise:
+                    if (handStrength == HandStrength.Strong)
+                    {  
+                        return UnityEngine.Random.Range(0, 10) < 7 ? TurnManager.PlayerAction.Raise : TurnManager.PlayerAction.Call;// 70% Raise, 30% Call
+                    }
+                    else if (handStrength == HandStrength.Medium)
+                    {   
+                        return UnityEngine.Random.Range(0, 10) < 7 ? TurnManager.PlayerAction.Call : TurnManager.PlayerAction.Fold; // 70% Call, 30% Fold
+                    }
+                    else
+                    {                    
+                        return UnityEngine.Random.Range(0, 10) < 8 ? TurnManager.PlayerAction.Fold : TurnManager.PlayerAction.Bet;  // 80%  Fold, 20% Bet (bluff)
+                    }
+                case TurnManager.PlayerAction.Check:
+                    if (handStrength == HandStrength.Strong)
+                    {      
+                        return UnityEngine.Random.Range(0, 4) < 3 ? TurnManager.PlayerAction.Bet : TurnManager.PlayerAction.Check; // 75% chance to Bet, 25% chance to Check
+                    }
+                    else if (handStrength == HandStrength.Medium)
+                    {
+                       
+                        return UnityEngine.Random.Range(0, 2) == 0 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Bet; // Equally likely to Check or Bet
+                    }
+                    else
+                    {
+                        return UnityEngine.Random.Range(0, 5) < 3 ? TurnManager.PlayerAction.Fold : TurnManager.PlayerAction.Check; // 60% Fold, 40% Check
+                    }
+                case TurnManager.PlayerAction.Call:
+                    if (handStrength == HandStrength.Strong)
+                    {                       
+                        return UnityEngine.Random.Range(0, 4) < 3 ? TurnManager.PlayerAction.Raise : TurnManager.PlayerAction.Bet; // 75% Raise, 25% Bet
+                    }
+                    else if (handStrength == HandStrength.Medium)
+                    {
+                        return UnityEngine.Random.Range(0, 3) < 2 ? TurnManager.PlayerAction.Bet : TurnManager.PlayerAction.Check;// 66% Bet, 33% Check
+                    }
+                    else
+                    {              
+                        return UnityEngine.Random.Range(0, 10) < 7 ? TurnManager.PlayerAction.Check : TurnManager.PlayerAction.Fold;  // 70% Check, 30% Fold
+                    }
+            }
         }
-        else // Weak hand
-        {
-            // Occasionally bluff with a weak hand
-            return UnityEngine.Random.Range(0, 10) <= 4 ? TurnManager.PlayerAction.Bet : TurnManager.PlayerAction.Fold;
-        }
+
+        return TurnManager.PlayerAction.Fold; // Default fallback action
     }
 
     public HandStrength HandStrenghtCalculator(int handRank)
@@ -94,47 +148,6 @@ public class AiPlayerBehaviour : MonoBehaviour
             return HandStrength.Weak;
         }
     }
-    private HandStrength TwoCardHandEvaluator(List<CardSO> holeCards)
-    {
-        bool isSuited = holeCards[0].Suit == holeCards[1].Suit;
-        int card1Rank = (int)holeCards[0].Value; //2 = 2, Ace = 14
-        int card2Rank = (int)holeCards[1].Value; //2 = 2, Ace = 14
-
-        // High pairs
-        if (card1Rank == card2Rank && card1Rank >= 10) // TT and above
-        {
-            return HandStrength.Strong;
-        }
-
-        // High suited connectors or AK
-        if (isSuited && ((card1Rank >= 10 && card2Rank >= 10) || (card1Rank == 14 || card2Rank == 14)))
-        {
-            return HandStrength.Strong;
-        }
-        else if (!isSuited && ((card1Rank == 14 && card2Rank >= 10) || (card2Rank == 14 && card1Rank >= 10)))
-        {
-            return HandStrength.Strong;
-        }
-
-        // Medium pairs
-        if (card1Rank == card2Rank && card1Rank >= 7 && card1Rank <= 9)
-        {
-            return HandStrength.Medium;
-        }
-
-        // Suited connectors
-        if (isSuited && Mathf.Abs(card1Rank - card2Rank) == 1)
-        {
-            return HandStrength.Medium;
-        }
-
-        // High unsuited connectors
-        if (!isSuited && ((card1Rank >= 10 && card2Rank >= 10) || (card1Rank == 14 || card2Rank == 14)))
-        {
-            return HandStrength.Medium;
-        }
-
-        return HandStrength.Weak;
-    }
+    
 
 }

@@ -20,6 +20,12 @@ public class PlayerManager : MonoBehaviour
     }
     [SerializeField] private TurnManager.PlayerAction _playerAction;
 
+    public PokerPlayerHand PlayerHand
+    {
+        get => _playerHand;
+    }
+    [SerializeField] private PokerPlayerHand _playerHand;
+
     public bool IsPlayerTurn
     {
         get { return _isPlayerTurn; }

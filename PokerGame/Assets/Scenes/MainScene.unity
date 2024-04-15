@@ -758,6 +758,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerName: Scarlet (P2)
   _playerAction: 0
+  _playerHand: {fileID: 1230832290}
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _timebar: {fileID: 442589079}
@@ -1038,6 +1039,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerName: Otto (P4)
   _playerAction: 0
+  _playerHand: {fileID: 2010368667}
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _timebar: {fileID: 1083059689}
@@ -1645,6 +1647,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerName: Richard (P5)
   _playerAction: 0
+  _playerHand: {fileID: 276828756}
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _timebar: {fileID: 957681472}
@@ -2467,6 +2470,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerName: Player (P3)
   _playerAction: 0
+  _playerHand: {fileID: 1199791274}
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _timebar: {fileID: 135933206}
@@ -4003,7 +4007,7 @@ MonoBehaviour:
   - {fileID: 606718410}
   - {fileID: 145876574}
   - {fileID: 292966328}
-  _mainPlayer: {fileID: 606718410}
+  _mainPlayer: {fileID: 0}
 --- !u!1 &1067180967
 GameObject:
   m_ObjectHideFlags: 0
@@ -4266,6 +4270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerName: Catherina (P1)
   _playerAction: 0
+  _playerHand: {fileID: 264449917}
   _isPlayerTurn: 0
   _isPlayerDealer: 0
   _timebar: {fileID: 730244980}
