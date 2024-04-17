@@ -14,7 +14,6 @@ public class TurnManager : MonoBehaviour
     public static TurnManager Instance { get; private set; }
     public PlayerManager CurrentPlayer { get; private set; }
     private int _currentPlayerIndex;
-    private PlayerAction? _previousPlayerAction = null;
 
     private void Awake()
     {
@@ -71,9 +70,9 @@ public class TurnManager : MonoBehaviour
 
     private void ExecuteAIMovePostFlop()
     {
-        CurrentPlayer.PlayerAction = CurrentPlayer.PlayerHand.AiBotActionPostFlop();
-        _previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
-        _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
+        CurrentPlayer.PlayersAction = CurrentPlayer.PlayerHand.AiBotActionPostFlop();
+        //_previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
+        _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayersAction;
 
         ChangePlayerTurn();
     }

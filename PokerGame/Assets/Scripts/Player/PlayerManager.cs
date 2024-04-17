@@ -17,7 +17,7 @@ public class PlayerManager : MonoBehaviour
     }
     [SerializeField] private string _playerName;
 
-    public PlayerAction PlayerAction
+    public PlayerAction PlayersAction
     {
         get => _playerAction;
         set => _playerAction = value;
@@ -80,8 +80,26 @@ public class PlayerManager : MonoBehaviour
         {
             //if player is main player, set on UI objects for player input.
 
+            if(player.BetAmount < BetManager.Instance.CurrentHighestBetAmount)
+            {
+                //player can  Fold, Call, Raise
+
+                //can be used in the delegates / button text etc like Call (15$)
+                var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - player.BetAmount;
+                //tuşa delegate olarak gönderilebilir. BetManager.Instance.SetBet(player, callBetAmount);
+
+
+            }
+            else
+            {
+                //player can Fold, Check, Bet
+            }
+
+            UiManager.Instance.SetActionButtonsForPlayer();
+
             StartCoroutine(TenSecondTimerForMainPlayer());
 
+            
             //Burada previous Action'ı bizim playerın actionına eşitlememiz lazım
             // _previousPlayerAction = CurrentPlayer.PlayerAction;
             //check if player is last in this turn or not, if last, change state to flop, else, change player turn
@@ -105,6 +123,51 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public void FoldAction()
+    {
+        if(this == GameManager.Instance.MainPlayer)
+        {
+            PlayersAction = PlayerAction.Fold;
+            Debug.Log("Player has made the move to: " + PlayersAction);
+        }
+    }
+
+    public void CallAction()
+    {
+        if (this == GameManager.Instance.MainPlayer)
+        {
+            PlayersAction = PlayerAction.Call;
+            Debug.Log("Player has made the move to: " + PlayersAction);
+        }
+    }
+
+    public void BetAction()
+    {
+        if (this == GameManager.Instance.MainPlayer)
+        {
+            PlayersAction = PlayerAction.Bet;
+            Debug.Log("Player has made the move to: " + PlayersAction);
+        }
+    }
+
+    public void CheckAction()
+    {
+        if (this == GameManager.Instance.MainPlayer)
+        {
+            PlayersAction = PlayerAction.Check;
+            Debug.Log("Player has made the move to: " + PlayersAction);
+        }
+    }
+
+    public void RaiseAction()
+    {
+        if (this == GameManager.Instance.MainPlayer)
+        {
+            PlayersAction = PlayerAction.Raise;
+            Debug.Log("Player has made the move to: " + PlayersAction);
+        }
+    }
+
     IEnumerator TenSecondTimerForMainPlayer()
     {
         float startTime = Time.time;
@@ -123,6 +186,7 @@ public class PlayerManager : MonoBehaviour
         // if (main player didn't make a move)
         //      if (can check):  => check
         //      else:            => fold
+        UiManager.Instance.ResetFunctionsAndHideButtons();
         TurnManager.Instance.ChangePlayerTurn();
     }
 
@@ -149,9 +213,9 @@ public class PlayerManager : MonoBehaviour
 
     private void ExecuteAIMove()
     {
-        PlayerAction = PlayerHand.AiBotActionPreFlop();
+        PlayersAction = PlayerHand.AiBotActionPreFlop();
         // Reset the previous player action to fold or null after each betting round ends
-        Debug.Log(name + " Made the move: " + PlayerAction);
+        Debug.Log(name + " Made the move: " + PlayersAction);
 
         TurnManager.Instance.ChangePlayerTurn();
     }
