@@ -49,6 +49,28 @@ public class PlayerManager : MonoBehaviour
     }
     [SerializeField] private bool _isPlayerTurn;
 
+    public bool IsPlayerActive //folded or not
+    {
+        get => _isPlayerActive;
+        set
+        {
+            _isPlayerActive = value;
+
+            if (value == false)
+            {
+                _passivePlayerTint.gameObject.SetActive(true);
+            }
+            else
+            {
+                _passivePlayerTint.gameObject.SetActive(false);
+            }
+        }
+    }
+    [SerializeField] private bool _isPlayerActive;
+
+
+    [SerializeField] private GameObject _passivePlayerTint;
+
     public bool IsPlayerDealer
     {
         get => _isPlayerDealer;
@@ -76,6 +98,13 @@ public class PlayerManager : MonoBehaviour
 
     private void TurnManager_OnPlayerTurn(PlayerManager player)
     {
+        
+        if(player == this && !IsPlayerActive)
+        {
+            //change turn imideatly if player folded
+            TurnManager.Instance.ChangePlayerTurn();
+        }
+
         if (player == this && player == GameManager.Instance.MainPlayer)
         {
             //if player is main player, set on UI objects for player input.
@@ -216,6 +245,11 @@ public class PlayerManager : MonoBehaviour
         PlayersAction = PlayerHand.AiBotActionPreFlop();
         // Reset the previous player action to fold or null after each betting round ends
         Debug.Log(name + " Made the move: " + PlayersAction);
+
+        if(PlayersAction == PlayerAction.Fold)
+        {
+            IsPlayerActive = false;
+        }
 
         TurnManager.Instance.ChangePlayerTurn();
     }

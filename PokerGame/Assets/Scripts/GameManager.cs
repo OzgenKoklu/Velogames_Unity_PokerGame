@@ -77,4 +77,16 @@ public class GameManager : MonoBehaviour
     {
         return _currentGameState;
     }
+
+    public List<PlayerManager> GetActivePlayers()
+    {
+        List<PlayerManager> activePlayers = new List<PlayerManager>();
+
+        foreach (var player in _players)
+        {
+            if(player.IsPlayerActive) activePlayers.Add(player);
+        } 
+
+        return activePlayers;
+    }
 }

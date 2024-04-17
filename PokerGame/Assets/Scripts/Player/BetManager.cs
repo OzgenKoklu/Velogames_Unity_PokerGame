@@ -52,4 +52,18 @@ public class BetManager : MonoBehaviour
         GameManager.OnGameStateChanged -= GameManager_OnGameStateChanged;
         DealerManager.Instance.OnDealerChanged -= DealerManager_OnDealerChanged;
     }
+
+    public bool IsAllActivePlayersBetsEqual()
+    {
+        var activePlayerList = GameManager.Instance.GetActivePlayers();
+
+        if(activePlayerList == null ||  activePlayerList.Count == 0) { return false; }
+
+        foreach (var player in activePlayerList)
+        {
+            if (player.BetAmount != CurrentHighestBetAmount) return false;
+        }
+        //everyone has the same bet amount and its the highest bet amount
+        return true;
+    }
 }

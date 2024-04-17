@@ -31,7 +31,9 @@ public class TurnManager : MonoBehaviour
         switch (state)
         {
             case GameManager.GameState.PreFlop:
+                ResetAllPlayersActiveStatus(); //resetting flop/inactive status
                 SetFirstPlayer();
+                GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
                 break;
             case GameManager.GameState.PlayerTurn:
                 OnPlayerTurn?.Invoke(CurrentPlayer);
@@ -84,35 +86,46 @@ public class TurnManager : MonoBehaviour
         _currentPlayerIndex = DealerManager.Instance.GetFirstPlayerIndexAfterBigBlind();
         CurrentPlayer = players[_currentPlayerIndex];
         CurrentPlayer.IsPlayerTurn = true;
-        GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
+        
 
         return;
     }
 
-    public void ChangePlayerTurn()
+    private void ResetAllPlayersActiveStatus()
     {
         var players = GameManager.Instance.Players;
+        foreach(var player in players)
+        {
+            player.IsPlayerActive = true;
+            Debug.Log("Player status marked as active");
+
+        }
+    }
+
+    public void ChangePlayerTurn()
+    {
+        CheckIfBettingRoundCanBeConcluded();
+
+        var players = GameManager.Instance.Players;
+
+        CurrentPlayer.IsPlayerTurn = false;
 
         if (_currentPlayerIndex + 1 >= players.Count)
         {
-            CurrentPlayer.IsPlayerTurn = false;
             _currentPlayerIndex = 0;
             CurrentPlayer = players[_currentPlayerIndex];
+
             CurrentPlayer.IsPlayerTurn = true;
             GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
 
             return;
         }
 
-        CurrentPlayer.IsPlayerTurn = false;
         _currentPlayerIndex++;
         CurrentPlayer = players[_currentPlayerIndex];
+
         CurrentPlayer.IsPlayerTurn = true;
         GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
-
-        // Wait for player to make a move for a while
-        // ...
-        // ...
     }
 
     //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.
@@ -127,5 +140,16 @@ public class TurnManager : MonoBehaviour
         string winningHandCardCodes = winningHandResult.WinningCardCodes;
         List<CardSO> WinningCardList = winningHandResult.WinningCardList;
         CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes);
+    }
+
+    private void CheckIfBettingRoundCanBeConcluded()
+    {
+        if (BetManager.Instance.IsAllActivePlayersBetsEqual() && BetManager.Instance.CurrentHighestBetAmount > 0)
+        {
+            //flop the cards. 
+            Debug.Log("State Changed, all players ready to go to the flop stage.");
+            GameManager.Instance.SetGameState(GameManager.GameState.Flop);
+
+        }
     }
 }
