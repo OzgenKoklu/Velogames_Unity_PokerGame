@@ -32,13 +32,15 @@ public class TurnManager : MonoBehaviour
         {
             case GameManager.GameState.PreFlop:
                 ResetAllPlayersActiveStatus(); //resetting flop/inactive status
-                SetFirstPlayer();
+                SetFirstPlayer(true); //true for IsPreFlop
                 GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
                 break;
             case GameManager.GameState.PlayerTurn:
                 OnPlayerTurn?.Invoke(CurrentPlayer);
                 break;
             case GameManager.GameState.Flop:
+                SetFirstPlayer(false); //false for IsPreFlop
+
                 break;
             case GameManager.GameState.PostFlop:
                 break;
@@ -79,15 +81,27 @@ public class TurnManager : MonoBehaviour
         ChangePlayerTurn();
     }
 
-    private void SetFirstPlayer()
+    private void SetFirstPlayer(bool isPreFlop)
     {
         var players = GameManager.Instance.Players;
+        int firstPlayerIndex;
 
-        _currentPlayerIndex = DealerManager.Instance.GetFirstPlayerIndexAfterBigBlind();
+        if (isPreFlop)
+        {
+            // Pre-flop: Start after the big blind
+            firstPlayerIndex = DealerManager.Instance.GetFirstPlayerIndexAfterBigBlind();
+        }
+        else
+        {
+            // Post-flop: Start from the small blind or the first active player to the left of the dealer button
+            firstPlayerIndex = DealerManager.Instance.GetFirstActivePlayerIndexFromDealer();
+            Debug.Log("After the flop, first player selected as: " + firstPlayerIndex);
+        }
+
+        _currentPlayerIndex = firstPlayerIndex;
         CurrentPlayer = players[_currentPlayerIndex];
         CurrentPlayer.IsPlayerTurn = true;
         
-
         return;
     }
 
@@ -97,14 +111,21 @@ public class TurnManager : MonoBehaviour
         foreach(var player in players)
         {
             player.IsPlayerActive = true;
-            Debug.Log("Player status marked as active");
-
         }
     }
 
     public void ChangePlayerTurn()
     {
-        CheckIfBettingRoundCanBeConcluded();
+        if (IsBettingRoundConcludable())
+        {
+            //go into the next stage. Not always flop stage
+            Debug.Log("State Changed, all players ready to go to the flop stage.");
+
+            //also should take players money into the pot etc. The logic should be here.
+
+            GameManager.Instance.SetGameState(GameManager.GameState.Flop);
+            return;        
+        };
 
         var players = GameManager.Instance.Players;
 
@@ -142,14 +163,9 @@ public class TurnManager : MonoBehaviour
         CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes);
     }
 
-    private void CheckIfBettingRoundCanBeConcluded()
+    private bool IsBettingRoundConcludable()
     {
-        if (BetManager.Instance.IsAllActivePlayersBetsEqual() && BetManager.Instance.CurrentHighestBetAmount > 0)
-        {
-            //flop the cards. 
-            Debug.Log("State Changed, all players ready to go to the flop stage.");
-            GameManager.Instance.SetGameState(GameManager.GameState.Flop);
-
-        }
+        //Burada dikkat. Sıra Big Blind'a geçince direkt conclude edebiliyo bir kere oldu
+        return BetManager.Instance.IsAllActivePlayersBetsEqual() && BetManager.Instance.CurrentHighestBetAmount > 0;
     }
 }

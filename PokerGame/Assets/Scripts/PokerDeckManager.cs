@@ -20,6 +20,8 @@ public class PokerDeckManager : MonoBehaviour
     [SerializeField] private PokerPlayerHand _aiPlayerTwoHand;
     [SerializeField] private PokerPlayerHand _aiPlayerThreeHand;
     [SerializeField] private PokerPlayerHand _aiPlayerFourHand;
+
+    [SerializeField] private GameObject _communityCardsGameObject;
     private List<PokerPlayerHand> _playerHands;
 
     
@@ -49,7 +51,14 @@ public class PokerDeckManager : MonoBehaviour
 
         if(obj == GameManager.GameState.PreFlop)
         {
-            DrawInitialCommunityCards();
+            
+            
+            return;
+        }
+
+        if(obj == GameManager.GameState.Flop)
+        {
+            DrawInitialCommunityCards(); //normally should draw in flop. Lets draw and hide for now. 
             return;
         }
 
@@ -57,18 +66,21 @@ public class PokerDeckManager : MonoBehaviour
         {
             //draw 4th card for community cards
             DrawOneMoreCommunityCard();
+            return;
         }
 
         if (obj == GameManager.GameState.River)
         {
             //draw 5th card for community cards
             DrawOneMoreCommunityCard();
+            return;
         }
 
         if (obj == GameManager.GameState.GameOver)
         {
             //reset the deck
             ResetDeck();
+            return;
         }
     }
 

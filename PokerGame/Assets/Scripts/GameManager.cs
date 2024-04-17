@@ -46,6 +46,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+       // Debug.Log(_currentGameState);
+    }
+
     private void Start()
     {
         StartGame();

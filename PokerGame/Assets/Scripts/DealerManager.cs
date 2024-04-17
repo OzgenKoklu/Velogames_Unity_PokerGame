@@ -106,6 +106,25 @@ public class DealerManager : MonoBehaviour
         }
     }
 
+    public int GetFirstActivePlayerIndexFromDealer()
+    {
+        var players = GameManager.Instance.Players;
+        int dealerIndex = GetDealerPlayerIndex(); // Implement this method to find the dealer's index
+        int playerCount = players.Count;
+        int startIndex = (dealerIndex + 1) % playerCount;
+
+        for (int i = 0; i < playerCount; i++)
+        {
+            int index = (startIndex + i) % playerCount;
+            if (players[index].IsPlayerActive) // Ensure IsActive properly reflects if the player has not folded
+            {
+                return index;
+            }
+        }
+
+        return -1; // Return -1 or handle this case if all players are inactive
+    }
+
     public int GetFirstPlayerIndexAfterBigBlind()
     {
         return _firstPlayerIndexAfterBigBlind;
