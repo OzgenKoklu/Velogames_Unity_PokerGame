@@ -104,14 +104,11 @@ public class AiPlayerBehaviour : MonoBehaviour
 
                 if (playerAction == PlayerAction.Call)
                 {
-                    var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.BetAmount;
-                    BetManager.Instance.SetBet(_playerManager, callBetAmount);
+                    CallAction();
                 }
-                else
+                else // Player raises. 
                 {
-                    //....
-                    //...
-                    //...
+                    RaiseAction(handStrength);                  
                 }
 
                 return playerAction;
@@ -122,31 +119,24 @@ public class AiPlayerBehaviour : MonoBehaviour
 
                 if (playerAction == PlayerAction.Call)
                 {
-                    var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.BetAmount;
-                    BetManager.Instance.SetBet(_playerManager, callBetAmount);
+                    CallAction();
                 }
                 else
                 {
-                    //....
-                    //...
-                    //...
+                    RaiseAction(handStrength);
                 }
                 return playerAction;
             }
             else
             {
                 playerAction = UnityEngine.Random.Range(0, 10) < 7 ? PlayerAction.Call : PlayerAction.Fold; // 70% Call , 30% Fold
+                
                 if (playerAction == PlayerAction.Call)
                 {
-                    var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.BetAmount;
-                    BetManager.Instance.SetBet(_playerManager, callBetAmount);
+                    CallAction();
                 }
-                else
-                {
-                    //....
-                    //...
-                    //...
-                }
+
+                // if player folds, no need to set any bet.
                 return playerAction;
             }
         }
@@ -154,17 +144,103 @@ public class AiPlayerBehaviour : MonoBehaviour
         {
             if (handStrength == HandStrength.Strong)
             {
-                return UnityEngine.Random.Range(0, 10) < 9 ? PlayerAction.Check : PlayerAction.Bet; // 90% Check, 10% Bet
+                playerAction = UnityEngine.Random.Range(0, 10) < 9 ? PlayerAction.Check : PlayerAction.Bet; // 90% Check, 10% Bet
+
+                if (playerAction == PlayerAction.Bet)
+                {
+                    BetAction(handStrength);
+                }
+
+                //no further logic needed for check
+                return playerAction;
             }
             else if (handStrength == HandStrength.Medium)
             {
-                return UnityEngine.Random.Range(0, 20) < 19 ? PlayerAction.Check : PlayerAction.Bet; // 95% Check, 5% Bet
+                playerAction =  UnityEngine.Random.Range(0, 20) < 19 ? PlayerAction.Check : PlayerAction.Bet; // 95% Check, 5% Bet
+
+                if (playerAction == PlayerAction.Bet)
+                {
+                    BetAction(handStrength);
+                }
+
+                return playerAction;
             }
             else
             {
-                return UnityEngine.Random.Range(0, 20) < 19 ? PlayerAction.Check : PlayerAction.Fold; // 95% Check, 5% Fold
+                playerAction =  UnityEngine.Random.Range(0, 20) < 19 ? PlayerAction.Check : PlayerAction.Fold; // 95% Check, 5% Fold
+
+                //no logic needed for either check or fold. 
+
+                return playerAction;
             }
         }
         return PlayerAction.Fold; // Default fallback action
+    }
+
+    private void CallAction()
+    {
+        var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.BetAmount;
+        BetManager.Instance.SetBet(_playerManager, callBetAmount);
+    }
+
+    private void BetAction(HandStrength handStrength)
+    {
+        RaiseAction(handStrength);
+    }
+    private void RaiseAction(HandStrength handStrength)
+    {
+        int raiseBetAmount = CalculateRaiseAmount(handStrength);
+
+        // Set the raise amount in the bet manager, and also the highest bet. 
+        BetManager.Instance.SetBet(_playerManager, raiseBetAmount);
+        BetManager.Instance.CurrentHighestBetAmount += raiseBetAmount;
+    }
+
+    public int CalculateRaiseAmount(HandStrength handStrength)
+    {
+        // Calculate the minimum raise amount
+        int minimumRaiseAmount = BetManager.Instance.CurrentHighestBetAmount * 2 - _playerManager.BetAmount;
+
+        // Define a multiplier based on hand strength
+        int raiseMultiplier = GetRandomMultiplier(handStrength);
+
+        // Calculate the proposed raise amount
+        int raiseAmount = minimumRaiseAmount * raiseMultiplier;
+
+        // Ensure the raise does not exceed the player's total stack and adheres to the game's rules
+        raiseAmount = Mathf.Max(raiseAmount, minimumRaiseAmount); // At least the minimum raise
+        int totalStack = _playerManager.TotalStackAmount;
+        raiseAmount = Mathf.Min(raiseAmount, totalStack); // Do not exceed the player's stack
+
+        return raiseAmount;
+    }
+
+    public int GetRandomMultiplier(HandStrength handStrength)
+    {
+        float exponent;
+        switch (handStrength)
+        {
+            case HandStrength.Amazing:
+                exponent = 0.3f; // Strong skew towards higher values
+                break;
+            case HandStrength.Strong:
+                exponent = 0.5f; // Moderate skew towards higher values
+                break;
+            case HandStrength.Medium:
+                exponent = 0.7f; // Slight skew towards higher values
+                break;
+            case HandStrength.WeakPlus:
+                exponent = 1.0f; // Uniform distribution
+                break;
+            case HandStrength.Weak:
+                exponent = 1.5f; // Skew towards lower values
+                break;
+            default:
+                exponent = 1.0f; // Uniform distribution for undefined cases
+                break;
+        }
+
+        float skewedRandom = Mathf.Pow(UnityEngine.Random.value, exponent);
+        return (int)(skewedRandom * 4) + 1; // Scaling to get a value from 1 to 4
     }
 }

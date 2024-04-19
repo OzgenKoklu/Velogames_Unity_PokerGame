@@ -14,11 +14,14 @@ public class BetManager : MonoBehaviour
     }
     private int _currentHighestBetAmount;
 
+    private int _potInThisSession;
+
     private GameManager.GameState _currentState;
 
     private void Awake()
     {
         Instance = this;
+        _potInThisSession = 0;
     }
 
     private void Start()
@@ -65,5 +68,19 @@ public class BetManager : MonoBehaviour
         }
         //everyone has the same bet amount and its the highest bet amount
         return true;
+    }
+
+    public void CollectBets()
+    {
+        Debug.Log("collecting bets.");
+        var players = GameManager.Instance.Players;
+
+        //handle all in players here
+        foreach(var player in players)
+        {
+            _potInThisSession += player.BetAmount;
+            player.TotalStackAmount -= player.BetAmount;
+            player.BetAmount = 0;
+        }
     }
 }

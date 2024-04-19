@@ -39,7 +39,8 @@ public class TurnManager : MonoBehaviour
                 OnPlayerTurn?.Invoke(CurrentPlayer);
                 break;
             case GameManager.GameState.Flop:
-                SetFirstPlayer(false); //false for IsPreFlop
+                ResetTurnStatus();
+                //SetFirstPlayer(false); //false for IsPreFlop
 
                 break;
             case GameManager.GameState.PostFlop:
@@ -111,42 +112,34 @@ public class TurnManager : MonoBehaviour
         foreach(var player in players)
         {
             player.IsPlayerActive = true;
+            player.HasActedSinceLastRaise = false;
         }
     }
 
     public void ChangePlayerTurn()
     {
+        CurrentPlayer.IsPlayerTurn = false;
+        int originalPlayerIndex = _currentPlayerIndex;
+        do
+        {
+            _currentPlayerIndex = (_currentPlayerIndex + 1) % GameManager.Instance.Players.Count;
+            CurrentPlayer = GameManager.Instance.Players[_currentPlayerIndex];
+
+            // Skip the players who have folded
+            if (CurrentPlayer.IsPlayerActive)
+            {
+                CurrentPlayer.IsPlayerTurn = true;
+                GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
+                break;
+            }
+        } while (_currentPlayerIndex != originalPlayerIndex);  // Avoid infinite loops
+
         if (IsBettingRoundConcludable())
         {
-            //go into the next stage. Not always flop stage
-            Debug.Log("State Changed, all players ready to go to the flop stage.");
-
-            //also should take players money into the pot etc. The logic should be here.
-
-            GameManager.Instance.SetGameState(GameManager.GameState.Flop);
-            return;        
-        };
-
-        var players = GameManager.Instance.Players;
-
-        CurrentPlayer.IsPlayerTurn = false;
-
-        if (_currentPlayerIndex + 1 >= players.Count)
-        {
-            _currentPlayerIndex = 0;
-            CurrentPlayer = players[_currentPlayerIndex];
-
-            CurrentPlayer.IsPlayerTurn = true;
-            GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
-
-            return;
+            // Proceed to collect bets into the pot, move to the next stage
+            BetManager.Instance.CollectBets();
+            GameManager.Instance.SetGameState(GameManager.GameState.Flop); // Or the next appropriate state
         }
-
-        _currentPlayerIndex++;
-        CurrentPlayer = players[_currentPlayerIndex];
-
-        CurrentPlayer.IsPlayerTurn = true;
-        GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
     }
 
     //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.
@@ -165,7 +158,25 @@ public class TurnManager : MonoBehaviour
 
     private bool IsBettingRoundConcludable()
     {
-        //Burada dikkat. Sıra Big Blind'a geçince direkt conclude edebiliyo bir kere oldu
-        return BetManager.Instance.IsAllActivePlayersBetsEqual() && BetManager.Instance.CurrentHighestBetAmount > 0;
+        if (BetManager.Instance.CurrentHighestBetAmount == 0) return false;
+        if (!BetManager.Instance.IsAllActivePlayersBetsEqual()) return false;
+        if (DealerManager.Instance.GetBigBlind().HasActedSinceLastRaise)
+        {
+            Debug.Log(DealerManager.Instance.GetBigBlind().name + " bet amount of big blind. " + DealerManager.Instance.GetBigBlind().BetAmount);
+            return true;
+        }
+        else
+        {
+            return false;
+        }        
+    }
+
+    private void ResetTurnStatus()
+    {
+        var players = GameManager.Instance.Players;        
+        foreach (var player in players)
+        {
+            player.IsPlayerTurn = false;
+        }
     }
 }

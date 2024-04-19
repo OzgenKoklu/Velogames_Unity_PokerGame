@@ -70,12 +70,22 @@ public class GameManager : MonoBehaviour
     public void StartGameRound()
     {
         SetGameState(GameState.NewRound);
+        SetPlayerStacks();
     }
 
     public void SetGameState(GameState newState)
     {
         _currentGameState = newState;
         OnGameStateChanged?.Invoke(_currentGameState);
+    }
+
+    private void SetPlayerStacks()
+    {
+        foreach (var player in _players)
+        {
+            //will need to change this.
+            player.TotalStackAmount = 1000; 
+        }
     }
 
     public GameState GetState()
