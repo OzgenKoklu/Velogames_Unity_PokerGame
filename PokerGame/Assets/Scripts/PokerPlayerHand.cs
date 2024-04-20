@@ -13,7 +13,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     [SerializeField] private AiPlayerBehaviour _aiPlayerBehavior;
 
     [Header("Card Transform Values:")]
-    [SerializeField] private float initialXOffset = -0.6f;
+    [SerializeField] private float initialXOffset = -10.6f;
     [SerializeField] private float xOffsetMultiplier = 1.2f;
     [SerializeField] private float initialRotationAngle = 15f;
     [SerializeField] private float rotationAngleMultiplier = -30f;
@@ -80,6 +80,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     {
         var handStrength = PokerHandEvaluator.Instance.HandStrengthCalculatorFor2Cards(GetCardList());
 
+        //Decide ismi çok da iyi olmamis cunku bi yandan act de yapýyor bunun içinde (call, set bet etc). belki de o asamalar farklý sekilde encapsule edilmeliydi.
         PlayerAction playerAction = _aiPlayerBehavior.DecidePreFlop(handStrength);
 
         return playerAction;

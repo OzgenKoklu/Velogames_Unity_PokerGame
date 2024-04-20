@@ -122,6 +122,10 @@ public class PlayerManager : MonoBehaviour
 
     private void TurnManager_OnPlayerTurn(PlayerManager player)
     {
+        if (player != this) return; // If player isnt this, just dont do any more calculations
+
+        IsPlayerTurn = true;
+
         if (player == this && player == GameManager.Instance.MainPlayer)
         {
             //if player is main player, set on UI objects for player input.
@@ -277,7 +281,15 @@ public class PlayerManager : MonoBehaviour
 
     private void ExecuteAIMove()
     {
-        PlayersAction = PlayerHand.AiBotActionPreFlop();
+        if (TurnManager.Instance.IsPreFlop)
+        {
+            PlayersAction = PlayerHand.AiBotActionPreFlop();
+        }
+        else //post flop, river, etc
+        {
+            PlayersAction = PlayerHand.AiBotActionPostFlop();
+        }
+       
         // Reset the previous player action to fold or null after each betting round ends
         Debug.Log(name + " Made the move: " + PlayersAction);
 

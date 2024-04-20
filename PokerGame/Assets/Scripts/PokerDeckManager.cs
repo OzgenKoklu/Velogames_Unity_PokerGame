@@ -59,6 +59,13 @@ public class PokerDeckManager : MonoBehaviour
         if(obj == GameManager.GameState.Flop)
         {
             DrawInitialCommunityCards(); //normally should draw in flop. Lets draw and hide for now. 
+
+            //!!! Bu state change'in burda iþi yok belki game manager'ýn takip ettiði bir event triggerlanmalý ve o tetiklemeli.
+            //bu yaklaþým sýkýntýlý çünkü turn manager'daki scriptlerdeki "newRound'da olmasý gereken iþlemlerin tamamlandýðýna emin olmadan state'i ilerletiyor. 
+            //Turn manager'da kalsa muhtemelen 3 community card çekilmeden playerTurn'e geçirirdi.
+
+            GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
+
             return;
         }
 

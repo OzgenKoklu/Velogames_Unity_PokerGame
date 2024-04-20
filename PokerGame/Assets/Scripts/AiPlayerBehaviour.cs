@@ -28,65 +28,133 @@ public class AiPlayerBehaviour : MonoBehaviour
     // *** POSTFLOP DECISIONS ***
     // **************************
     //5-7 card Decision making (post flop), maybe it should take bluffs into account, like if the earlier player bets, the player will become likely to fold or something. 
-    public PlayerAction DecidePostFlop(HandStrength handStrength, PlayerAction? previousPlayersAction = null)
+    public PlayerAction DecidePostFlop(HandStrength handStrength)
     {
-        if (previousPlayersAction == null || previousPlayersAction == PlayerAction.Fold || previousPlayersAction == PlayerAction.Check)
+        PlayerAction playerAction;
+
+        int highestBetAmount = BetManager.Instance.CurrentHighestBetAmount;
+
+        int ourCurrentBetAmount = _playerManager.BetAmount;
+
+        float zeroBetFactor = highestBetAmount == 0 ? 0.5f : 1; // If highest bet is zero, weak hands will call more often, since they wont lose much.
+
+        float possibilityFactor = CalculatePossibilityFactor();
+
+        float conservativeFactor = CalculateConservativeFactor(handStrength);
+
+        float combinedFactor = possibilityFactor * conservativeFactor * zeroBetFactor;
+
+
+        if (ourCurrentBetAmount < highestBetAmount) 
         {
             if (handStrength == HandStrength.Amazing)
             {
-                return UnityEngine.Random.Range(0, 5) <= 1 ? PlayerAction.Check : PlayerAction.Bet; //%20 check %80 bet
+               playerAction = UnityEngine.Random.Range(0, 5) < 1 * combinedFactor ? PlayerAction.Call : PlayerAction.Raise; //%20 Call %80 Raise (conservative Factor & possibilityFactor = 1)
+
+                if (playerAction == PlayerAction.Call)
+                {
+                    CallAction();
+                }
+                else
+                {
+                    RaiseAction(handStrength);
+                }
+
+                return playerAction;
             }
             else if (handStrength == HandStrength.Strong)
             {
-                return UnityEngine.Random.Range(0, 5) <= 2 ? PlayerAction.Check : PlayerAction.Bet;
+                playerAction = UnityEngine.Random.Range(0, 5) < 2 * combinedFactor ? PlayerAction.Call : PlayerAction.Raise; //%40 Call %60 Raise (conservative Factor & possibilityFactor = 1)
+
+                if (playerAction == PlayerAction.Call)
+                {
+                    CallAction();
+                }
+                else
+                {
+                    RaiseAction(handStrength);
+                }
+
+                return playerAction;
             }
             else if (handStrength == HandStrength.Medium)
             {
-                return UnityEngine.Random.Range(0, 4) < 1 ? PlayerAction.Check : PlayerAction.Bet;
+                playerAction = UnityEngine.Random.Range(0, 4) < 3 * combinedFactor ? PlayerAction.Call : PlayerAction.Raise; //%75 Call %25 Raise (conservative Factor & possibilityFactor = 1)
+
+                if (playerAction == PlayerAction.Call)
+                {
+                    CallAction();
+                }
+                else
+                {
+                    RaiseAction(handStrength);
+                }
+                return playerAction;
             }
             else if (handStrength == HandStrength.WeakPlus)
             {
-                return UnityEngine.Random.Range(0, 3) <= 1 ? PlayerAction.Check : PlayerAction.Fold;
+                playerAction = UnityEngine.Random.Range(0, 3) < 1 * combinedFactor ? PlayerAction.Fold : PlayerAction.Call;
+
+                if (playerAction == PlayerAction.Call)
+                {
+                    CallAction();
+                }
+               
+                return playerAction;
             }
             else
             {
-                return UnityEngine.Random.Range(0, 3) <= 1 ? PlayerAction.Check : PlayerAction.Fold;
+                playerAction = UnityEngine.Random.Range(0, 3) < 2 * combinedFactor ? PlayerAction.Fold : PlayerAction.Call;
+
+                if (playerAction == PlayerAction.Call)
+                {
+                    CallAction();
+                }
+
+                return playerAction;
             }
         }
-        else if (previousPlayersAction == PlayerAction.Bet || previousPlayersAction == PlayerAction.Raise)
+        else if (ourCurrentBetAmount == highestBetAmount) // It can also be zero 
         {
             // Adjusted logic for response to aggression
             switch (handStrength)
             {
                 case HandStrength.Amazing:
-                    return UnityEngine.Random.Range(0, 4) < 3 ? PlayerAction.Raise : PlayerAction.Call; // Mostly raise, occasionally call
+                    playerAction = UnityEngine.Random.Range(0, 4) < 1 * combinedFactor ? PlayerAction.Check : PlayerAction.Bet; 
+
+                    if (playerAction == PlayerAction.Bet)
+                    {
+                        BetAction(handStrength);
+                    }
+
+                    return playerAction;
                 case HandStrength.Strong:
-                    return UnityEngine.Random.Range(0, 3) == 0 ? PlayerAction.Fold : PlayerAction.Call; // Mostly call, rarely fold
+                    playerAction = UnityEngine.Random.Range(0, 3) < 1 * combinedFactor ? PlayerAction.Check : PlayerAction.Bet;
+
+                    if (playerAction == PlayerAction.Bet)
+                    {
+                        BetAction(handStrength);
+                    }
+                    return playerAction;
                 case HandStrength.Medium:
-                    return UnityEngine.Random.Range(0, 3) == 0 ? PlayerAction.Call : PlayerAction.Fold; // Some chance to call, mostly fold
+                    playerAction = UnityEngine.Random.Range(0, 3) < 2 * combinedFactor ? PlayerAction.Check : PlayerAction.Bet;
+
+                    if (playerAction == PlayerAction.Bet)
+                    {
+                        BetAction(handStrength);
+                    }
+
+                    return playerAction;
                 case HandStrength.WeakPlus:
-                    return UnityEngine.Random.Range(0, 5) < 1 ? PlayerAction.Call : PlayerAction.Fold; // Small chance to call, mostly fold
+                    playerAction = UnityEngine.Random.Range(0, 5) < 3 * combinedFactor ? PlayerAction.Fold : PlayerAction.Check; 
+
+                    return playerAction;
                 case HandStrength.Weak:
-                    return UnityEngine.Random.Range(0, 10) < 1 ? PlayerAction.Call : PlayerAction.Fold; // Very small chance to call, mostly fold
+                    playerAction = UnityEngine.Random.Range(0, 10) < 5 * combinedFactor ? PlayerAction.Fold : PlayerAction.Check; 
+                    return playerAction;
             }
         }
-        else if (previousPlayersAction == PlayerAction.Call)
-        {
-            // Adjusted logic for response to a call
-            switch (handStrength)
-            {
-                case HandStrength.Amazing:
-                    return UnityEngine.Random.Range(0, 3) < 2 ? PlayerAction.Raise : PlayerAction.Bet; // Mostly raise, sometimes bet
-                case HandStrength.Strong:
-                    return UnityEngine.Random.Range(0, 4) < 3 ? PlayerAction.Bet : PlayerAction.Check; // Mostly bet, occasionally check
-                case HandStrength.Medium:
-                    return UnityEngine.Random.Range(0, 4) == 0 ? PlayerAction.Bet : PlayerAction.Check; // Some chance to bet, mostly check
-                case HandStrength.WeakPlus:
-                    return UnityEngine.Random.Range(0, 2) == 0 ? PlayerAction.Check : PlayerAction.Fold; // Equally likely to check or fold
-                case HandStrength.Weak:
-                    return PlayerAction.Check; // Default to check, cautious play
-            }
-        }
+        // it cant be > highest bet anyway. (unluess bug happens)
 
         return PlayerAction.Fold; // Default action
     }
@@ -95,9 +163,13 @@ public class AiPlayerBehaviour : MonoBehaviour
     // *************************
     // 2 card Decision making (pre flop), maybe it should take bluffs into account, like if the earlier player bets, the player will become likely to fold or something.
     // for prefold stage only, (for 2 cards) Weak hands still have more chance to check at this stage, no WeakPlus or Amazing hands.
-    public PlayerAction DecidePreFlop(HandStrength handStrength) 
+    public PlayerAction DecidePreFlop(HandStrength handStrength)
     {
         PlayerAction playerAction;
+
+        int highestBetAmount = BetManager.Instance.CurrentHighestBetAmount;
+
+        int ourCurrentBetAmount = _playerManager.BetAmount;
 
         ///!!! IMPORTANT !!! Conservative options are on the left for game-mechanics purposes. The conservative factor will increase the likelyhood of >
         /// selecting the conservative option. To avoid constant raises in betting rounds, AI players tendancy toward making brave moves lessens  over time
@@ -105,9 +177,9 @@ public class AiPlayerBehaviour : MonoBehaviour
         /// 
         float conservativeFactor = CalculateConservativeFactor(handStrength);
 
-        Debug.Log("After Clamp - ConservativeFactor: " + " for " + _playerManager.name +  ": " + conservativeFactor);
+        Debug.Log("After Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
 
-        if (_playerManager.BetAmount < BetManager.Instance.CurrentHighestBetAmount)
+        if (ourCurrentBetAmount < highestBetAmount)
         {
             if (handStrength == HandStrength.Strong)
             {
@@ -119,7 +191,7 @@ public class AiPlayerBehaviour : MonoBehaviour
                 }
                 else // Player raises. 
                 {
-                    RaiseAction(handStrength);                  
+                    RaiseAction(handStrength);
                 }
 
                 return playerAction;
@@ -141,7 +213,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             else
             {
                 playerAction = UnityEngine.Random.Range(0, 10) < 3 * conservativeFactor ? PlayerAction.Fold : PlayerAction.Call; // 70% Call , 30% Fold (for conservative factor = 1)
-                
+
                 if (playerAction == PlayerAction.Call)
                 {
                     CallAction();
@@ -151,7 +223,7 @@ public class AiPlayerBehaviour : MonoBehaviour
                 return playerAction;
             }
         }
-        else if (_playerManager.BetAmount == BetManager.Instance.CurrentHighestBetAmount)
+        else if (ourCurrentBetAmount == highestBetAmount)
         {
             if (handStrength == HandStrength.Strong)
             {
@@ -167,7 +239,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             }
             else if (handStrength == HandStrength.Medium)
             {
-                playerAction =  UnityEngine.Random.Range(0, 20) < 19 * conservativeFactor? PlayerAction.Check : PlayerAction.Bet; // 95% Check, 5% Bet (for conservative factor = 1)
+                playerAction = UnityEngine.Random.Range(0, 20) < 19 * conservativeFactor ? PlayerAction.Check : PlayerAction.Bet; // 95% Check, 5% Bet (for conservative factor = 1)
 
                 if (playerAction == PlayerAction.Bet)
                 {
@@ -178,7 +250,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             }
             else
             {
-                playerAction =  UnityEngine.Random.Range(0, 20) < 1 * conservativeFactor? PlayerAction.Fold : PlayerAction.Check; // 95% Check, 5% Fold (for conservative factor = 1)
+                playerAction = UnityEngine.Random.Range(0, 20) < 1 * conservativeFactor ? PlayerAction.Fold : PlayerAction.Check; // 95% Check, 5% Fold (for conservative factor = 1)
 
                 //no logic needed for either check or fold. 
 
@@ -210,7 +282,16 @@ public class AiPlayerBehaviour : MonoBehaviour
     public int CalculateRaiseAmount(HandStrength handStrength)
     {
         // Calculate the minimum raise amount
-        int minimumRaiseAmount = BetManager.Instance.CurrentHighestBetAmount * 2 - _playerManager.BetAmount;
+        int currentHighestBet = BetManager.Instance.CurrentHighestBetAmount;
+        int minimumRaiseAmount;
+        if (currentHighestBet != 0)
+        {
+            minimumRaiseAmount = currentHighestBet * 2 - _playerManager.BetAmount;
+        }
+        else // flop and after 
+        {
+            minimumRaiseAmount = BetManager.Instance.GetMinimumRaiseAmount();
+        }
 
         // Define a multiplier based on hand strength
         int raiseMultiplier = GetRandomMultiplier(handStrength);
@@ -222,6 +303,7 @@ public class AiPlayerBehaviour : MonoBehaviour
         raiseAmount = Mathf.Max(raiseAmount, minimumRaiseAmount); // At least the minimum raise
         int totalStack = _playerManager.TotalStackAmount;
         raiseAmount = Mathf.Min(raiseAmount, totalStack); // Do not exceed the player's stack
+        BetManager.Instance.SetMinimumRaiseAmount(raiseAmount);
 
         return raiseAmount;
     }
@@ -261,6 +343,8 @@ public class AiPlayerBehaviour : MonoBehaviour
         int currentStackAmount = _playerManager.TotalStackAmount;
         int highestBet = BetManager.Instance.CurrentHighestBetAmount;
 
+        if (highestBet == 0) return 1; //and avoid deviding by zero.
+
         float betProximity = MathF.Abs((float)(currentBet - highestBet) / highestBet);
         float stackRisk = (float)(highestBet) / currentStackAmount;
 
@@ -293,10 +377,28 @@ public class AiPlayerBehaviour : MonoBehaviour
         }*/
 
         // Calculate the conservative factor, aiming for a result close to 1 for low risk and potentially as high as 4 for high risk
-        float conservativeFactor =  betProximity + stackRisk; // + strengthAdjustment;
+        float conservativeFactor = betProximity + stackRisk; // + strengthAdjustment;
         Debug.Log("Before Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
         // Clamp the result to a reasonable range if needed
         return Mathf.Clamp(conservativeFactor, 1, 4);
 
+    }
+
+    //this is for making players taking braver actions when the amount of community cards available are less. There are still 2 cards remaining for flop
+    private float CalculatePossibilityFactor()
+    {
+        int communityCardsCount = CommunityCards.Instance.GetCardList().Count;
+
+        switch (communityCardsCount)
+        {
+            case 3: //still 2 more cards will be drawn
+                return 1.0f;
+            case 4:
+                return 1.2f;
+            case 5:
+                return 1.4f;
+            default:
+             return 1.0f; // Default neutral case   
+        }
     }
 }

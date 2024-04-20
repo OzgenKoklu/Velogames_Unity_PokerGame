@@ -15,6 +15,7 @@ public class BetManager : MonoBehaviour
     private int _currentHighestBetAmount;
 
     private int _potInThisSession;
+    private int baseRaiseAmount;
 
     private GameManager.GameState _currentState;
 
@@ -32,6 +33,7 @@ public class BetManager : MonoBehaviour
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
         _currentState = state;
+    
     }
 
     private void DealerManager_OnDealerChanged(PlayerManager dealerPlayer)
@@ -40,8 +42,11 @@ public class BetManager : MonoBehaviour
         {
             SetBet(DealerManager.Instance.GetSmallBlind(), 5);
             SetBet(DealerManager.Instance.GetBigBlind(), 10);
+            baseRaiseAmount = 10;
             _currentHighestBetAmount = DealerManager.Instance.GetBigBlind().BetAmount;
         }
+
+
     }
 
     public void SetBet(PlayerManager player, int betAmount)
@@ -56,7 +61,7 @@ public class BetManager : MonoBehaviour
         DealerManager.Instance.OnDealerChanged -= DealerManager_OnDealerChanged;
     }
 
-    public bool IsAllActivePlayersBetsEqual()
+    public bool AreAllActivePlayersBetsEqual()
     {
         var activePlayerList = GameManager.Instance.GetActivePlayers();
 
@@ -68,6 +73,16 @@ public class BetManager : MonoBehaviour
         }
         //everyone has the same bet amount and its the highest bet amount
         return true;
+    }
+
+    public void SetMinimumRaiseAmount(int raiseAmount)
+    {
+        baseRaiseAmount += raiseAmount;
+    }
+    
+    public int GetMinimumRaiseAmount()
+    {
+        return baseRaiseAmount;
     }
 
     public void CollectBets()

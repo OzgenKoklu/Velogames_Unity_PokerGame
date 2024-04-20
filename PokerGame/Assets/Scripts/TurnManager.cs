@@ -15,6 +15,12 @@ public class TurnManager : MonoBehaviour
     public PlayerManager CurrentPlayer { get; private set; }
     private int _currentPlayerIndex;
 
+    public bool IsPreFlop
+    {
+        get => _isPreFlop;     
+    }
+    [SerializeField] private bool _isPreFlop;
+
     private void Awake()
     {
         Instance = this;
@@ -31,17 +37,19 @@ public class TurnManager : MonoBehaviour
         switch (state)
         {
             case GameManager.GameState.PreFlop:
+                _isPreFlop = true;
                 ResetAllPlayersActiveStatus(); //resetting flop/inactive status
-                SetFirstPlayer(true); //true for IsPreFlop
+                SetFirstPlayer(IsPreFlop); //true for IsPreFlop
                 GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
                 break;
             case GameManager.GameState.PlayerTurn:
                 OnPlayerTurn?.Invoke(CurrentPlayer);
                 break;
             case GameManager.GameState.Flop:
+                _isPreFlop = false;
                 ResetTurnStatus();
-                //SetFirstPlayer(false); //false for IsPreFlop
-
+                SetFirstPlayer(IsPreFlop); //false for IsPreFlop
+                //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
             case GameManager.GameState.PostFlop:
                 break;
@@ -101,8 +109,7 @@ public class TurnManager : MonoBehaviour
 
         _currentPlayerIndex = firstPlayerIndex;
         CurrentPlayer = players[_currentPlayerIndex];
-        CurrentPlayer.IsPlayerTurn = true;
-        
+
         return;
     }
 
@@ -162,17 +169,22 @@ public class TurnManager : MonoBehaviour
 
     private bool IsBettingRoundConcludable()
     {
-        if (BetManager.Instance.CurrentHighestBetAmount == 0) return false;
-        if (!BetManager.Instance.IsAllActivePlayersBetsEqual()) return false;
-        if (DealerManager.Instance.GetBigBlind().HasActedSinceLastRaise)
+        // Check if there has been any bet made
+        if (BetManager.Instance.CurrentHighestBetAmount == 0)
         {
-            Debug.Log(DealerManager.Instance.GetBigBlind().name + " bet amount of big blind. " + DealerManager.Instance.GetBigBlind().BetAmount);
-            return true;
+            // If no bet has been made, the round can conclude if everyone has had a chance to act and chosen to check.
+            return AreAllActivePlayersChecked();
         }
-        else
+
+        // Check if all active players have their bets equal to the highest current bet
+        if (!BetManager.Instance.AreAllActivePlayersBetsEqual())
         {
             return false;
-        }        
+        }
+
+        // Check if the last player to raise has had other players act after them
+        return AreAllActivePlayersChecked(); 
+              
     }
 
     private void ResetTurnStatus()
@@ -181,6 +193,19 @@ public class TurnManager : MonoBehaviour
         foreach (var player in players)
         {
             player.IsPlayerTurn = false;
+            player.HasActedSinceLastRaise = false;
         }
+    }
+
+    private bool AreAllActivePlayersChecked()
+    {
+        foreach (var player in GameManager.Instance.Players)
+        {
+            if (player.IsPlayerActive && player.HasActedSinceLastRaise == false)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

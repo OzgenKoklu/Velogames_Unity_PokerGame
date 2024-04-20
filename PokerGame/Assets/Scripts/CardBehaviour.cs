@@ -23,6 +23,11 @@ public class CardBehaviour : MonoBehaviour
             {
                 _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
             }
+            else if(CardSO.CardParent is CommunityCards)
+            {
+                _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
+
+            }
             else
             {
                 //facedown sprite eklenecek
