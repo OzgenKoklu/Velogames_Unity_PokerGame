@@ -118,8 +118,19 @@ public class TurnManager : MonoBehaviour
 
     public void ChangePlayerTurn()
     {
+        if (GameManager.Instance.GetState() != GameManager.GameState.PlayerTurn) return;
+
         CurrentPlayer.IsPlayerTurn = false;
         int originalPlayerIndex = _currentPlayerIndex;
+
+        if (IsBettingRoundConcludable())
+        {
+            // Proceed to collect bets into the pot, move to the next stage
+            BetManager.Instance.CollectBets();
+            GameManager.Instance.SetGameState(GameManager.GameState.Flop); // Or the next appropriate state
+            return;
+        }
+
         do
         {
             _currentPlayerIndex = (_currentPlayerIndex + 1) % GameManager.Instance.Players.Count;
@@ -132,14 +143,7 @@ public class TurnManager : MonoBehaviour
                 GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
                 break;
             }
-        } while (_currentPlayerIndex != originalPlayerIndex);  // Avoid infinite loops
-
-        if (IsBettingRoundConcludable())
-        {
-            // Proceed to collect bets into the pot, move to the next stage
-            BetManager.Instance.CollectBets();
-            GameManager.Instance.SetGameState(GameManager.GameState.Flop); // Or the next appropriate state
-        }
+        } while (_currentPlayerIndex != originalPlayerIndex);  // Avoid infinite loops      
     }
 
     //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.

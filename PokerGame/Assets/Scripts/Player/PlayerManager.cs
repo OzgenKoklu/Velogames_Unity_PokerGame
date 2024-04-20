@@ -122,14 +122,6 @@ public class PlayerManager : MonoBehaviour
 
     private void TurnManager_OnPlayerTurn(PlayerManager player)
     {
-        /*
-        if(player == this && !IsPlayerActive)
-        {
-            //change turn imideatly if player folded
-            TurnManager.Instance.ChangePlayerTurn();
-        }
-        */
-
         if (player == this && player == GameManager.Instance.MainPlayer)
         {
             //if player is main player, set on UI objects for player input.

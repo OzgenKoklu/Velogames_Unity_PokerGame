@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-       // Debug.Log(_currentGameState);
+       Debug.Log(_currentGameState);
     }
 
     private void Start()

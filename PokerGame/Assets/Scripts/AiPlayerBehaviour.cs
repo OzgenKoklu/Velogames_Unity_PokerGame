@@ -1,4 +1,7 @@
+using System;
 using UnityEngine;
+using static AiPlayerBehaviour;
+
 public class AiPlayerBehaviour : MonoBehaviour
 {
     [SerializeField] private PlayerManager _playerManager;
@@ -92,15 +95,23 @@ public class AiPlayerBehaviour : MonoBehaviour
     // *************************
     // 2 card Decision making (pre flop), maybe it should take bluffs into account, like if the earlier player bets, the player will become likely to fold or something.
     // for prefold stage only, (for 2 cards) Weak hands still have more chance to check at this stage, no WeakPlus or Amazing hands.
-    public PlayerAction DecidePreFlop(HandStrength handStrength)
+    public PlayerAction DecidePreFlop(HandStrength handStrength) 
     {
         PlayerAction playerAction;
+
+        ///!!! IMPORTANT !!! Conservative options are on the left for game-mechanics purposes. The conservative factor will increase the likelyhood of >
+        /// selecting the conservative option. To avoid constant raises in betting rounds, AI players tendancy toward making brave moves lessens  over time
+        /// as their bets get larger and larger.
+        /// 
+        float conservativeFactor = CalculateConservativeFactor(handStrength);
+
+        Debug.Log("After Clamp - ConservativeFactor: " + " for " + _playerManager.name +  ": " + conservativeFactor);
 
         if (_playerManager.BetAmount < BetManager.Instance.CurrentHighestBetAmount)
         {
             if (handStrength == HandStrength.Strong)
             {
-                playerAction = UnityEngine.Random.Range(0, 4) < 2 ? PlayerAction.Call : PlayerAction.Raise; // 50% Call, 50% Raise
+                playerAction = UnityEngine.Random.Range(0, 4) < 2 * conservativeFactor ? PlayerAction.Call : PlayerAction.Raise; // 50% Call, 50% Raise (for conservative factor = 1)
 
                 if (playerAction == PlayerAction.Call)
                 {
@@ -115,7 +126,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             }
             else if (handStrength == HandStrength.Medium)
             {
-                playerAction = UnityEngine.Random.Range(0, 10) < 9 ? PlayerAction.Call : PlayerAction.Raise; // 90% Call, 10% Raise
+                playerAction = UnityEngine.Random.Range(0, 10) < 9 * conservativeFactor ? PlayerAction.Call : PlayerAction.Raise; // 90% Call, 10% Raise (for conservative factor = 1)
 
                 if (playerAction == PlayerAction.Call)
                 {
@@ -129,7 +140,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             }
             else
             {
-                playerAction = UnityEngine.Random.Range(0, 10) < 7 ? PlayerAction.Call : PlayerAction.Fold; // 70% Call , 30% Fold
+                playerAction = UnityEngine.Random.Range(0, 10) < 3 * conservativeFactor ? PlayerAction.Fold : PlayerAction.Call; // 70% Call , 30% Fold (for conservative factor = 1)
                 
                 if (playerAction == PlayerAction.Call)
                 {
@@ -144,7 +155,7 @@ public class AiPlayerBehaviour : MonoBehaviour
         {
             if (handStrength == HandStrength.Strong)
             {
-                playerAction = UnityEngine.Random.Range(0, 10) < 9 ? PlayerAction.Check : PlayerAction.Bet; // 90% Check, 10% Bet
+                playerAction = UnityEngine.Random.Range(0, 10) < 9 * conservativeFactor ? PlayerAction.Check : PlayerAction.Bet; // 90% Check, 10% Bet (for conservative factor = 1)
 
                 if (playerAction == PlayerAction.Bet)
                 {
@@ -156,7 +167,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             }
             else if (handStrength == HandStrength.Medium)
             {
-                playerAction =  UnityEngine.Random.Range(0, 20) < 19 ? PlayerAction.Check : PlayerAction.Bet; // 95% Check, 5% Bet
+                playerAction =  UnityEngine.Random.Range(0, 20) < 19 * conservativeFactor? PlayerAction.Check : PlayerAction.Bet; // 95% Check, 5% Bet (for conservative factor = 1)
 
                 if (playerAction == PlayerAction.Bet)
                 {
@@ -167,7 +178,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             }
             else
             {
-                playerAction =  UnityEngine.Random.Range(0, 20) < 19 ? PlayerAction.Check : PlayerAction.Fold; // 95% Check, 5% Fold
+                playerAction =  UnityEngine.Random.Range(0, 20) < 1 * conservativeFactor? PlayerAction.Fold : PlayerAction.Check; // 95% Check, 5% Fold (for conservative factor = 1)
 
                 //no logic needed for either check or fold. 
 
@@ -242,5 +253,50 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         float skewedRandom = Mathf.Pow(UnityEngine.Random.value, exponent);
         return (int)(skewedRandom * 4) + 1; // Scaling to get a value from 1 to 4
+    }
+
+    private float CalculateConservativeFactor(HandStrength handStrength)
+    {
+        int currentBet = _playerManager.BetAmount;
+        int currentStackAmount = _playerManager.TotalStackAmount;
+        int highestBet = BetManager.Instance.CurrentHighestBetAmount;
+
+        float betProximity = MathF.Abs((float)(currentBet - highestBet) / highestBet);
+        float stackRisk = (float)(highestBet) / currentStackAmount;
+
+        /*
+
+        !!! Might use hand strenght or not for the post flop !!!. At this moment, I think its not needed since we already take hand strenght into acount 
+        // In the DecidePreFlop Method. 
+        float strengthAdjustment = 0f;
+
+        switch (handStrength)
+        {
+            case HandStrength.Amazing:
+                strengthAdjustment = 0f;
+                break;
+            case HandStrength.Strong:
+                strengthAdjustment = 0.2f;
+                break;
+            case HandStrength.Medium:
+                strengthAdjustment = 0.4f;
+                break;
+            case HandStrength.WeakPlus:
+                strengthAdjustment = 0.6f;
+                break;
+            case HandStrength.Weak:
+                strengthAdjustment = 0.8f;
+                break;
+            default:
+                strengthAdjustment = 0.4f;
+                break;
+        }*/
+
+        // Calculate the conservative factor, aiming for a result close to 1 for low risk and potentially as high as 4 for high risk
+        float conservativeFactor =  betProximity + stackRisk; // + strengthAdjustment;
+        Debug.Log("Before Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
+        // Clamp the result to a reasonable range if needed
+        return Mathf.Clamp(conservativeFactor, 1, 4);
+
     }
 }
