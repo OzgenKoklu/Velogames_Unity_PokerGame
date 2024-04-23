@@ -1,30 +1,27 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TurnManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _playerMoveInfoText;
-    public event Action<PlayerManager> OnPlayerTurn;
-    private List<PlayerAction> _aiPlayerActionsForTurn;
-
     public static TurnManager Instance { get; private set; }
+    public event Action<PlayerManager> OnPlayerTurn;
+
+    [SerializeField] private TextMeshProUGUI _playerMoveInfoText;
+
     public PlayerManager CurrentPlayer { get; private set; }
     private int _currentPlayerIndex;
 
     public bool IsPreFlop
     {
-        get => _isPreFlop;     
+        get => _isPreFlop;
     }
     [SerializeField] private bool _isPreFlop;
 
     private void Awake()
     {
         Instance = this;
-        _aiPlayerActionsForTurn = new List<PlayerAction>();
     }
 
     private void OnEnable()
@@ -46,20 +43,29 @@ public class TurnManager : MonoBehaviour
                 OnPlayerTurn?.Invoke(CurrentPlayer);
                 break;
             case GameManager.GameState.Flop:
+
+                break;
+            case GameManager.GameState.PostFlop:
                 _isPreFlop = false;
                 ResetTurnStatus();
                 SetFirstPlayer(IsPreFlop); //false for IsPreFlop
                 //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
-            case GameManager.GameState.PostFlop:
-                break;
             case GameManager.GameState.Turn:
                 break;
             case GameManager.GameState.PostTurn:
+                _isPreFlop = false;
+                ResetTurnStatus();
+                SetFirstPlayer(IsPreFlop); //false for IsPreFlop
+                //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
             case GameManager.GameState.River:
                 break;
             case GameManager.GameState.PostRiver:
+                _isPreFlop = false;
+                ResetTurnStatus();
+                SetFirstPlayer(IsPreFlop); //false for IsPreFlop
+                //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
             case GameManager.GameState.Showdown:
                 //showdown'a katilmadan önce post floptan alinan oyuncu listeleri güncellenmeli, ona göre oyundan çikmamiş en yüksek el winning hand seçilmeli.
@@ -81,76 +87,98 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    private void ExecuteAIMovePostFlop()
-    {
-        CurrentPlayer.PlayersAction = CurrentPlayer.PlayerHand.AiBotActionPostFlop();
-        //_previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
-        _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayersAction;
-
-        ChangePlayerTurn();
-    }
-
     private void SetFirstPlayer(bool isPreFlop)
     {
-        var players = GameManager.Instance.Players;
-        int firstPlayerIndex;
+        var activePlayers = GameManager.Instance.ActivePlayers;
+        PlayerManager firstPlayer;
 
         if (isPreFlop)
         {
             // Pre-flop: Start after the big blind
-            firstPlayerIndex = DealerManager.Instance.GetFirstPlayerIndexAfterBigBlind();
+            firstPlayer = DealerManager.Instance.GetFirstPlayerAfterBigBlind();
         }
         else
         {
             // Post-flop: Start from the small blind or the first active player to the left of the dealer button
-            firstPlayerIndex = DealerManager.Instance.GetFirstActivePlayerIndexFromDealer();
-            Debug.Log("After the flop, first player selected as: " + firstPlayerIndex);
+            firstPlayer = DealerManager.Instance.GetFirstActivePlayerFromDealer();
+            Debug.Log("After the flop, first player selected as: " + firstPlayer);
         }
 
-        _currentPlayerIndex = firstPlayerIndex;
-        CurrentPlayer = players[_currentPlayerIndex];
+        CurrentPlayer = firstPlayer;
+        _currentPlayerIndex = activePlayers.IndexOf(CurrentPlayer);
 
         return;
     }
 
     private void ResetAllPlayersActiveStatus()
     {
-        var players = GameManager.Instance.Players;
-        foreach(var player in players)
+        var activePlayers = GameManager.Instance.ActivePlayers;
+        foreach (var player in activePlayers)
         {
             player.IsPlayerActive = true;
             player.HasActedSinceLastRaise = false;
         }
     }
 
-    public void ChangePlayerTurn()
+    private void ExecuteAIMovePostFlop()
+    {
+        CurrentPlayer.PlayersAction = CurrentPlayer.PlayerHand.AiBotActionPostFlop();
+        //_previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
+        _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayersAction;
+
+        //ChangePlayerTurn();
+    }
+
+    public void ChangePlayerTurn(bool isPreviousPlayerFolded)
     {
         if (GameManager.Instance.GetState() != GameManager.GameState.PlayerTurn) return;
 
         CurrentPlayer.IsPlayerTurn = false;
-        int originalPlayerIndex = _currentPlayerIndex;
 
         if (IsBettingRoundConcludable())
         {
             // Proceed to collect bets into the pot, move to the next stage
             BetManager.Instance.CollectBets();
-            GameManager.Instance.SetGameState(GameManager.GameState.Flop); // Or the next appropriate state
-            return;
+
+            switch (GameManager.Instance.GetMainGameState())
+            {
+                case GameManager.GameState.PreFlop:
+                    GameManager.Instance.SetGameState(GameManager.GameState.Flop);
+                    return;
+                case GameManager.GameState.PostFlop:
+                    GameManager.Instance.SetGameState(GameManager.GameState.Turn);
+                    return;
+                case GameManager.GameState.PostTurn:
+                    GameManager.Instance.SetGameState(GameManager.GameState.River);
+                    return;
+                case GameManager.GameState.PostRiver:
+                    GameManager.Instance.SetGameState(GameManager.GameState.Showdown);
+                    return;
+                case GameManager.GameState.Showdown:
+                    GameManager.Instance.SetGameState(GameManager.GameState.PotDistribution);
+                    return;
+                case GameManager.GameState.PotDistribution:
+                    GameManager.Instance.SetGameState(GameManager.GameState.GameOver);
+                    return;
+                case GameManager.GameState.GameOver:
+                    GameManager.Instance.SetGameState(GameManager.GameState.NewRound);
+                    return;
+            }
         }
 
-        do
+        if (isPreviousPlayerFolded)
         {
-            _currentPlayerIndex = (_currentPlayerIndex + 1) % GameManager.Instance.Players.Count;
-            CurrentPlayer = GameManager.Instance.Players[_currentPlayerIndex];
+            _currentPlayerIndex = (_currentPlayerIndex) % GameManager.Instance.ActivePlayers.Count;
+            CurrentPlayer = GameManager.Instance.ActivePlayers[_currentPlayerIndex];
+        }
+        else
+        {
+            _currentPlayerIndex = (_currentPlayerIndex + 1) % GameManager.Instance.ActivePlayers.Count;
+            CurrentPlayer = GameManager.Instance.ActivePlayers[_currentPlayerIndex];
+        }
 
-            // Skip the players who have folded
-            if (CurrentPlayer.IsPlayerActive)
-            {
-                CurrentPlayer.IsPlayerTurn = true;
-                GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
-                break;
-            }
-        } while (_currentPlayerIndex != originalPlayerIndex);  // Avoid infinite loops      
+        CurrentPlayer.IsPlayerTurn = true;
+        GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
     }
 
     //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.
@@ -183,23 +211,23 @@ public class TurnManager : MonoBehaviour
         }
 
         // Check if the last player to raise has had other players act after them
-        return AreAllActivePlayersChecked(); 
-              
+        return AreAllActivePlayersChecked();
+
     }
 
     private void ResetTurnStatus()
     {
-        var players = GameManager.Instance.Players;        
-        foreach (var player in players)
+        var activePlayers = GameManager.Instance.ActivePlayers;
+        foreach (var player in activePlayers)
         {
-            player.IsPlayerTurn = false;
-            player.HasActedSinceLastRaise = false;
+            player.ResetTurnStatus();
         }
     }
 
+
     private bool AreAllActivePlayersChecked()
     {
-        foreach (var player in GameManager.Instance.Players)
+        foreach (var player in GameManager.Instance.ActivePlayers)
         {
             if (player.IsPlayerActive && player.HasActedSinceLastRaise == false)
             {

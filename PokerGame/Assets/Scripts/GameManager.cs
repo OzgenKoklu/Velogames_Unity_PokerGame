@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     public enum GameState
     {
         NewRound,       // Setup for a new round of poker
-        PreFlop,        // Before the flop (first three community cards) is dealt. Deals two hole cards face down to each player.
+        PreFlop,        // Deals two hole cards face down to each player. Before the flop (first three community cards) is dealt. 
         Flop,           // The flop is dealt
         PostFlop,       // Betting round after the flop
         Turn,           // The turn (fourth community card) is dealt
@@ -24,11 +24,14 @@ public class GameManager : MonoBehaviour
         GameOver        // The game is over
     }
 
+    private GameState _currentMainGameState;
     private GameState _currentGameState;
     private bool _isGameStarted = false;
 
     public List<PlayerManager> Players => _players;
     [SerializeField] private List<PlayerManager> _players;
+    public List<PlayerManager> ActivePlayers => _activePlayers;
+    [SerializeField] private List<PlayerManager> _activePlayers;
 
     public PlayerManager MainPlayer => _mainPlayer;
     [SerializeField] private PlayerManager _mainPlayer;
@@ -48,12 +51,18 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-       Debug.Log(_currentGameState);
+        Debug.Log(_currentGameState);
     }
 
     private void Start()
     {
+        PlayerManager.OnPlayerFolded += PlayerManager_OnPlayerFolded;
         StartGame();
+    }
+
+    private void PlayerManager_OnPlayerFolded(PlayerManager foldedPlayer)
+    {
+        _activePlayers.Remove(foldedPlayer);
     }
 
     public void StartGame()
@@ -75,16 +84,20 @@ public class GameManager : MonoBehaviour
 
     public void SetGameState(GameState newState)
     {
+        if (newState != GameState.PlayerTurn)
+        {
+            _currentMainGameState = newState;
+        }
         _currentGameState = newState;
         OnGameStateChanged?.Invoke(_currentGameState);
     }
 
     private void SetPlayerStacks()
     {
-        foreach (var player in _players)
+        foreach (var player in _activePlayers)
         {
             //will need to change this.
-            player.TotalStackAmount = 1000; 
+            player.TotalStackAmount = 1000;
         }
     }
 
@@ -93,15 +106,8 @@ public class GameManager : MonoBehaviour
         return _currentGameState;
     }
 
-    public List<PlayerManager> GetActivePlayers()
+    public GameState GetMainGameState()
     {
-        List<PlayerManager> activePlayers = new List<PlayerManager>();
-
-        foreach (var player in _players)
-        {
-            if(player.IsPlayerActive) activePlayers.Add(player);
-        } 
-
-        return activePlayers;
+        return _currentMainGameState;
     }
 }

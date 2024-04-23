@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class UiManager : MonoBehaviour
 {
+    public static UiManager Instance { get; private set; }
+
     [SerializeField] private GameObject _actionButtons;
     [SerializeField] private Button _foldButton;
     [SerializeField] private Button _callOrCheckButton;
@@ -13,22 +15,17 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _callOrCheckButtonText;
     [SerializeField] private TextMeshProUGUI _raiseOrBetButtonText;
 
-    
-    public static UiManager Instance { get; private set; }
-    
-
     private void Awake()
     {
         Instance = this;
     }
-
 
     public void SetActionButtonsForPlayer()
     {
         ShowButtons();
 
         PlayerManager player = GameManager.Instance.MainPlayer;
-        
+
         //hem burada, hem de SetActionbuttons'ý cagirdigimiz yerde ayný karþýlaþtýrmayý yapmamýz mantiksiz
         //bu yüzden daha iyi bir sekilde halledilmeli, ayni sekilde callbetAmountu da tek yerde hesaplasak daha iyi
         if (player.BetAmount < BetManager.Instance.CurrentHighestBetAmount)
@@ -37,7 +34,7 @@ public class UiManager : MonoBehaviour
             _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CallAction);
             _raiseOrBetButton.onClick.AddListener(GameManager.Instance.MainPlayer.RaiseAction);
             var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - player.BetAmount;
-            _callOrCheckButtonText.text = "CALL" + "("+ callBetAmount.ToString() + ")";
+            _callOrCheckButtonText.text = "CALL" + "(" + callBetAmount.ToString() + ")";
             _raiseOrBetButtonText.text = "RAISE";
         }
         else  //player is big blind, biggest bet == current bet 
@@ -47,31 +44,29 @@ public class UiManager : MonoBehaviour
             _raiseOrBetButton.onClick.AddListener(GameManager.Instance.MainPlayer.BetAction);
             _callOrCheckButtonText.text = "CHECK";
             _raiseOrBetButtonText.text = "BET";
-        }  
+        }
     }
 
     private void ShowButtons()
     {
-        _actionButtons.gameObject.SetActive(true);
+        _actionButtons.SetActive(true);
     }
 
     public void ResetFunctionsAndHideButtons()
     {
-        HideButtons();
-
         RemoveAllListenersFromButtons();
     }
 
     private void HideButtons()
     {
-        _actionButtons.gameObject.SetActive(false);
+        _actionButtons.SetActive(false);
     }
 
-    private void RemoveAllListenersFromButtons() 
+    private void RemoveAllListenersFromButtons()
     {
         _foldButton.onClick.RemoveAllListeners();
         _callOrCheckButton.onClick.RemoveAllListeners();
         _raiseOrBetButton.onClick.RemoveAllListeners();
+        HideButtons();
     }
-
 }

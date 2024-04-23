@@ -33,7 +33,6 @@ public class BetManager : MonoBehaviour
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
         _currentState = state;
-    
     }
 
     private void DealerManager_OnDealerChanged(PlayerManager dealerPlayer)
@@ -44,9 +43,8 @@ public class BetManager : MonoBehaviour
             SetBet(DealerManager.Instance.GetBigBlind(), 10);
             baseRaiseAmount = 10;
             _currentHighestBetAmount = DealerManager.Instance.GetBigBlind().BetAmount;
+            GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
         }
-
-
     }
 
     public void SetBet(PlayerManager player, int betAmount)
@@ -63,11 +61,11 @@ public class BetManager : MonoBehaviour
 
     public bool AreAllActivePlayersBetsEqual()
     {
-        var activePlayerList = GameManager.Instance.GetActivePlayers();
+        var activePlayers = GameManager.Instance.ActivePlayers;
 
-        if(activePlayerList == null ||  activePlayerList.Count == 0) { return false; }
+        if (activePlayers == null || activePlayers.Count == 0) { return false; }
 
-        foreach (var player in activePlayerList)
+        foreach (var player in activePlayers)
         {
             if (player.BetAmount != CurrentHighestBetAmount) return false;
         }
@@ -79,7 +77,7 @@ public class BetManager : MonoBehaviour
     {
         baseRaiseAmount += raiseAmount;
     }
-    
+
     public int GetMinimumRaiseAmount()
     {
         return baseRaiseAmount;
@@ -88,10 +86,10 @@ public class BetManager : MonoBehaviour
     public void CollectBets()
     {
         Debug.Log("collecting bets.");
-        var players = GameManager.Instance.Players;
+        var activePlayers = GameManager.Instance.ActivePlayers;
 
         //handle all in players here
-        foreach(var player in players)
+        foreach (var player in activePlayers)
         {
             _potInThisSession += player.BetAmount;
             player.TotalStackAmount -= player.BetAmount;

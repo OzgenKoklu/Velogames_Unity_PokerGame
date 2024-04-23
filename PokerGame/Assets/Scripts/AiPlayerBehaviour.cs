@@ -45,11 +45,11 @@ public class AiPlayerBehaviour : MonoBehaviour
         float combinedFactor = possibilityFactor * conservativeFactor * zeroBetFactor;
 
 
-        if (ourCurrentBetAmount < highestBetAmount) 
+        if (ourCurrentBetAmount < highestBetAmount)
         {
             if (handStrength == HandStrength.Amazing)
             {
-               playerAction = UnityEngine.Random.Range(0, 5) < 1 * combinedFactor ? PlayerAction.Call : PlayerAction.Raise; //%20 Call %80 Raise (conservative Factor & possibilityFactor = 1)
+                playerAction = UnityEngine.Random.Range(0, 5) < 1 * combinedFactor ? PlayerAction.Call : PlayerAction.Raise; //%20 Call %80 Raise (conservative Factor & possibilityFactor = 1)
 
                 if (playerAction == PlayerAction.Call)
                 {
@@ -99,7 +99,7 @@ public class AiPlayerBehaviour : MonoBehaviour
                 {
                     CallAction();
                 }
-               
+
                 return playerAction;
             }
             else
@@ -120,7 +120,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             switch (handStrength)
             {
                 case HandStrength.Amazing:
-                    playerAction = UnityEngine.Random.Range(0, 4) < 1 * combinedFactor ? PlayerAction.Check : PlayerAction.Bet; 
+                    playerAction = UnityEngine.Random.Range(0, 4) < 1 * combinedFactor ? PlayerAction.Check : PlayerAction.Bet;
 
                     if (playerAction == PlayerAction.Bet)
                     {
@@ -146,11 +146,11 @@ public class AiPlayerBehaviour : MonoBehaviour
 
                     return playerAction;
                 case HandStrength.WeakPlus:
-                    playerAction = UnityEngine.Random.Range(0, 5) < 3 * combinedFactor ? PlayerAction.Fold : PlayerAction.Check; 
+                    playerAction = UnityEngine.Random.Range(0, 5) < 3 * combinedFactor ? PlayerAction.Fold : PlayerAction.Check;
 
                     return playerAction;
                 case HandStrength.Weak:
-                    playerAction = UnityEngine.Random.Range(0, 10) < 5 * combinedFactor ? PlayerAction.Fold : PlayerAction.Check; 
+                    playerAction = UnityEngine.Random.Range(0, 10) < 5 * combinedFactor ? PlayerAction.Fold : PlayerAction.Check;
                     return playerAction;
             }
         }
@@ -177,7 +177,7 @@ public class AiPlayerBehaviour : MonoBehaviour
         /// 
         float conservativeFactor = CalculateConservativeFactor(handStrength);
 
-        Debug.Log("After Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
+        //Debug.Log("After Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
 
         if (ourCurrentBetAmount < highestBetAmount)
         {
@@ -378,7 +378,7 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         // Calculate the conservative factor, aiming for a result close to 1 for low risk and potentially as high as 4 for high risk
         float conservativeFactor = betProximity + stackRisk; // + strengthAdjustment;
-        Debug.Log("Before Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
+        //Debug.Log("Before Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
         // Clamp the result to a reasonable range if needed
         return Mathf.Clamp(conservativeFactor, 1, 4);
 
@@ -398,7 +398,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             case 5:
                 return 1.4f;
             default:
-             return 1.0f; // Default neutral case   
+                return 1.0f; // Default neutral case   
         }
     }
 }

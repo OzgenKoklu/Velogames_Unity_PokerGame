@@ -555,6 +555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerMoveInfoText: {fileID: 190807543}
+  _isPreFlop: 0
 --- !u!1 &114051008
 GameObject:
   m_ObjectHideFlags: 0
@@ -4443,6 +4444,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _players:
+  - {fileID: 1074086709}
+  - {fileID: 134982086}
+  - {fileID: 606718410}
+  - {fileID: 145876574}
+  - {fileID: 292966328}
+  _activePlayers:
   - {fileID: 1074086709}
   - {fileID: 134982086}
   - {fileID: 606718410}

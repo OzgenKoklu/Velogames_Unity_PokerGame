@@ -24,7 +24,7 @@ public class PokerDeckManager : MonoBehaviour
     [SerializeField] private GameObject _communityCardsGameObject;
     private List<PokerPlayerHand> _playerHands;
 
-    
+
     private void Awake()
     {
         Instance = this;
@@ -40,23 +40,22 @@ public class PokerDeckManager : MonoBehaviour
 
     private void GameManager_OnGameStateChanged(GameManager.GameState obj)
     {
-        if(obj == GameManager.GameState.NewRound)
-        {        
+        if (obj == GameManager.GameState.NewRound)
+        {
             DealCardsToPlayers();
             //bu yaklaþým sýkýntýlý çünkü diðer scriptlerdeki "newRound'da olmasý gereken iþlemlerin tamamlandýðýna emin olmadan state'i ilerletiyor. 
             //Preflop'a geçiren aþama BetManager'dayken buradaki kart daðýtým iþlemleri olmadan ilerliyordu. Belki courotine baþlatýlmalý ve böylece paralel olarak ilerlemeli bazý iþlemler.
-            GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
             return;
         }
 
-        if(obj == GameManager.GameState.PreFlop)
+        if (obj == GameManager.GameState.PreFlop)
         {
-            
-            
+
+
             return;
         }
 
-        if(obj == GameManager.GameState.Flop)
+        if (obj == GameManager.GameState.Flop)
         {
             DrawInitialCommunityCards(); //normally should draw in flop. Lets draw and hide for now. 
 
@@ -64,15 +63,20 @@ public class PokerDeckManager : MonoBehaviour
             //bu yaklaþým sýkýntýlý çünkü turn manager'daki scriptlerdeki "newRound'da olmasý gereken iþlemlerin tamamlandýðýna emin olmadan state'i ilerletiyor. 
             //Turn manager'da kalsa muhtemelen 3 community card çekilmeden playerTurn'e geçirirdi.
 
+            GameManager.Instance.SetGameState(GameManager.GameState.PostFlop);
             GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
 
             return;
         }
 
-        if(obj == GameManager.GameState.Turn)
+        if (obj == GameManager.GameState.Turn)
         {
             //draw 4th card for community cards
             DrawOneMoreCommunityCard();
+
+            GameManager.Instance.SetGameState(GameManager.GameState.PostTurn);
+            GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
+
             return;
         }
 
@@ -80,6 +84,9 @@ public class PokerDeckManager : MonoBehaviour
         {
             //draw 5th card for community cards
             DrawOneMoreCommunityCard();
+
+            GameManager.Instance.SetGameState(GameManager.GameState.PostRiver);
+            GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
             return;
         }
 
@@ -173,7 +180,7 @@ public class PokerDeckManager : MonoBehaviour
     {
         //Draws 2 cards for each player. 
         foreach (PokerPlayerHand hand in _playerHands)
-        {            
+        {
             CardSO card1 = DrawCardFromDeck(); // Draw the first card
             CardSO card2 = DrawCardFromDeck(); // Draw the second card
 
@@ -194,7 +201,7 @@ public class PokerDeckManager : MonoBehaviour
     private void InitializePlayers()
     {
         _playerHands = new List<PokerPlayerHand>
-        {        
+        {
             _aiPlayerOneHand,
             _aiPlayerTwoHand,
             _playerHand, // Index 2 = player
@@ -215,7 +222,7 @@ public class PokerDeckManager : MonoBehaviour
         // Add each player's combined hand to the list
 
         allHands.Add(_aiPlayerOneHand.GetCardListWithCommunityCardsAdded());
-        allHands.Add(_aiPlayerTwoHand.GetCardListWithCommunityCardsAdded()); 
+        allHands.Add(_aiPlayerTwoHand.GetCardListWithCommunityCardsAdded());
         allHands.Add(_playerHand.GetCardListWithCommunityCardsAdded()); // index 2
         allHands.Add(_aiPlayerThreeHand.GetCardListWithCommunityCardsAdded());
         allHands.Add(_aiPlayerFourHand.GetCardListWithCommunityCardsAdded());

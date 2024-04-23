@@ -9,10 +9,10 @@ public class DealerManager : MonoBehaviour
     public static DealerManager Instance { get; private set; }
     public Action<PlayerManager> OnDealerChanged;
 
-    private int _currentDealerIndex;
-    private int _smallBlindIndex;
-    private int _bigBlindIndex;
-    private int _firstPlayerIndexAfterBigBlind;
+    private PlayerManager _currentDealer;
+    private PlayerManager _smallBlind;
+    private PlayerManager _bigBlind;
+    private PlayerManager _firstPlayerAfterBigBlind;
 
     private void Awake()
     {
@@ -21,7 +21,7 @@ public class DealerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        _currentDealerIndex = 0;
+        _currentDealer = GameManager.Instance.ActivePlayers[0];
         GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
 
@@ -43,91 +43,107 @@ public class DealerManager : MonoBehaviour
             // Debug.Log("GameManager and Players list are valid");
 
             // Attempt to set the IsPlayerDealer property
-            players[_currentDealerIndex].IsPlayerDealer = true;
+            var currentDealerIndex = players.IndexOf(_currentDealer);
+            _currentDealer.IsPlayerDealer = true;
             SetSmallAndBigBlind();
             //Debug.Log("Player set as dealer");
-            OnDealerChanged?.Invoke(players[_currentDealerIndex]);
+            OnDealerChanged?.Invoke(_currentDealer);
 
-            _currentDealerIndex++;
+            currentDealerIndex++;
             // Check if the current dealer index is greater than the number of players
-            if (_currentDealerIndex == players.Count)
+            if (currentDealerIndex == players.Count)
             {
-                _currentDealerIndex = 0;
+                currentDealerIndex = 0;
             }
         }
         else
         {
             Debug.Log("GameManager instance is null or no players found");
         }
+
+        Debug.Log(players.Count);
     }
 
     public PlayerManager GetDealerPlayer()
     {
-        return GameManager.Instance.Players[_currentDealerIndex];
-    }
-
-    public int GetDealerPlayerIndex()
-    {
-        return _currentDealerIndex;
+        return _currentDealer;
     }
 
     public PlayerManager GetSmallBlind()
     {
-        return GameManager.Instance.Players[_smallBlindIndex];
+        return _smallBlind;
     }
 
     public PlayerManager GetBigBlind()
     {
-        return GameManager.Instance.Players[_bigBlindIndex];
+        return _bigBlind;
     }
 
     public void SetSmallAndBigBlind()
     {
         var players = GameManager.Instance.Players;
+        var currentDealerIndex = players.IndexOf(_currentDealer);
 
-        if (_currentDealerIndex + 1 >= players.Count)
+        if (currentDealerIndex + 1 >= players.Count)
         {
-            _smallBlindIndex = 0;
+            _smallBlind = players[0];
         }
         else
         {
-            _smallBlindIndex = _currentDealerIndex + 1;
+            _smallBlind = players[players.IndexOf(_currentDealer) + 1];
         }
 
-        if (_currentDealerIndex + 2 >= players.Count)
+        if (currentDealerIndex + 2 >= players.Count)
         {
-            _bigBlindIndex = 1;
-            _firstPlayerIndexAfterBigBlind = _bigBlindIndex + 1;
+            _bigBlind = players[1];
+            _firstPlayerAfterBigBlind = players[players.IndexOf(_currentDealer) + 1];
         }
         else
         {
-            _bigBlindIndex = _currentDealerIndex + 2;
-            _firstPlayerIndexAfterBigBlind = _bigBlindIndex + 1;
+            _bigBlind = players[players.IndexOf(_currentDealer) + 2];
+            _firstPlayerAfterBigBlind = players[players.IndexOf(_bigBlind) + 1];
         }
     }
 
-    public int GetFirstActivePlayerIndexFromDealer()
+    public PlayerManager GetFirstActivePlayerFromDealer()
     {
-        var players = GameManager.Instance.Players;
-        int dealerIndex = GetDealerPlayerIndex(); // Implement this method to find the dealer's index
-        int playerCount = players.Count;
-        int startIndex = (dealerIndex + 1) % playerCount;
-
-        for (int i = 0; i < playerCount; i++)
+        if (_smallBlind.IsPlayerActive)
         {
-            int index = (startIndex + i) % playerCount;
-            if (players[index].IsPlayerActive) // Ensure IsActive properly reflects if the player has not folded
+            return _smallBlind;
+        }
+        else if (_bigBlind.IsPlayerActive)
+        {
+            return _bigBlind;
+        }
+        else if (_firstPlayerAfterBigBlind.IsPlayerActive)
+        {
+            return _firstPlayerAfterBigBlind;
+        }
+        else
+        {
+            var players = GameManager.Instance.Players;
+            var firstPlayerAfterBigBlindIndex = players.IndexOf(_firstPlayerAfterBigBlind);
+
+            if (players[firstPlayerAfterBigBlindIndex + 1].IsPlayerActive)
             {
-                return index;
+                return players[firstPlayerAfterBigBlindIndex + 1];
+            }
+            else if (players[firstPlayerAfterBigBlindIndex + 2].IsPlayerActive)
+            {
+                return players[firstPlayerAfterBigBlindIndex + 2];
+
+            }
+            else
+            {
+                return null;
+                Debug.Log("No active player!");
             }
         }
-
-        return -1; // Return -1 or handle this case if all players are inactive
     }
 
-    public int GetFirstPlayerIndexAfterBigBlind()
+    public PlayerManager GetFirstPlayerAfterBigBlind()
     {
-        return _firstPlayerIndexAfterBigBlind;
+        return _firstPlayerAfterBigBlind;
     }
 
     private void OnDisable()
