@@ -4,12 +4,17 @@ apply plugin: 'com.android.library'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.google.android.gms:play-services-base:18.3.0' // Assets/Firebase/Editor/AppDependencies.xml:17
-    implementation 'com.google.firebase:firebase-analytics:21.5.1' // Assets/Firebase/Editor/AuthDependencies.xml:15
+    implementation 'com.google.android.gms:play-services-base:18.3.0' // Assets/Firebase/Editor/DatabaseDependencies.xml:17
+    implementation 'com.google.firebase:firebase-analytics:21.5.1' // Assets/Firebase/Editor/InstallationsDependencies.xml:15
+    implementation 'com.google.firebase:firebase-analytics-unity:11.8.1' // Assets/Firebase/Editor/AnalyticsDependencies.xml:18
     implementation 'com.google.firebase:firebase-app-unity:11.8.1' // Assets/Firebase/Editor/AppDependencies.xml:22
     implementation 'com.google.firebase:firebase-auth:22.3.1' // Assets/Firebase/Editor/AuthDependencies.xml:13
     implementation 'com.google.firebase:firebase-auth-unity:11.8.1' // Assets/Firebase/Editor/AuthDependencies.xml:20
     implementation 'com.google.firebase:firebase-common:20.4.2' // Assets/Firebase/Editor/AppDependencies.xml:13
+    implementation 'com.google.firebase:firebase-database:20.3.1' // Assets/Firebase/Editor/DatabaseDependencies.xml:13
+    implementation 'com.google.firebase:firebase-database-unity:11.8.1' // Assets/Firebase/Editor/DatabaseDependencies.xml:22
+    implementation 'com.google.firebase:firebase-installations:17.2.0' // Assets/Firebase/Editor/InstallationsDependencies.xml:13
+    implementation 'com.google.firebase:firebase-installations-unity:11.8.1' // Assets/Firebase/Editor/InstallationsDependencies.xml:20
 // Android Resolver Dependencies End
 **DEPS**}
 
