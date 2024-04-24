@@ -204,7 +204,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void BetAction()
+    public void BetAction(int betAmount)
     {
         if (this == GameManager.Instance.MainPlayer)
         {
@@ -215,9 +215,15 @@ public class PlayerManager : MonoBehaviour
             HasActedSinceLastRaise = true;
             Debug.Log("Player has made the move to: " + PlayersAction);
             _isPlayerFolded = false;
+            Debug.Log("Bet Amount: " + betAmount);
+            BetManager.Instance.SetBet(this, betAmount);
+
+            //SET HIGHEST BET ALSO. MAYBE WE SHOULD SET IT IN betmanager.setBet if its the highest bet.
+
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
-            StopCoroutine(TenSecondTimerForMainPlayer());
+
         }
+
     }
 
     public void CheckAction()
