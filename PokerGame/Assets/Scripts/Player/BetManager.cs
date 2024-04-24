@@ -15,7 +15,13 @@ public class BetManager : MonoBehaviour
     private int _currentHighestBetAmount;
 
     private int _potInThisSession;
-    private int baseRaiseAmount;
+
+    public int BaseRaiseBetAmount
+    {
+        get => _baseRaiseAmount;
+        set => _baseRaiseAmount = value;
+    }
+    [SerializeField] private int _baseRaiseAmount = 10;
 
     private GameManager.GameState _currentState;
 
@@ -39,9 +45,8 @@ public class BetManager : MonoBehaviour
     {
         if (_currentState == GameManager.GameState.NewRound)
         {
-            SetBet(DealerManager.Instance.GetSmallBlind(), 5);
-            SetBet(DealerManager.Instance.GetBigBlind(), 10);
-            baseRaiseAmount = 10;
+            SetBet(DealerManager.Instance.GetSmallBlind(), _baseRaiseAmount / 2);
+            SetBet(DealerManager.Instance.GetBigBlind(), _baseRaiseAmount);
             _currentHighestBetAmount = DealerManager.Instance.GetBigBlind().BetAmount;
             GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
         }
@@ -75,12 +80,12 @@ public class BetManager : MonoBehaviour
 
     public void SetMinimumRaiseAmount(int raiseAmount)
     {
-        baseRaiseAmount += raiseAmount;
+        _baseRaiseAmount += raiseAmount;
     }
 
     public int GetMinimumRaiseAmount()
     {
-        return baseRaiseAmount;
+        return _baseRaiseAmount;
     }
 
     public void CollectBets()

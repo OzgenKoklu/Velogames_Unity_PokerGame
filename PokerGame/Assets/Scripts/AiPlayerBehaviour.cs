@@ -303,7 +303,6 @@ public class AiPlayerBehaviour : MonoBehaviour
         raiseAmount = Mathf.Max(raiseAmount, minimumRaiseAmount); // At least the minimum raise
         int totalStack = _playerManager.TotalStackAmount;
         raiseAmount = Mathf.Min(raiseAmount, totalStack); // Do not exceed the player's stack
-        BetManager.Instance.SetMinimumRaiseAmount(raiseAmount);
 
         return raiseAmount;
     }

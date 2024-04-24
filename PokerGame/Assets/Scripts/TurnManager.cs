@@ -139,6 +139,7 @@ public class TurnManager : MonoBehaviour
         {
             // Proceed to collect bets into the pot, move to the next stage
             BetManager.Instance.CollectBets();
+            BetManager.Instance.CurrentHighestBetAmount = 0;
 
             switch (GameManager.Instance.GetMainGameState())
             {

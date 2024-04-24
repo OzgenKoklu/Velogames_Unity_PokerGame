@@ -116,13 +116,6 @@ public class UiManager : MonoBehaviour
         return betAmount;
     }
 
-    private void UpdateBettingAmountText(float amount)
-    {
-
-        _bettingPanelBetAmountText.text = $"${amount:N0}";
-    }
-
-
     private void ShowButtons()
     {
         _actionButtons.SetActive(true);

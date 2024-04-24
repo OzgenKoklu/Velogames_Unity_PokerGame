@@ -215,7 +215,7 @@ public class PlayerManager : MonoBehaviour
             UiManager.Instance.ResetFunctionsAndHideButtons();
 
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
-            
+
         }
     }
 
@@ -229,8 +229,8 @@ public class PlayerManager : MonoBehaviour
             Debug.Log("Player has made the move to: " + PlayersAction);
             _isPlayerFolded = false;
             Debug.Log("Bet Amount: " + betAmount);
-            BetManager.Instance.SetBet(this, betAmount);      
-            
+            BetManager.Instance.SetBet(this, betAmount);
+
             BetManager.Instance.CurrentHighestBetAmount += betAmount;
             UiManager.Instance.ResetFunctionsAndHideButtons();
 
