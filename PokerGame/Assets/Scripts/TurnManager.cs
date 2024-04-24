@@ -182,8 +182,12 @@ public class TurnManager : MonoBehaviour
         GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
     }
 
+
+
+    // DÜZELTİLECEK!!!!!!!!!
+
     //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.
-    private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
+    /*private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
     {
         Debug.Log("Winning hand type: " + winningHandResult.WinningHandType + "- Player Index(0,1,2,3,4), 0 is the player. : " + winningHandResult.WinningHandIndex + " - Winning Hand(5Cards) Ranks: " + winningHandResult.WinningCardCodes);
         string winningHandType = winningHandResult.WinningHandType;
@@ -194,7 +198,7 @@ public class TurnManager : MonoBehaviour
         string winningHandCardCodes = winningHandResult.WinningCardCodes;
         List<CardSO> WinningCardList = winningHandResult.WinningCardList;
         CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes);
-    }
+    }*/
 
     private bool IsBettingRoundConcludable()
     {

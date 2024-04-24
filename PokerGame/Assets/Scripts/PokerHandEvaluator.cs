@@ -9,6 +9,8 @@ using static PokerHandEvaluator;
 
 public class PokerHandEvaluator : MonoBehaviour
 {
+    public static PokerHandEvaluator Instance { get; private set; }
+
     public enum HandRank
     {
         HighCard,
@@ -23,13 +25,10 @@ public class PokerHandEvaluator : MonoBehaviour
         RoyalFlush
     }
 
-    public static PokerHandEvaluator Instance { get; private set; }
-
     private void Awake()
     {
         Instance = this;
     }
-
 
     public int EvaluateHandRank(List<CardSO> hand)
     {
@@ -68,21 +67,28 @@ public class PokerHandEvaluator : MonoBehaviour
 
         return concatenatedCodes;
     }
-    public WinningHandResults SelectTheWinnerForTheShowdown(List<int> playerRankList)
+
+    public WinningHandResults SelectTheWinnerForTheShowdown()
     {
-        int bestHandIndex = -1;
+        var activePlayers = GameManager.Instance.ActivePlayers;
+        List<PlayerManager> playersWithBestHand = new List<PlayerManager>();
         int bestRank = 7462; //not a magical number, just the weakest possible hand rank
 
-        for (int i = 0; i < playerRankList.Count; i++)
+        foreach (var player in activePlayers)
         {
-            if (playerRankList[i] < bestRank)
+            var cardSOList = player.PlayerHand.GetCardListWithCommunityCardsAdded();
+            var handRank = EvaluateHandRank(cardSOList);
+
+            if (handRank < bestRank)
             {
-                bestRank = playerRankList[i];
-                bestHandIndex = i;
+                bestRank = handRank;
+                playersWithBestHand.Clear();
+                playersWithBestHand.Add(player);
             }
-            else if (playerRankList[i] == bestRank)
+            else if (handRank == bestRank)
             {
-                //tie situation
+                // Tie situation
+                playersWithBestHand.Add(player);
             }
         }
 
@@ -91,21 +97,37 @@ public class PokerHandEvaluator : MonoBehaviour
 
         WinningHandResults winningHandResults = new WinningHandResults()
         {
-            WinningCardList = PokerDeckManager.Instance.GetAllPlayerHands()[bestHandIndex],
-            WinningHandIndex = bestHandIndex,
+            WinningCardList = playersWithBestHand[0].PlayerHand.GetCardListWithCommunityCardsAdded(),
             WinningCardCodes = winningHandDescriptionCode,
             WinningHandType = winningHandType
         };
 
+        // If there is a tie, add the players to the result
+        if (playersWithBestHand.Count > 1)
+        {
+            winningHandResults.TiedPlayers = playersWithBestHand;
+        }
+
         return winningHandResults;
     }
+
+
 
     public struct WinningHandResults
     {
         public List<CardSO> WinningCardList;
-        public int WinningHandIndex;
         public string WinningCardCodes;
         public string WinningHandType;
+        public List<PlayerManager> TiedPlayers;
+
+        // Constructor to initialize the struct
+        public WinningHandResults(List<CardSO> winningCardList, string winningCardCodes, string winningHandType)
+        {
+            WinningCardList = winningCardList;
+            WinningCardCodes = winningCardCodes;
+            WinningHandType = winningHandType;
+            TiedPlayers = null; // Initialize tied players list as null
+        }
     }
 
     public HandStrength HandStrengthCalculatorFor2Cards(List<CardSO> holeCards)
