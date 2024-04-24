@@ -12,7 +12,7 @@ public class PlayerManager : MonoBehaviour
 {
     public static event Action<PlayerManager> OnPlayerFolded;
     public float maxThinkTime = 10f; // Maximum time for make a move
-
+    private Coroutine _runningCoroutine;
     public string PlayerName
     {
         get => _playerName;
@@ -149,7 +149,7 @@ public class PlayerManager : MonoBehaviour
 
             UiManager.Instance.SetActionButtonsForPlayer();
 
-            StartCoroutine(TenSecondTimerForMainPlayer());
+            _runningCoroutine = StartCoroutine(TenSecondTimerForMainPlayer());
 
 
             //Burada previous Action'ı bizim playerın actionına eşitlememiz lazım
@@ -182,9 +182,15 @@ public class PlayerManager : MonoBehaviour
             PlayersAction = PlayerAction.Fold;
             HasActedSinceLastRaise = true;
             Debug.Log("Player has made the move to: " + PlayersAction);
-            StopCoroutine(TenSecondTimerForMainPlayer());
+
+            if (_runningCoroutine != null) // Check if coroutine is running
+            {
+                StopCoroutine(_runningCoroutine); // Stop the stored coroutine
+            }
+
             OnPlayerFolded?.Invoke(this);
             _isPlayerFolded = true;
+            UiManager.Instance.ResetFunctionsAndHideButtons();
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
         }
     }
@@ -199,8 +205,17 @@ public class PlayerManager : MonoBehaviour
             HasActedSinceLastRaise = true;
             Debug.Log("Player has made the move to: " + PlayersAction);
             _isPlayerFolded = false;
+
+
+            if (_runningCoroutine != null) // Check if coroutine is running
+            {
+                StopCoroutine(_runningCoroutine); // Stop the stored coroutine
+            }
+
+            UiManager.Instance.ResetFunctionsAndHideButtons();
+
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
-            StopCoroutine(TenSecondTimerForMainPlayer());
+            
         }
     }
 
@@ -209,21 +224,23 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayersAction = PlayerAction.Bet;
-            //IMPLEMENT THE THING HERE
-            //IMPLEMENT THE THING HERE
-            //IMPLEMENT THE THING HERE
+
             HasActedSinceLastRaise = true;
             Debug.Log("Player has made the move to: " + PlayersAction);
             _isPlayerFolded = false;
             Debug.Log("Bet Amount: " + betAmount);
-            BetManager.Instance.SetBet(this, betAmount);
+            BetManager.Instance.SetBet(this, betAmount);      
+            
+            BetManager.Instance.CurrentHighestBetAmount += betAmount;
+            UiManager.Instance.ResetFunctionsAndHideButtons();
 
-            //SET HIGHEST BET ALSO. MAYBE WE SHOULD SET IT IN betmanager.setBet if its the highest bet.
+            if (_runningCoroutine != null) // Check if coroutine is running
+            {
+                StopCoroutine(_runningCoroutine); // Stop the stored coroutine
+            }
 
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
-
         }
-
     }
 
     public void CheckAction()
@@ -232,27 +249,19 @@ public class PlayerManager : MonoBehaviour
         {
             PlayersAction = PlayerAction.Check;
             HasActedSinceLastRaise = true;
+            _isPlayerFolded = false;
+            UiManager.Instance.ResetFunctionsAndHideButtons();
             Debug.Log("Player has made the move to: " + PlayersAction);
-            StopCoroutine(TenSecondTimerForMainPlayer());
+
+            if (_runningCoroutine != null) // Check if coroutine is running
+            {
+                StopCoroutine(_runningCoroutine); // Stop the stored coroutine
+            }
+
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
         }
     }
 
-    public void RaiseAction()
-    {
-        if (this == GameManager.Instance.MainPlayer)
-        {
-            PlayersAction = PlayerAction.Raise;
-            //IMPLEMENT THE THING HERE
-            //IMPLEMENT THE THING HERE
-            //IMPLEMENT THE THING HERE
-            HasActedSinceLastRaise = true;
-            Debug.Log("Player has made the move to: " + PlayersAction);
-            _isPlayerFolded = false;
-            TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
-            StopCoroutine(TenSecondTimerForMainPlayer());
-        }
-    }
 
     IEnumerator TenSecondTimerForMainPlayer()
     {

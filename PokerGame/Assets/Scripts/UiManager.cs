@@ -131,6 +131,10 @@ public class UiManager : MonoBehaviour
     public void ResetFunctionsAndHideButtons()
     {
         RemoveAllListenersFromButtons();
+
+        HideButtons();
+
+        HideBettingWindow();
     }
 
     private void HideButtons()
