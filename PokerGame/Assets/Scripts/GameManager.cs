@@ -6,7 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public static event Action<GameState> OnGameStateChanged;
+    public static event Action<GameState> OnGameStateChanged; // !!! Reset static event if it need to be used in multiple scenes
 
     public enum GameState
     {

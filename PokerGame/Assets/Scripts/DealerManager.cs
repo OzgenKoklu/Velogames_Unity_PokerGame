@@ -60,8 +60,6 @@ public class DealerManager : MonoBehaviour
         {
             Debug.Log("GameManager instance is null or no players found");
         }
-
-        Debug.Log(players.Count);
     }
 
     public PlayerManager GetDealerPlayer()
