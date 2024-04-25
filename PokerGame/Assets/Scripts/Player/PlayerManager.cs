@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 
 public enum PlayerAction { Fold, Check, Bet, Raise, Call }
 
@@ -119,7 +117,7 @@ public class PlayerManager : MonoBehaviour
             SetTotalStackTextElement(value);
         }
     }
-    private int _totalStackAmount;
+    [SerializeField] private int _totalStackAmount;
     private bool _isPlayerFolded;
 
     [SerializeField] private Slider _timebar;
@@ -128,6 +126,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
+        _playerTotalStackText.text = _totalStackAmount.ToString() + " " + "$";
         DealerManager.Instance.OnDealerChanged += OnDealerChanged;
         TurnManager.Instance.OnPlayerTurn += TurnManager_OnPlayerTurn;
         OnDealerChanged(this);
@@ -151,8 +150,6 @@ public class PlayerManager : MonoBehaviour
                 //can be used in the delegates / button text etc like Call (15$)
                 var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - player.BetAmount;
                 //tuşa delegate olarak gönderilebilir. BetManager.Instance.SetBet(player, callBetAmount);
-
-
             }
             else
             {
@@ -202,6 +199,7 @@ public class PlayerManager : MonoBehaviour
 
             OnPlayerFolded?.Invoke(this);
             _isPlayerFolded = true;
+            _isPlayerAllIn = false;
             UiManager.Instance.ResetFunctionsAndHideButtons();
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
         }
@@ -220,12 +218,12 @@ public class PlayerManager : MonoBehaviour
                 BetManager.Instance.SetBet(this, maxCallAmount);
                 //Player IS all IN!
                 //SIDE POT MAIN POT ACTIONS
-                //DO NOT GET ANY INPUT UNTIL SHOWDOWN
-                IsPlayerAllIn = true;
+                _isPlayerAllIn = true;
             }
             else
             {
                 BetManager.Instance.SetBet(this, callBetAmount);
+                _isPlayerAllIn = false;
             }
 
             HasActedSinceLastRaise = true;
@@ -262,7 +260,11 @@ public class PlayerManager : MonoBehaviour
                 //Player is All In.
                 //SIDE POT MAIN POT ACTIONS
                 //Do Not Get Any Input Until Showdown.
-                IsPlayerAllIn = true;
+                _isPlayerAllIn = true;
+            }
+            else
+            {
+                _isPlayerAllIn = false;
             }
 
             BetManager.Instance.CurrentHighestBetAmount += betAmount;
@@ -284,6 +286,7 @@ public class PlayerManager : MonoBehaviour
             PlayersAction = PlayerAction.Check;
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;
+            _isPlayerAllIn = false;
             UiManager.Instance.ResetFunctionsAndHideButtons();
             Debug.Log("Player has made the move to: " + PlayersAction);
 
@@ -296,7 +299,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-
+    // ------- !!!! REFACTOR EDILECEK !!! -----------
     IEnumerator TenSecondTimerForMainPlayer()
     {
         float startTime = Time.time;
@@ -370,6 +373,11 @@ public class PlayerManager : MonoBehaviour
             OnPlayerFolded?.Invoke(this);
             _isPlayerFolded = true;
             IsPlayerActive = false;
+        }
+        else if (PlayersAction == PlayerAction.Bet)
+        {
+            _isPlayerFolded = false;
+            IsPlayerActive = true;
         }
         TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
         StopCoroutine(AiBotMoveWithRandomWait());

@@ -59,7 +59,7 @@ public class CardBehaviour : MonoBehaviour
 
     public void SetCardAsSelected()
     {
-         _selectedVisualGameObject?.SetActive(true);
+        _selectedVisualGameObject?.SetActive(true);
         Debug.Log("Card Selected: " + CardSO.CardCode);
     }
 }

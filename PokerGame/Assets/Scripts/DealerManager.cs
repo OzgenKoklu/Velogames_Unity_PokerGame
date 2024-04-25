@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static GameManager;
 
@@ -105,15 +103,15 @@ public class DealerManager : MonoBehaviour
 
     public PlayerManager GetFirstActivePlayerFromDealer()
     {
-        if (_smallBlind.IsPlayerActive)
+        if (_smallBlind.IsPlayerActive && !_smallBlind.IsPlayerAllIn)
         {
             return _smallBlind;
         }
-        else if (_bigBlind.IsPlayerActive)
+        else if (_bigBlind.IsPlayerActive && !_bigBlind.IsPlayerAllIn)
         {
             return _bigBlind;
         }
-        else if (_firstPlayerAfterBigBlind.IsPlayerActive)
+        else if (_firstPlayerAfterBigBlind.IsPlayerActive && !_firstPlayerAfterBigBlind.IsPlayerAllIn)
         {
             return _firstPlayerAfterBigBlind;
         }
@@ -122,14 +120,13 @@ public class DealerManager : MonoBehaviour
             var players = GameManager.Instance.Players;
             var firstPlayerAfterBigBlindIndex = players.IndexOf(_firstPlayerAfterBigBlind);
 
-            if (players[firstPlayerAfterBigBlindIndex + 1].IsPlayerActive)
+            if (players[firstPlayerAfterBigBlindIndex + 1].IsPlayerActive && !players[firstPlayerAfterBigBlindIndex + 1].IsPlayerAllIn)
             {
                 return players[firstPlayerAfterBigBlindIndex + 1];
             }
-            else if (players[firstPlayerAfterBigBlindIndex + 2].IsPlayerActive)
+            else if (players[firstPlayerAfterBigBlindIndex + 2].IsPlayerActive && !players[firstPlayerAfterBigBlindIndex + 2].IsPlayerAllIn)
             {
                 return players[firstPlayerAfterBigBlindIndex + 2];
-
             }
             else
             {

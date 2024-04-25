@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BetManager : MonoBehaviour
@@ -77,6 +74,7 @@ public class BetManager : MonoBehaviour
 
         foreach (var player in activePlayers)
         {
+            if (player.IsPlayerAllIn) continue;
             if (player.BetAmount != CurrentHighestBetAmount) return false;
         }
         //everyone has the same bet amount and its the highest bet amount

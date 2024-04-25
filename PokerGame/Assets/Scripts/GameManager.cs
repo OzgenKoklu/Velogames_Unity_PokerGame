@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
         PostRiver,      // Final betting round after the river
         Showdown,       // Players reveal their hands to determine the winner
         PotDistribution,// The pot is distributed to the winner(s)
+        EveryoneFolded, // Everyone folded except one player
         PlayerTurn,     // A player's turn to act
         GameOver        // The game is over
     }
@@ -79,16 +80,27 @@ public class GameManager : MonoBehaviour
     public void StartGameRound()
     {
         SetGameState(GameState.NewRound);
-        SetPlayerStacks();
+        //SetPlayerStacks();
     }
 
     public void SetGameState(GameState newState)
     {
+        // Check if all players have folded except one and set the game state to EveryoneFolded and give the main pot to the remaining player
+        if (ActivePlayers.Count == 1)
+        {
+            _currentGameState = GameState.EveryoneFolded;
+            _currentMainGameState = GameState.EveryoneFolded;
+            OnGameStateChanged?.Invoke(_currentGameState);
+            Debug.Log("Everyone folded...");
+            return;
+        }
+
         if (newState != GameState.PlayerTurn)
         {
             _currentMainGameState = newState;
         }
         _currentGameState = newState;
+
         OnGameStateChanged?.Invoke(_currentGameState);
     }
 

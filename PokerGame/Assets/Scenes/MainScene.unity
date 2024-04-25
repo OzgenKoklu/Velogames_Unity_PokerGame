@@ -611,10 +611,12 @@ MonoBehaviour:
   _playerHand: {fileID: 1230832290}
   _isPlayerTurn: 0
   _hasActedSinceLastRaise: 0
+  _isPlayerAllIn: 0
   _isPlayerActive: 0
   _passivePlayerTint: {fileID: 968531466}
   _playerTotalStackText: {fileID: 60285888}
   _isPlayerDealer: 0
+  _totalStackAmount: 5000
   _timebar: {fileID: 442589079}
   _dealerIcon: {fileID: 611473412}
 --- !u!114 &134982087
@@ -898,10 +900,12 @@ MonoBehaviour:
   _playerHand: {fileID: 2010368667}
   _isPlayerTurn: 0
   _hasActedSinceLastRaise: 0
+  _isPlayerAllIn: 0
   _isPlayerActive: 0
   _passivePlayerTint: {fileID: 436575415}
   _playerTotalStackText: {fileID: 1826873582}
   _isPlayerDealer: 0
+  _totalStackAmount: 5000
   _timebar: {fileID: 1083059689}
   _dealerIcon: {fileID: 384630816}
 --- !u!114 &145876575
@@ -1092,6 +1096,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06252a294872b6c4693abe71a1d1ccf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _potInThisSession: 0
+  _baseRaiseAmount: 10
 --- !u!1 &185640585
 GameObject:
   m_ObjectHideFlags: 0
@@ -1525,10 +1531,12 @@ MonoBehaviour:
   _playerHand: {fileID: 276828756}
   _isPlayerTurn: 0
   _hasActedSinceLastRaise: 0
+  _isPlayerAllIn: 0
   _isPlayerActive: 0
   _passivePlayerTint: {fileID: 185640585}
   _playerTotalStackText: {fileID: 1859058508}
   _isPlayerDealer: 0
+  _totalStackAmount: 5000
   _timebar: {fileID: 957681472}
   _dealerIcon: {fileID: 1988252620}
 --- !u!114 &292966329
@@ -2428,10 +2436,12 @@ MonoBehaviour:
   _playerHand: {fileID: 1199791274}
   _isPlayerTurn: 0
   _hasActedSinceLastRaise: 0
+  _isPlayerAllIn: 0
   _isPlayerActive: 0
   _passivePlayerTint: {fileID: 642709986}
   _playerTotalStackText: {fileID: 1178458312}
   _isPlayerDealer: 0
+  _totalStackAmount: 1000
   _timebar: {fileID: 135933206}
   _dealerIcon: {fileID: 786410615}
 --- !u!1 &611473412
@@ -4444,10 +4454,12 @@ MonoBehaviour:
   _playerHand: {fileID: 264449917}
   _isPlayerTurn: 0
   _hasActedSinceLastRaise: 0
+  _isPlayerAllIn: 0
   _isPlayerActive: 0
   _passivePlayerTint: {fileID: 282021218}
   _playerTotalStackText: {fileID: 739166000}
   _isPlayerDealer: 0
+  _totalStackAmount: 5000
   _timebar: {fileID: 730244980}
   _dealerIcon: {fileID: 777249507}
 --- !u!114 &1074086710

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static AiPlayerBehaviour;
 
@@ -54,7 +53,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
         {
             float newXPosition = transform.position.x + (0.6f * (HoleCardsList.Count - 1));
             float newRotationAngle = initialRotationAngle + (rotationAngleMultiplier * (HoleCardsList.Count - 1));
- 
+
             cardTransform.localScale = Vector3.one * aiScaleMultiplier;
             cardTransform.SetPositionAndRotation(new Vector2(newXPosition, transform.position.y), Quaternion.AngleAxis(newRotationAngle, Vector3.forward));
         }

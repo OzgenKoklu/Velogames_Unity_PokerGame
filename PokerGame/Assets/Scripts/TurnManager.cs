@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class TurnManager : MonoBehaviour
 {
@@ -69,7 +68,6 @@ public class TurnManager : MonoBehaviour
                 //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
             case GameManager.GameState.Showdown:
-
                 PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown();
                 CardVisualsManager.Instance.FlipAllCards();
                 CardVisualsManager.Instance.GetToShowdownPosition();
@@ -114,6 +112,7 @@ public class TurnManager : MonoBehaviour
         {
             player.IsPlayerActive = true;
             player.HasActedSinceLastRaise = false;
+            player.IsPlayerAllIn = false;
         }
     }
 
@@ -131,9 +130,6 @@ public class TurnManager : MonoBehaviour
         if (GameManager.Instance.GetState() != GameManager.GameState.PlayerTurn) return;
 
         CurrentPlayer.IsPlayerTurn = false;
-
-        // ADD LOGIC TO SUPPORT ALL INS. 
-        // PLAYER MANAGER = IS WAITING FOR SHOWDOWN / MAYBE CHANGE IT TO ISPLAYERALLIN
 
         if (IsBettingRoundConcludable())
         {
@@ -167,25 +163,37 @@ public class TurnManager : MonoBehaviour
             }
         }
 
+        // Check if the previous player folded to make sure the next player is the correct one
         if (isPreviousPlayerFolded)
         {
             _currentPlayerIndex = (_currentPlayerIndex) % GameManager.Instance.ActivePlayers.Count;
             CurrentPlayer = GameManager.Instance.ActivePlayers[_currentPlayerIndex];
+
+            // Check if the player is all in and skip their turn if they are
+            if (CurrentPlayer.IsPlayerAllIn == true)
+            {
+                _currentPlayerIndex = (_currentPlayerIndex + 1) % GameManager.Instance.ActivePlayers.Count;
+                CurrentPlayer = GameManager.Instance.ActivePlayers[_currentPlayerIndex];
+            }
         }
         else
         {
             _currentPlayerIndex = (_currentPlayerIndex + 1) % GameManager.Instance.ActivePlayers.Count;
             CurrentPlayer = GameManager.Instance.ActivePlayers[_currentPlayerIndex];
+
+            // Check if the player is all in and skip their turn if they are
+            if (CurrentPlayer.IsPlayerAllIn == true)
+            {
+                _currentPlayerIndex = (_currentPlayerIndex + 1) % GameManager.Instance.ActivePlayers.Count;
+                CurrentPlayer = GameManager.Instance.ActivePlayers[_currentPlayerIndex];
+            }
         }
 
         CurrentPlayer.IsPlayerTurn = true;
         GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
     }
 
-
-
     // DÜZELTİLECEK!!!!!!!!!
-
     //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.
     private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
     {
@@ -223,9 +231,6 @@ public class TurnManager : MonoBehaviour
 
     private bool IsBettingRoundConcludable()
     {
-        // ADD LOGIC TO SUPPORT ALL INS. 
-        // PLAYER MANAGER = IS WAITING FOR SHOWDOWN / MAYBE CHANGE IT TO ISPLAYERALLIN
-
         // Check if there has been any bet made
         if (BetManager.Instance.CurrentHighestBetAmount == 0)
         {
@@ -241,7 +246,6 @@ public class TurnManager : MonoBehaviour
 
         // Check if the last player to raise has had other players act after them
         return AreAllActivePlayersChecked();
-
     }
 
     private void ResetTurnStatus()
@@ -260,6 +264,10 @@ public class TurnManager : MonoBehaviour
         {
             if (player.IsPlayerActive && player.HasActedSinceLastRaise == false)
             {
+                if (player.IsPlayerAllIn)
+                {
+                    continue;
+                }
                 return false;
             }
         }
