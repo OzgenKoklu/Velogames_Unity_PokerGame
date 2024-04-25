@@ -214,7 +214,8 @@ public class TurnManager : MonoBehaviour
 
         BetManager.Instance.PotInThisSession = 0; // set pot to zero.
         List<CardSO> WinningCardList = winningHandResult.WinningCardList;
-        CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes);
+        bool isItATie = winningHandResult.IsTie;
+        CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes, isItATie);
     }
 
     private bool IsBettingRoundConcludable()

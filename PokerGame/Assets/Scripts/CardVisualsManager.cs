@@ -35,7 +35,7 @@ public class CardVisualsManager : MonoBehaviour
         return cardObject;
     }
 
-    public void HighlightHand(List<CardSO> WinningCardList, string winningHandCode)
+    public void HighlightHand(List<CardSO> WinningCardList, string winningHandCode, bool isTie)
     {
         foreach (CardSO cardSO in WinningCardList)
         {
@@ -47,7 +47,30 @@ public class CardVisualsManager : MonoBehaviour
 
                 if (index != -1) // Make sure the rank was found
                 {
-                    //winningHandCode = winningHandCode.Remove(index, firstKey);
+                    if (isTie)
+                    {
+                        if (cardSO.CardParent is CommunityCards)
+                        {
+                            winningHandCode = winningHandCode.Remove(index, 1);
+                        }
+                        else
+                        {
+                            //!!!Implement further logic if needed
+                            //First cards in the WinningCardList is CommunityCards by nature. 
+                            //After getting through them and removing them from winningHandCode string
+                            //the tie hands should be highlighted
+                            //This might need an extra list to work
+                            //e.g.: Winning hand is AA421 
+                            //AA2 are community cards. 4 1 remains in the winningHandCode
+                            //The max amount of community cards in 5-char code > 5 Char
+                            //Least >> 3 char. 
+                            //maybe we dont need to implement anything extra, Im just confused at the moment.
+                        }
+                    }
+                    else // single winner, just remove the winning hand code.
+                    {
+                        winningHandCode = winningHandCode.Remove(index, 1);
+                    }
 
                     CardBehaviour cardBehaviour = cardSO.CardBehavior;
                     cardBehaviour.SetCardAsSelected();

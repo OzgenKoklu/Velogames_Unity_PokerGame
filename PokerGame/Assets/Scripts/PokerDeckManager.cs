@@ -233,8 +233,10 @@ public class PokerDeckManager : MonoBehaviour
     public List<CardSO> CombineHandWithCommunityCards(List<CardSO> playerHand)
     {
         List<CardSO> communityCards = _communityCards.GetCardList();
-        List<CardSO> combinedHand = new List<CardSO>(playerHand);
-        combinedHand.AddRange(communityCards);
+        List<CardSO> combinedHand = new List<CardSO>(communityCards);
+        combinedHand.AddRange(playerHand); 
+        //first cards are always community cards,
+        //this is important in winning player selection algoritm. (for tie situations)
         return combinedHand;
     }
 }

@@ -107,6 +107,13 @@ public class PokerHandEvaluator : MonoBehaviour
         if (playersWithBestHand.Count > 1)
         {
             winningHandResults.IsTie = true;
+
+            //add the tie hands to the winning card list, 0 index is already added + community cards
+            for (int i = 1; i < playersWithBestHand.Count; i++)
+            {
+                //add the hole cards to the winning card list.
+                winningHandResults.WinningCardList.AddRange(playersWithBestHand[i].PlayerHand.GetCardList());
+            }
         }
         else
         {
