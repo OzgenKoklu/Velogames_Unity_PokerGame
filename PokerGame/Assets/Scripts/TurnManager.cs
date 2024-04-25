@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TurnManager : MonoBehaviour
 {
@@ -68,15 +69,10 @@ public class TurnManager : MonoBehaviour
                 //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
             case GameManager.GameState.Showdown:
-                //showdown'a katilmadan önce post floptan alinan oyuncu listeleri güncellenmeli, ona göre oyundan çikmamiş en yüksek el winning hand seçilmeli.
-                // int handRank = PokerHandEvaluator.Instance.EvaluateHandRank(GetCardListWithCommunityCardsAdded()); şu şekil CardSO listeleri için handrank alınabiliyo.
 
-                List<int> handRanksOfPlayersWhoAreStillinTheGame; //= PokerDeckManager.Instance.GetAllPlayerHands();
-
-                // Aşağıdaki şekilde de bir liste içindeki kazanan el belirlenip winning hand result döndürülüyo.
-
-                //PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(playerHandRankList);
-                //HandleWinningHandResult(winningHandResult);
+                PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown();
+                CardVisualsManager.Instance.FlipAllCards();
+                HandleWinningHandResult(winningHandResult);
                 break;
             case GameManager.GameState.PotDistribution:
                 break;
@@ -187,18 +183,38 @@ public class TurnManager : MonoBehaviour
     // DÜZELTİLECEK!!!!!!!!!
 
     //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.
-    /*private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
+    private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
     {
-        Debug.Log("Winning hand type: " + winningHandResult.WinningHandType + "- Player Index(0,1,2,3,4), 0 is the player. : " + winningHandResult.WinningHandIndex + " - Winning Hand(5Cards) Ranks: " + winningHandResult.WinningCardCodes);
         string winningHandType = winningHandResult.WinningHandType;
-        int winningHandPlayerIndex = winningHandResult.WinningHandIndex;
+        string winningHandCardCodes = winningHandResult.WinningCardCodes;
+        var winningPlayerList = winningHandResult.WinnerList;
+        Debug.Log("Winning hand type: " + winningHandType + "- Winner List (playerManagerList) : " + winningPlayerList + " - Winning Hand(5Cards) Ranks: " + winningHandCardCodes);
 
+        Debug.Log("Is there tie: " + winningHandResult.IsTie);
         //Show ile UI'da winning hand gösterecek bi mesaj. ShowWinningHand and player Name(indexten çikartilir) 
 
-        string winningHandCardCodes = winningHandResult.WinningCardCodes;
+        //Main pot side pot ayarlamalari yapilacak. 
+        int totalPotToSlipt = BetManager.Instance.PotInThisSession;
+        if (winningHandResult.IsTie)
+        {
+            //pot split (not doing side / main pot for now)
+            int splitAmount = totalPotToSlipt / winningPlayerList.Count;
+
+            foreach (var player in winningPlayerList)
+            {
+                player.TotalStackAmount += splitAmount;
+            }
+        }
+        else
+        {
+            winningPlayerList[0].TotalStackAmount += totalPotToSlipt;
+        }
+
+
+        BetManager.Instance.PotInThisSession = 0; // set pot to zero.
         List<CardSO> WinningCardList = winningHandResult.WinningCardList;
         CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes);
-    }*/
+    }
 
     private bool IsBettingRoundConcludable()
     {

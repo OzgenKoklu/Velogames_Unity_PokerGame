@@ -99,13 +99,18 @@ public class PokerHandEvaluator : MonoBehaviour
         {
             WinningCardList = playersWithBestHand[0].PlayerHand.GetCardListWithCommunityCardsAdded(),
             WinningCardCodes = winningHandDescriptionCode,
-            WinningHandType = winningHandType
+            WinningHandType = winningHandType,
+            WinnerList = playersWithBestHand
         };
 
         // If there is a tie, add the players to the result
         if (playersWithBestHand.Count > 1)
         {
-            winningHandResults.TiedPlayers = playersWithBestHand;
+            winningHandResults.IsTie = true;
+        }
+        else
+        {
+            winningHandResults.IsTie = false;
         }
 
         return winningHandResults;
@@ -118,15 +123,17 @@ public class PokerHandEvaluator : MonoBehaviour
         public List<CardSO> WinningCardList;
         public string WinningCardCodes;
         public string WinningHandType;
-        public List<PlayerManager> TiedPlayers;
+        public List<PlayerManager> WinnerList;
+        public bool IsTie;
 
         // Constructor to initialize the struct
-        public WinningHandResults(List<CardSO> winningCardList, string winningCardCodes, string winningHandType)
+        public WinningHandResults(List<CardSO> winningCardList, string winningCardCodes, string winningHandType, bool isTie)
         {
             WinningCardList = winningCardList;
             WinningCardCodes = winningCardCodes;
             WinningHandType = winningHandType;
-            TiedPlayers = null; // Initialize tied players list as null
+            IsTie = isTie;
+            WinnerList = null; // Initialize tied players list as null
         }
     }
 

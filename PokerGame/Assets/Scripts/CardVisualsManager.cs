@@ -6,19 +6,32 @@ using static pheval.Rank;
 public class CardVisualsManager : MonoBehaviour
 {
     [SerializeField] private Transform _cardPrefab;
-    private List<CardBehaviour> _allSpawnedCards = new List<CardBehaviour>();
+    private List<CardBehaviour> allActiveCards = new List<CardBehaviour>();
 
-    public static CardVisualsManager Instance { get; private set; }   
+    public static CardVisualsManager Instance { get; private set; }
     private void Awake()
     {
-        Instance = this;   
+        Instance = this;
     }
+
+    private void OnEnable()
+    {
+        PlayerManager.OnPlayerFolded += PlayerManager_OnPlayerFolded;
+    }
+
+    private void PlayerManager_OnPlayerFolded(PlayerManager foldedPlayer)
+    {
+        List<CardSO> foldedCardSOList = foldedPlayer.PlayerHand.GetCardList();
+        RemovePlayerCardsFromActiveCards(foldedCardSOList);
+    }
+
     public CardBehaviour SpawnCardObject(CardSO cardSO, ICardParent cardParent)
     {
         Transform cardObjectTransform = Instantiate(_cardPrefab);
         CardBehaviour cardObject = cardObjectTransform.GetComponent<CardBehaviour>();
         cardObject.SetCardScriptableObject(cardSO);
         cardObject.SetCardTransform(cardParent.GetCardFollowTransform());
+        allActiveCards.Add(cardObject);
         return cardObject;
     }
 
@@ -36,13 +49,30 @@ public class CardVisualsManager : MonoBehaviour
                 {
                     //winningHandCode = winningHandCode.Remove(index, firstKey);
 
-                     CardBehaviour cardBehaviour = cardSO.CardBehavior;
+                    CardBehaviour cardBehaviour = cardSO.CardBehavior;
                     cardBehaviour.SetCardAsSelected();
                     Debug.Log(firstKey + "from cardlist card > " + cardSO + "  will be highlighted");
                 }
-                
+
             }
 
+        }
+    }
+
+    public void RemovePlayerCardsFromActiveCards(List<CardSO> cardSOList)
+    {
+        foreach (var cardSO in cardSOList)
+        {
+            CardBehaviour cardToRemove = cardSO.CardBehavior;
+            allActiveCards.Remove(cardToRemove);
+        }
+    }
+
+    public void FlipAllCards()
+    {
+        foreach (CardBehaviour cardBehaviour in allActiveCards)
+        {
+            cardBehaviour.FlipCard();
         }
     }
 

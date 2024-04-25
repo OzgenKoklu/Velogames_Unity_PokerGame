@@ -23,10 +23,9 @@ public class CardBehaviour : MonoBehaviour
             {
                 _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
             }
-            else if(CardSO.CardParent is CommunityCards)
+            else if (CardSO.CardParent is CommunityCards)
             {
                 _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
-
             }
             else
             {
@@ -38,6 +37,11 @@ public class CardBehaviour : MonoBehaviour
         {
             _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
         }
+    }
+
+    public void FlipCard()
+    {
+        _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
     }
 
     public void SetCardTransform(Transform transform)

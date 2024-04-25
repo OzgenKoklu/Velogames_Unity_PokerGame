@@ -14,7 +14,12 @@ public class BetManager : MonoBehaviour
     }
     private int _currentHighestBetAmount;
 
-    private int _potInThisSession;
+    public int PotInThisSession
+    {
+        get => _potInThisSession;
+        set => _potInThisSession = value;
+    }
+    [SerializeField] private int _potInThisSession = 0;
 
     public int BaseRaiseBetAmount
     {
