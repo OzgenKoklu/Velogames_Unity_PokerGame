@@ -68,6 +68,14 @@ public class CardVisualsManager : MonoBehaviour
         }
     }
 
+    public void GetToShowdownPosition()
+    {
+        foreach (CardBehaviour cardBehaviour in allActiveCards)
+        {
+            cardBehaviour.GetToShowDownPosition();
+        }
+    }
+
     public void FlipAllCards()
     {
         foreach (CardBehaviour cardBehaviour in allActiveCards)

@@ -72,6 +72,7 @@ public class TurnManager : MonoBehaviour
 
                 PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown();
                 CardVisualsManager.Instance.FlipAllCards();
+                CardVisualsManager.Instance.GetToShowdownPosition();
                 HandleWinningHandResult(winningHandResult);
                 break;
             case GameManager.GameState.PotDistribution:

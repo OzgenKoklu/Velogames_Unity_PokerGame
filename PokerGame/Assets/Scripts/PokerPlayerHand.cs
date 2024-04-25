@@ -52,9 +52,11 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
         }
         else // if player is AI or Online
         {
-            float newRotationAngle = aiRotationAngle * (HoleCardsList.Count - 1);
-            cardTransform.rotation = Quaternion.AngleAxis(newRotationAngle, Vector3.forward);
+            float newXPosition = transform.position.x + (0.6f * (HoleCardsList.Count - 1));
+            float newRotationAngle = initialRotationAngle + (rotationAngleMultiplier * (HoleCardsList.Count - 1));
+ 
             cardTransform.localScale = Vector3.one * aiScaleMultiplier;
+            cardTransform.SetPositionAndRotation(new Vector2(newXPosition, transform.position.y), Quaternion.AngleAxis(newRotationAngle, Vector3.forward));
         }
 
         return cardTransform;

@@ -44,15 +44,22 @@ public class CardBehaviour : MonoBehaviour
         _cardFaceSpriteRenderer.sprite = CardSO.CardSprite;
     }
 
+    public void GetToShowDownPosition()
+    {
+        if (CardSO.CardParent is CommunityCards) return; // no need to change position
+        this.transform.SetPositionAndRotation(transform.position, Quaternion.identity);
+    }
+
     public void SetCardTransform(Transform transform)
     {
         this.transform.SetPositionAndRotation(transform.position, transform.rotation);
         this.transform.localScale = transform.localScale;
     }
 
+
     public void SetCardAsSelected()
     {
-        // _selectedVisualGameObject?.SetActive(true);
+         _selectedVisualGameObject?.SetActive(true);
         Debug.Log("Card Selected: " + CardSO.CardCode);
     }
 }
