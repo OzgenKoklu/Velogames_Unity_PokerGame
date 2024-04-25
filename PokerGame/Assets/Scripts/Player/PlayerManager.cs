@@ -62,6 +62,18 @@ public class PlayerManager : MonoBehaviour
     }
     [SerializeField] private bool _hasActedSinceLastRaise;
 
+    public bool IsPlayerAllIn
+    {
+        //this will make the player to show the cards and wait until the showdown.
+        //The "concludability check" for the player should also be loosend
+        get { return _isPlayerAllIn; }
+        set
+        {
+            _isPlayerAllIn = value;
+        }
+    }
+    [SerializeField] private bool _isPlayerAllIn;
+
     public bool IsPlayerActive //folded or not
     {
         get => _isPlayerActive;
@@ -201,7 +213,21 @@ public class PlayerManager : MonoBehaviour
         {
             PlayersAction = PlayerAction.Call;
             var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - BetAmount;
-            BetManager.Instance.SetBet(this, callBetAmount);
+
+            int maxCallAmount = TotalStackAmount - BetAmount;
+            if (callBetAmount >= maxCallAmount)
+            {
+                BetManager.Instance.SetBet(this, maxCallAmount);
+                //Player IS all IN!
+                //SIDE POT MAIN POT ACTIONS
+                //DO NOT GET ANY INPUT UNTIL SHOWDOWN
+                IsPlayerAllIn = true;
+            }
+            else
+            {
+                BetManager.Instance.SetBet(this, callBetAmount);
+            }
+
             HasActedSinceLastRaise = true;
             Debug.Log("Player has made the move to: " + PlayersAction);
             _isPlayerFolded = false;
@@ -230,6 +256,14 @@ public class PlayerManager : MonoBehaviour
             _isPlayerFolded = false;
             Debug.Log("Bet Amount: " + betAmount);
             BetManager.Instance.SetBet(this, betAmount);
+
+            if (BetAmount >= TotalStackAmount)
+            {
+                //Player is All In.
+                //SIDE POT MAIN POT ACTIONS
+                //Do Not Get Any Input Until Showdown.
+                IsPlayerAllIn = true;
+            }
 
             BetManager.Instance.CurrentHighestBetAmount += betAmount;
             UiManager.Instance.ResetFunctionsAndHideButtons();

@@ -263,7 +263,20 @@ public class AiPlayerBehaviour : MonoBehaviour
     private void CallAction()
     {
         var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.BetAmount;
-        BetManager.Instance.SetBet(_playerManager, callBetAmount);
+        int maxCallAmount = _playerManager.TotalStackAmount - _playerManager.BetAmount;
+        if (callBetAmount >= maxCallAmount)
+        {
+            BetManager.Instance.SetBet(_playerManager, maxCallAmount);
+            //Player IS all IN!
+            //SIDE POT MAIN POT ACTIONS
+            //DO NOT GET ANY INPUT UNTIL SHOWDOWN
+            _playerManager.IsPlayerAllIn = true;
+        }
+        else
+        {
+            BetManager.Instance.SetBet(_playerManager, callBetAmount);
+        }
+
     }
 
     private void BetAction(HandStrength handStrength)
@@ -276,6 +289,15 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         // Set the raise amount in the bet manager, and also the highest bet. 
         BetManager.Instance.SetBet(_playerManager, raiseBetAmount);
+
+        if (_playerManager.BetAmount >= _playerManager.TotalStackAmount)
+        {
+            //Player is All In.
+            //SIDE POT MAIN POT ACTIONS
+            //Do Not Get Any Input Until Showdown.
+            _playerManager.IsPlayerAllIn = true;
+
+        }
         BetManager.Instance.CurrentHighestBetAmount += raiseBetAmount;
     }
 
@@ -301,8 +323,8 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         // Ensure the raise does not exceed the player's total stack and adheres to the game's rules
         raiseAmount = Mathf.Max(raiseAmount, minimumRaiseAmount); // At least the minimum raise
-        int totalStack = _playerManager.TotalStackAmount;
-        raiseAmount = Mathf.Min(raiseAmount, totalStack); // Do not exceed the player's stack
+        int totalExpandableStack = _playerManager.TotalStackAmount - _playerManager.BetAmount;
+        raiseAmount = Mathf.Min(raiseAmount, totalExpandableStack); // Do not exceed the player's stack
 
         return raiseAmount;
     }

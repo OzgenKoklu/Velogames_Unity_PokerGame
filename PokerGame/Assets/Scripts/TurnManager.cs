@@ -132,6 +132,9 @@ public class TurnManager : MonoBehaviour
 
         CurrentPlayer.IsPlayerTurn = false;
 
+        // ADD LOGIC TO SUPPORT ALL INS. 
+        // PLAYER MANAGER = IS WAITING FOR SHOWDOWN / MAYBE CHANGE IT TO ISPLAYERALLIN
+
         if (IsBettingRoundConcludable())
         {
             // Proceed to collect bets into the pot, move to the next stage
@@ -220,6 +223,9 @@ public class TurnManager : MonoBehaviour
 
     private bool IsBettingRoundConcludable()
     {
+        // ADD LOGIC TO SUPPORT ALL INS. 
+        // PLAYER MANAGER = IS WAITING FOR SHOWDOWN / MAYBE CHANGE IT TO ISPLAYERALLIN
+
         // Check if there has been any bet made
         if (BetManager.Instance.CurrentHighestBetAmount == 0)
         {

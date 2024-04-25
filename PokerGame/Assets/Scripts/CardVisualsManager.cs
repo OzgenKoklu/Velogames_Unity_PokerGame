@@ -91,6 +91,7 @@ public class CardVisualsManager : MonoBehaviour
         }
     }
 
+    //Triggering these two in showdown but it might happen earlier if all the active players go "All in" 
     public void GetToShowdownPosition()
     {
         foreach (CardBehaviour cardBehaviour in allActiveCards)
@@ -99,6 +100,7 @@ public class CardVisualsManager : MonoBehaviour
         }
     }
 
+    //Triggering these two in showdown but it might happen earlier if all the active players go "All in" 
     public void FlipAllCards()
     {
         foreach (CardBehaviour cardBehaviour in allActiveCards)
