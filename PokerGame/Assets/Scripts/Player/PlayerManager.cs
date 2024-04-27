@@ -21,10 +21,14 @@ public class PlayerManager : MonoBehaviour
     }
     [SerializeField] private string _playerName;
 
-    public PlayerAction PlayersAction
+    public PlayerAction PlayerAction
     {
         get => _playerAction;
-        set => _playerAction = value;
+        set
+        {
+            _playerAction = value;
+            OnPlayerActionChanged?.Invoke(_playerAction);
+        }
     }
     [SerializeField] private PlayerAction _playerAction;
 
@@ -190,9 +194,9 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-            PlayersAction = PlayerAction.Fold;
+            PlayerAction = PlayerAction.Fold;
             HasActedSinceLastRaise = true;
-            Debug.Log("Player has made the move to: " + PlayersAction);
+            //Debug.Log("Player has made the move to: " + PlayerAction);
 
             if (_runningCoroutine != null) // Check if coroutine is running
             {
@@ -212,7 +216,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-            PlayersAction = PlayerAction.Call;
+            PlayerAction = PlayerAction.Call;
             var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - BetAmount;
 
             int maxCallAmount = TotalStackAmount - BetAmount;
@@ -230,7 +234,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             HasActedSinceLastRaise = true;
-            Debug.Log("Player has made the move to: " + PlayersAction);
+            //Debug.Log("Player has made the move to: " + PlayerAction);
             _isPlayerFolded = false;
 
 
@@ -248,10 +252,10 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-            PlayersAction = PlayerAction.Bet;
+            PlayerAction = PlayerAction.Bet;
 
             HasActedSinceLastRaise = true;
-            Debug.Log("Player has made the move to: " + PlayersAction);
+            //Debug.Log("Player has made the move to: " + PlayerAction);
             _isPlayerFolded = false;
             Debug.Log("Bet Amount: " + betAmount);
             BetManager.Instance.SetBet(this, betAmount);
@@ -284,12 +288,12 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-            PlayersAction = PlayerAction.Check;
+            PlayerAction = PlayerAction.Check;
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;
             _isPlayerAllIn = false;
             UiManager.Instance.ResetFunctionsAndHideButtons();
-            Debug.Log("Player has made the move to: " + PlayersAction);
+            //Debug.Log("Player has made the move to: " + PlayerAction);
 
             if (_runningCoroutine != null) // Check if coroutine is running
             {
@@ -320,11 +324,11 @@ public class PlayerManager : MonoBehaviour
         //      if (can check):  => check
         //      else:            => fold
 
-        _playerAction = PlayerAction.Call;
+        PlayerAction = PlayerAction.Call;
         var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - BetAmount;
         BetManager.Instance.SetBet(this, callBetAmount);
         HasActedSinceLastRaise = true;
-        Debug.Log("Our Player has made the move to: " + PlayersAction);
+        //Debug.Log("Our Player has made the move to: " + PlayerAction);
         UiManager.Instance.ResetFunctionsAndHideButtons();
         _isPlayerFolded = false;
         TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
@@ -357,25 +361,25 @@ public class PlayerManager : MonoBehaviour
 
         if (TurnManager.Instance.IsPreFlop)
         {
-            PlayersAction = PlayerHand.AiBotActionPreFlop();
+            PlayerAction = PlayerHand.AiBotActionPreFlop();
         }
         else //post flop, river, etc
         {
-            PlayersAction = PlayerHand.AiBotActionPostFlop();
+            PlayerAction = PlayerHand.AiBotActionPostFlop();
         }
 
         // Reset the previous player action to fold or null after each betting round ends
-        Debug.Log(name + " Made the move: " + PlayersAction);
+        //Debug.Log(name + " Made the move: " + PlayerAction);
 
         HasActedSinceLastRaise = true;
 
-        if (PlayersAction == PlayerAction.Fold)
+        if (PlayerAction == PlayerAction.Fold)
         {
             OnPlayerFolded?.Invoke(this);
             _isPlayerFolded = true;
             IsPlayerActive = false;
         }
-        else if (PlayersAction == PlayerAction.Bet)
+        else if (PlayerAction == PlayerAction.Bet)
         {
             _isPlayerFolded = false;
             IsPlayerActive = true;

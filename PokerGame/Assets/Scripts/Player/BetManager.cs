@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BetManager : MonoBehaviour
 {
     public static BetManager Instance { get; private set; }
+
+    public event Action<PlayerManager, int> OnBetUpdated;
 
     public int CurrentHighestBetAmount
     {
@@ -72,6 +75,7 @@ public class BetManager : MonoBehaviour
     public void SetBet(PlayerManager player, int betAmount)
     {
         player.BetAmount += betAmount;
+        OnBetUpdated?.Invoke(player, betAmount);
         //Debug.Log(player.name + " bet " + betAmount);
     }
 
@@ -108,7 +112,7 @@ public class BetManager : MonoBehaviour
 
     public void CollectBets(PlayerManager player)
     {
-        Debug.Log("collecting bets.");
+        //Debug.Log("collecting bets.");
         int betAmount = player.BetAmount;
         _currentPot += betAmount;
         player.TotalStackAmount -= player.BetAmount;
@@ -124,10 +128,10 @@ public class BetManager : MonoBehaviour
         }
     }
 
-   
+
 }
 
-public class Pot 
+public class Pot
 {
     private int _potContributionLimit; //represent individual contribution limit to the pot, set by the all in player
     private int _potCurrency; //total amount of money in the pot, including the folded players money
@@ -144,7 +148,7 @@ public class Pot
 
     public void CollectBetsToPot(int betAmount, out int remainder)
     {
-        if(betAmount > _potContributionLimit)
+        if (betAmount > _potContributionLimit)
         {
             _potCurrency += _potContributionLimit;
             remainder = betAmount - _potContributionLimit;
@@ -169,7 +173,7 @@ public class Pot
     public bool IsPlayerEligibleForThisPot(PlayerManager player)
     {
         if (player.IsFolded) return false;
-        if(player.TotalBetInThisRound >= _potContributionLimit) return true;      
+        if (player.TotalBetInThisRound >= _potContributionLimit) return true;
         return false;
     }
 }

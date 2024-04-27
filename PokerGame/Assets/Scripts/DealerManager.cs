@@ -5,7 +5,9 @@ using static GameManager;
 public class DealerManager : MonoBehaviour
 {
     public static DealerManager Instance { get; private set; }
-    public Action<PlayerManager> OnDealerChanged;
+    public event Action<PlayerManager> OnDealerChanged;
+    public event Action<PlayerManager> OnSmallBlindChanged;
+    public event Action<PlayerManager> OnBigBlindChanged;
 
     private PlayerManager _currentDealer;
     private PlayerManager _smallBlind;
@@ -99,6 +101,9 @@ public class DealerManager : MonoBehaviour
             _bigBlind = players[players.IndexOf(_currentDealer) + 2];
             _firstPlayerAfterBigBlind = players[players.IndexOf(_bigBlind) + 1];
         }
+
+        OnSmallBlindChanged?.Invoke(_smallBlind);
+        OnBigBlindChanged?.Invoke(_bigBlind);
     }
 
     public PlayerManager GetFirstActivePlayerFromDealer()
