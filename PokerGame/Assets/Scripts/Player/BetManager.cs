@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BetManager : MonoBehaviour
@@ -11,12 +12,26 @@ public class BetManager : MonoBehaviour
     }
     private int _currentHighestBetAmount;
 
-    public int PotInThisSession
+    public int CurrentPot
     {
-        get => _potInThisSession;
-        set => _potInThisSession = value;
+        get => _currentPot;
+        set => _currentPot = value;
     }
-    [SerializeField] private int _potInThisSession = 0;
+    [SerializeField] private int _currentPot = 0;
+
+    public Pot MainPot
+    {
+        get => _mainPot;
+        set => _mainPot = value;
+    }
+    [SerializeField] private Pot _mainPot;
+
+    public List<Pot> SidePots
+    {
+        get => _sidePots;
+        set => _sidePots = value;
+    }
+    private List<Pot> _sidePots;
 
     public int BaseRaiseBetAmount
     {
@@ -30,7 +45,7 @@ public class BetManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        _potInThisSession = 0;
+        _currentPot = 0;
     }
 
     private void Start()
@@ -91,17 +106,70 @@ public class BetManager : MonoBehaviour
         return _baseRaiseAmount;
     }
 
-    public void CollectBets()
+    public void CollectBets(PlayerManager player)
     {
         Debug.Log("collecting bets.");
-        var activePlayers = GameManager.Instance.ActivePlayers;
+        int betAmount = player.BetAmount;
+        _currentPot += betAmount;
+        player.TotalStackAmount -= player.BetAmount;
+        player.TotalBetInThisRound += betAmount;
+        player.BetAmount = 0;
 
-        //handle all in players here
-        foreach (var player in activePlayers)
+        if (player.IsPlayerAllIn)
         {
-            _potInThisSession += player.BetAmount;
-            player.TotalStackAmount -= player.BetAmount;
-            player.BetAmount = 0;
+            //if (!IsThereAnySidePots())
+            {
+
+            }
         }
+    }
+
+   
+}
+
+public class Pot 
+{
+    private int _potContributionLimit; //represent individual contribution limit to the pot, set by the all in player
+    private int _potCurrency; //total amount of money in the pot, including the folded players money
+    private List<PlayerManager> _eligiblePlayerList; //All Players who are not folded and also paid at least the amount of the _potContributionLimit
+
+    public void SetPotLimit(int potLimit)
+    {
+        _potContributionLimit = potLimit;
+    }
+    public int GetPotLimit()
+    {
+        return _potContributionLimit;
+    }
+
+    public void CollectBetsToPot(int betAmount, out int remainder)
+    {
+        if(betAmount > _potContributionLimit)
+        {
+            _potCurrency += _potContributionLimit;
+            remainder = betAmount - _potContributionLimit;
+        }
+        else
+        {
+            _potCurrency += betAmount;
+            remainder = 0;
+        }
+    }
+
+    public List<PlayerManager> PlayersEligibleForThisPot()
+    {
+        return _eligiblePlayerList;
+    }
+
+    public void AddEligiblePlayer(PlayerManager player)
+    {
+        _eligiblePlayerList.Add(player);
+    }
+
+    public bool IsPlayerEligibleForThisPot(PlayerManager player)
+    {
+        if (player.IsFolded) return false;
+        if(player.TotalBetInThisRound >= _potContributionLimit) return true;      
+        return false;
     }
 }

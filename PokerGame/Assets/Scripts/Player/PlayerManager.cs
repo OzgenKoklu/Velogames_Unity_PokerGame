@@ -101,6 +101,15 @@ public class PlayerManager : MonoBehaviour
     }
     [SerializeField] private bool _isPlayerDealer;
 
+
+    //Dont forget to reset in showdown / all players folded.
+    public int TotalBetInThisRound
+    {
+        get => _totalBetAmount;
+        set => _totalBetAmount = value;
+    }
+    private int _totalBetAmount;
+
     public int BetAmount
     {
         get => _betAmount;
@@ -118,6 +127,12 @@ public class PlayerManager : MonoBehaviour
         }
     }
     [SerializeField] private int _totalStackAmount;
+
+    public bool IsFolded
+    {
+        get => _isPlayerFolded;
+        set => _isPlayerFolded = value;
+    }
     private bool _isPlayerFolded;
 
     [SerializeField] private Slider _timebar;

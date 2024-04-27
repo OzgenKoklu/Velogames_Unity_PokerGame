@@ -128,13 +128,15 @@ public class TurnManager : MonoBehaviour
     public void ChangePlayerTurn(bool isPreviousPlayerFolded)
     {
         if (GameManager.Instance.GetState() != GameManager.GameState.PlayerTurn) return;
+        BetManager.Instance.CollectBets(CurrentPlayer);
+
 
         CurrentPlayer.IsPlayerTurn = false;
 
         if (IsBettingRoundConcludable())
         {
             // Proceed to collect bets into the pot, move to the next stage
-            BetManager.Instance.CollectBets();
+            
             BetManager.Instance.CurrentHighestBetAmount = 0;
 
             switch (GameManager.Instance.GetMainGameState())
@@ -206,7 +208,7 @@ public class TurnManager : MonoBehaviour
         //Show ile UI'da winning hand gösterecek bi mesaj. ShowWinningHand and player Name(indexten çikartilir) 
 
         //Main pot side pot ayarlamalari yapilacak. 
-        int totalPotToSlipt = BetManager.Instance.PotInThisSession;
+        int totalPotToSlipt = BetManager.Instance.CurrentPot;
         if (winningHandResult.IsTie)
         {
             //pot split (not doing side / main pot for now)
@@ -223,7 +225,7 @@ public class TurnManager : MonoBehaviour
         }
 
 
-        BetManager.Instance.PotInThisSession = 0; // set pot to zero.
+        BetManager.Instance.CurrentPot = 0; // set pot to zero.
         List<CardSO> WinningCardList = winningHandResult.WinningCardList;
         bool isItATie = winningHandResult.IsTie;
         CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes, isItATie);
