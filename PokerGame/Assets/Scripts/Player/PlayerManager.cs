@@ -9,6 +9,9 @@ public enum PlayerAction { Fold, Check, Bet, Raise, Call }
 public class PlayerManager : MonoBehaviour
 {
     public static event Action<PlayerManager> OnPlayerFolded;
+    public event Action<PlayerAction> OnPlayerActionChanged;
+    public event Action<bool> OnPlayerActiveChanged;
+
     public float maxThinkTime = 10f; // Maximum time for make a move
     private Coroutine _runningCoroutine;
     public string PlayerName
@@ -78,20 +81,11 @@ public class PlayerManager : MonoBehaviour
         set
         {
             _isPlayerActive = value;
-
-            if (value == false)
-            {
-                _passivePlayerTint.SetActive(true);
-            }
-            else
-            {
-                _passivePlayerTint.SetActive(false);
-            }
+            OnPlayerActiveChanged?.Invoke(value);
         }
     }
     [SerializeField] private bool _isPlayerActive;
 
-    [SerializeField] private GameObject _passivePlayerTint;
     [SerializeField] private TextMeshPro _playerTotalStackText;
 
     public bool IsPlayerDealer
@@ -136,8 +130,6 @@ public class PlayerManager : MonoBehaviour
     private bool _isPlayerFolded;
 
     [SerializeField] private Slider _timebar;
-
-    [SerializeField] private GameObject _dealerIcon;
 
     private void Start()
     {
@@ -186,16 +178,11 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void OnDealerChanged(PlayerManager playerManager)
+    private void OnDealerChanged(PlayerManager player)
     {
-        if (_isPlayerDealer && playerManager == this)
-        {
-            _dealerIcon.SetActive(true);
-        }
-        else
+        if (!_isPlayerDealer && !player == this)
         {
             _isPlayerDealer = false;
-            _dealerIcon.SetActive(false);
         }
     }
 
@@ -213,6 +200,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             OnPlayerFolded?.Invoke(this);
+            IsPlayerActive = false;
             _isPlayerFolded = true;
             _isPlayerAllIn = false;
             UiManager.Instance.ResetFunctionsAndHideButtons();
@@ -252,9 +240,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             UiManager.Instance.ResetFunctionsAndHideButtons();
-
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
-
         }
     }
 

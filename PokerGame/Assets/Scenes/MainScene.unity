@@ -322,7 +322,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: $1,000
+  m_text: $1.000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -613,12 +613,10 @@ MonoBehaviour:
   _hasActedSinceLastRaise: 0
   _isPlayerAllIn: 0
   _isPlayerActive: 0
-  _passivePlayerTint: {fileID: 968531466}
   _playerTotalStackText: {fileID: 60285888}
   _isPlayerDealer: 0
   _totalStackAmount: 5000
   _timebar: {fileID: 442589079}
-  _dealerIcon: {fileID: 611473412}
 --- !u!114 &134982087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -902,12 +900,10 @@ MonoBehaviour:
   _hasActedSinceLastRaise: 0
   _isPlayerAllIn: 0
   _isPlayerActive: 0
-  _passivePlayerTint: {fileID: 436575415}
   _playerTotalStackText: {fileID: 1826873582}
   _isPlayerDealer: 0
   _totalStackAmount: 5000
   _timebar: {fileID: 1083059689}
-  _dealerIcon: {fileID: 384630816}
 --- !u!114 &145876575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1096,7 +1092,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06252a294872b6c4693abe71a1d1ccf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _potInThisSession: 0
+  _currentPot: 0
   _baseRaiseAmount: 10
 --- !u!1 &185640585
 GameObject:
@@ -1533,12 +1529,10 @@ MonoBehaviour:
   _hasActedSinceLastRaise: 0
   _isPlayerAllIn: 0
   _isPlayerActive: 0
-  _passivePlayerTint: {fileID: 185640585}
   _playerTotalStackText: {fileID: 1859058508}
   _isPlayerDealer: 0
   _totalStackAmount: 5000
   _timebar: {fileID: 957681472}
-  _dealerIcon: {fileID: 1988252620}
 --- !u!114 &292966329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2438,12 +2432,10 @@ MonoBehaviour:
   _hasActedSinceLastRaise: 0
   _isPlayerAllIn: 0
   _isPlayerActive: 0
-  _passivePlayerTint: {fileID: 642709986}
   _playerTotalStackText: {fileID: 1178458312}
   _isPlayerDealer: 0
   _totalStackAmount: 1000
   _timebar: {fileID: 135933206}
-  _dealerIcon: {fileID: 786410615}
 --- !u!1 &611473412
 GameObject:
   m_ObjectHideFlags: 0
@@ -2928,7 +2920,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: $1,000
+  m_text: $1.000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3665,6 +3657,7 @@ GameObject:
   - component: {fileID: 904804031}
   - component: {fileID: 904804030}
   - component: {fileID: 904804029}
+  - component: {fileID: 904804032}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -3757,6 +3750,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &904804032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904804027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e115afc720e09848954d03c2c8c51c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 292966328}
+  _dealerIcon: {fileID: 1988252620}
+  _passivePlayerTint: {fileID: 185640585}
+  _playerTotalStackText: {fileID: 1859058508}
 --- !u!1 &920580783
 GameObject:
   m_ObjectHideFlags: 0
@@ -4456,12 +4465,10 @@ MonoBehaviour:
   _hasActedSinceLastRaise: 0
   _isPlayerAllIn: 0
   _isPlayerActive: 0
-  _passivePlayerTint: {fileID: 282021218}
   _playerTotalStackText: {fileID: 739166000}
   _isPlayerDealer: 0
   _totalStackAmount: 5000
   _timebar: {fileID: 730244980}
-  _dealerIcon: {fileID: 777249507}
 --- !u!114 &1074086710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4700,7 +4707,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: $1,000
+  m_text: $1.000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5109,6 +5116,7 @@ GameObject:
   - component: {fileID: 1276208527}
   - component: {fileID: 1276208526}
   - component: {fileID: 1276208525}
+  - component: {fileID: 1276208528}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -5203,6 +5211,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1276208528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1276208523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e115afc720e09848954d03c2c8c51c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 606718410}
+  _dealerIcon: {fileID: 786410615}
+  _passivePlayerTint: {fileID: 642709986}
+  _playerTotalStackText: {fileID: 1178458312}
 --- !u!1 &1286633078
 GameObject:
   m_ObjectHideFlags: 0
@@ -5252,6 +5276,7 @@ GameObject:
   - component: {fileID: 1293550940}
   - component: {fileID: 1293550939}
   - component: {fileID: 1293550938}
+  - component: {fileID: 1293550941}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -5344,6 +5369,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1293550941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293550936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e115afc720e09848954d03c2c8c51c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 1074086709}
+  _dealerIcon: {fileID: 777249507}
+  _passivePlayerTint: {fileID: 282021218}
+  _playerTotalStackText: {fileID: 739166000}
 --- !u!1 &1297857217
 GameObject:
   m_ObjectHideFlags: 0
@@ -6039,6 +6080,7 @@ GameObject:
   - component: {fileID: 1782495972}
   - component: {fileID: 1782495971}
   - component: {fileID: 1782495970}
+  - component: {fileID: 1782495973}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -6131,6 +6173,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1782495973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782495968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e115afc720e09848954d03c2c8c51c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 145876574}
+  _dealerIcon: {fileID: 384630816}
+  _passivePlayerTint: {fileID: 436575415}
+  _playerTotalStackText: {fileID: 1826873582}
 --- !u!1 &1788366252
 GameObject:
   m_ObjectHideFlags: 0
@@ -6257,7 +6315,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: $1,000
+  m_text: $1.000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6429,7 +6487,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: $1,000
+  m_text: $1.000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6735,6 +6793,7 @@ GameObject:
   - component: {fileID: 1891667320}
   - component: {fileID: 1891667319}
   - component: {fileID: 1891667318}
+  - component: {fileID: 1891667321}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -6827,6 +6886,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1891667321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891667316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e115afc720e09848954d03c2c8c51c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 134982086}
+  _dealerIcon: {fileID: 611473412}
+  _passivePlayerTint: {fileID: 968531466}
+  _playerTotalStackText: {fileID: 60285888}
 --- !u!1 &1988252620
 GameObject:
   m_ObjectHideFlags: 0
