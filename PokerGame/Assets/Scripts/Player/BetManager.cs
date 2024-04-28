@@ -44,6 +44,7 @@ public class BetManager : MonoBehaviour
         Instance = this;
         _tempPot = 0;
         showdownPots = new List<Pot>();
+        potContributionDictionary = new Dictionary<PlayerManager, int>();
     }
 
     private void Start()
@@ -59,6 +60,32 @@ public class BetManager : MonoBehaviour
         {
             showdownPots = DevideIntoPots();
 
+            int potCount = showdownPots.Count;
+
+            Debug.Log("Number of pots for the showdown: " + potCount);
+
+            CardVisualsManager.Instance.FlipAllCards();
+            CardVisualsManager.Instance.GetToShowdownPosition();
+
+            for (int i = 0; i < potCount; i++)
+            {
+                var eligiblePlayersForThisPot = showdownPots[i]._eligiblePlayerList;
+                PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(eligiblePlayersForThisPot);
+                Debug.Log("Winning result for the pot index " + i + " is " + winningHandResult.WinnerList[0]);
+                HandleWinningHandResult(winningHandResult, showdownPots[i]);
+            }
+        }
+        else if (state == GameManager.GameState.EveryoneFolded)
+        {
+            showdownPots = DevideIntoPots();
+
+            var player = GameManager.Instance.ActivePlayers;
+            Debug.Log("Before Money transfer, total chips : " + player[0].TotalStackAmount);
+
+            player[0].TotalStackAmount += showdownPots[0].MoneyInPot;
+            Debug.Log("After Money transfer, total chips : " + player[0].TotalStackAmount);
+            showdownPots[0].MoneyInPot = 0;
+
         }
     }
 
@@ -66,12 +93,16 @@ public class BetManager : MonoBehaviour
     {
         if (_currentState == GameManager.GameState.NewRound)
         {
-            SetBet(DealerManager.Instance.GetSmallBlind(), _baseRaiseAmount / 2);
-            DealerManager.Instance.GetSmallBlind().TotalBetInThisRound = _baseRaiseAmount / 2;//rotus cekelim
-            SetBet(DealerManager.Instance.GetBigBlind(), _baseRaiseAmount);
-            DealerManager.Instance.GetBigBlind().TotalBetInThisRound = _baseRaiseAmount; //rotus cekelim
-            _currentHighestBetAmount = DealerManager.Instance.GetBigBlind().BetAmount;
-            potContributionDictionary = new Dictionary<PlayerManager, int>();
+            PlayerManager smallBlind = DealerManager.Instance.GetSmallBlind();
+            SetBet(smallBlind, _baseRaiseAmount / 2);
+            CollectBets(DealerManager.Instance.GetSmallBlind()); // rotus cekelim
+
+            PlayerManager bigBlind = DealerManager.Instance.GetBigBlind();
+            SetBet(bigBlind, _baseRaiseAmount);
+            CollectBets(bigBlind);//rotus cekelim
+          
+            _currentHighestBetAmount = _baseRaiseAmount;
+            
             GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
 
 
@@ -116,6 +147,42 @@ public class BetManager : MonoBehaviour
         return _baseRaiseAmount;
     }
 
+    // DÜZELTÝLECEK!!!!!!!!!
+    //bu fonksiyonun betle Le bi ilgisi yok o yüzden aslinda game manager'a tasinmasý mantikli olabilir. buradan yapilacak seylerin oradan yapilmasý dogru olabilir.
+    private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult, Pot potInHand)
+    {
+        string winningHandType = winningHandResult.WinningHandType;
+        string winningHandCardCodes = winningHandResult.WinningCardCodes;
+        var winningPlayerList = winningHandResult.WinnerList;
+        Debug.Log("Winning hand type: " + winningHandType + "- Winner List (playerManagerList) : " + winningPlayerList + " - Winning Hand(5Cards) Ranks: " + winningHandCardCodes);
+
+        Debug.Log("Is there tie: " + winningHandResult.IsTie);
+        //Show ile UI'da winning hand gösterecek bi mesaj. ShowWinningHand and player Name(indexten çikartilir) 
+
+        //Main pot side pot ayarlamalari yapilacak. 
+        int totalPotToSlipt = potInHand.MoneyInPot;
+        if (winningHandResult.IsTie)
+        {
+            //pot split (not doing side / main pot for now)
+            int splitAmount = totalPotToSlipt / winningPlayerList.Count;
+
+            foreach (var player in winningPlayerList)
+            {
+                player.TotalStackAmount += splitAmount;
+            }
+        }
+        else
+        {
+            winningPlayerList[0].TotalStackAmount += totalPotToSlipt;
+        }
+
+
+        potInHand.MoneyInPot = 0; // set pot to zero.
+        List<CardSO> WinningCardList = winningHandResult.WinningCardList;
+        bool isItATie = winningHandResult.IsTie;
+        CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes, isItATie);
+    }
+
     public void CollectBets(PlayerManager player)
     {
         Debug.Log("Collecting Bets from player.");
@@ -142,11 +209,9 @@ public class BetManager : MonoBehaviour
     {
         // a function that will work in showdown or whenever necessary. 
 
-        //Will take the current potContributionDictionary. 
+        // Will take the current potContributionDictionary. 
 
-        //There are 5 players in this dictionary. We will check the amount they put to the pot. We will also check wheter they are IsPlayerAllIn or IsPlayerFolded.
-
-        //From there onwards we will create main pots and side pots if necessary. 
+        // From there onwards we will create main pots and side pots if necessary. 
 
 
         int playerCount = GameManager.Instance.Players.Count;

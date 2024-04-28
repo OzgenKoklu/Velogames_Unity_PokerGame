@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
         if (ActivePlayers.Count == 1)
         {
             _currentGameState = GameState.EveryoneFolded;
-            BetManager.Instance.DevideIntoPots();
+
             _currentMainGameState = GameState.EveryoneFolded;
             OnGameStateChanged?.Invoke(_currentGameState);
             Debug.Log("Everyone folded...");

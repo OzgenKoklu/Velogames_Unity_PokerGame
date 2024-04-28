@@ -68,13 +68,12 @@ public class PokerHandEvaluator : MonoBehaviour
         return concatenatedCodes;
     }
 
-    public WinningHandResults SelectTheWinnerForTheShowdown()
-    {
-        var activePlayers = GameManager.Instance.ActivePlayers;
+    public WinningHandResults SelectTheWinnerForTheShowdown(List<PlayerManager> eligiblePlayerList)
+    {       
         List<PlayerManager> playersWithBestHand = new List<PlayerManager>();
         int bestRank = 7462; //not a magical number, just the weakest possible hand rank
 
-        foreach (var player in activePlayers)
+        foreach (var player in eligiblePlayerList)
         {
             var cardSOList = player.PlayerHand.GetCardListWithCommunityCardsAdded();
             var handRank = EvaluateHandRank(cardSOList);

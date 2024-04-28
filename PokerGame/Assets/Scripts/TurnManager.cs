@@ -68,11 +68,8 @@ public class TurnManager : MonoBehaviour
                 //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
             case GameManager.GameState.Showdown:
-              //  BetManager.Instance.DevideIntoPots();
-                PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown();
-                CardVisualsManager.Instance.FlipAllCards();
-                CardVisualsManager.Instance.GetToShowdownPosition();
-                HandleWinningHandResult(winningHandResult);
+
+
                 break;
             case GameManager.GameState.PotDistribution:
                 break;
@@ -137,7 +134,7 @@ public class TurnManager : MonoBehaviour
         if (IsBettingRoundConcludable())
         {
             // Proceed to collect bets into the pot, move to the next stage
-            
+
             //BetManager.Instance.CurrentHighestBetAmount = 0; bunu sildik çünkü highest bet'i showdown'a kadar tutucaz. (ki o bet'e erisebilene kadar raise/call etsinelr)
 
             switch (GameManager.Instance.GetMainGameState())
@@ -194,42 +191,6 @@ public class TurnManager : MonoBehaviour
 
         CurrentPlayer.IsPlayerTurn = true;
         GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
-    }
-
-    // DÜZELTİLECEK!!!!!!!!!
-    //bu fonksiyonun deck'Le bi ilgisi yok o yüzden aslinda game manager'a tasinması mantikli olabilir. buradan yapilacak seylerin oradan yapilması dogru olabilir.
-    private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult)
-    {
-        string winningHandType = winningHandResult.WinningHandType;
-        string winningHandCardCodes = winningHandResult.WinningCardCodes;
-        var winningPlayerList = winningHandResult.WinnerList;
-        Debug.Log("Winning hand type: " + winningHandType + "- Winner List (playerManagerList) : " + winningPlayerList + " - Winning Hand(5Cards) Ranks: " + winningHandCardCodes);
-
-        Debug.Log("Is there tie: " + winningHandResult.IsTie);
-        //Show ile UI'da winning hand gösterecek bi mesaj. ShowWinningHand and player Name(indexten çikartilir) 
-
-        //Main pot side pot ayarlamalari yapilacak. 
-        int totalPotToSlipt = BetManager.Instance.TempPot;
-        if (winningHandResult.IsTie)
-        {
-            //pot split (not doing side / main pot for now)
-            int splitAmount = totalPotToSlipt / winningPlayerList.Count;
-
-            foreach (var player in winningPlayerList)
-            {
-                player.TotalStackAmount += splitAmount;
-            }
-        }
-        else
-        {
-            winningPlayerList[0].TotalStackAmount += totalPotToSlipt;
-        }
-
-
-        BetManager.Instance.TempPot = 0; // set pot to zero.
-        List<CardSO> WinningCardList = winningHandResult.WinningCardList;
-        bool isItATie = winningHandResult.IsTie;
-        CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes, isItATie);
     }
 
     private bool IsBettingRoundConcludable()
