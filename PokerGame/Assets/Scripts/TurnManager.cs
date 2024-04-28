@@ -68,7 +68,7 @@ public class TurnManager : MonoBehaviour
                 //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
             case GameManager.GameState.Showdown:
-                BetManager.Instance.DevideIntoPots();
+              //  BetManager.Instance.DevideIntoPots();
                 PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown();
                 CardVisualsManager.Instance.FlipAllCards();
                 CardVisualsManager.Instance.GetToShowdownPosition();
