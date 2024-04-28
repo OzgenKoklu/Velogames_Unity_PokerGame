@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -6,6 +7,8 @@ using UnityEngine;
 public class BetManager : MonoBehaviour
 {
     public static BetManager Instance { get; private set; }
+
+    public event Action<PlayerManager, int> OnBetUpdated;
 
     public int CurrentHighestBetAmount
     {
@@ -60,14 +63,15 @@ public class BetManager : MonoBehaviour
             _currentHighestBetAmount = DealerManager.Instance.GetBigBlind().BetAmount;
             potContributionDictionary = new Dictionary<PlayerManager, int>();
             GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
-            
-           
+
+
         }
     }
 
     public void SetBet(PlayerManager player, int betAmount)
     {
         player.BetAmount = betAmount;
+        OnBetUpdated?.Invoke(player, betAmount);
         //Debug.Log(player.name + " bet " + betAmount);
     }
 
@@ -123,6 +127,7 @@ public class BetManager : MonoBehaviour
         }
     }
 
+
     public void DevideIntoPots()
     {
         // a function that will work in showdown or whenever necessary. 
@@ -166,7 +171,7 @@ public class BetManager : MonoBehaviour
 
         potDefiningBetValues.Sort();
 
-        foreach(var intiger in potDefiningBetValues)
+        foreach (var intiger in potDefiningBetValues)
         {
             Debug.Log("int: " + intiger);
         }
@@ -175,24 +180,25 @@ public class BetManager : MonoBehaviour
 
 
         // Loop through players in contribution dictionary
-       
+
     }
+
 }
 
 public class Pot
 {
     public int potLimit = 0;
     public int MoneyInPot = 0;
-  
+
     public List<PlayerManager> _eligiblePlayerList;
 
 
     public void AddEligiblePlayer(PlayerManager player)
     {
-        if(player != null && !_eligiblePlayerList.Contains(player))
+        if (player != null && !_eligiblePlayerList.Contains(player))
         {
             _eligiblePlayerList.Add(player);
-        }  
+        }
     }
 
     public bool IsPlayerEligibleForThisPot(PlayerManager player, Pot pot)

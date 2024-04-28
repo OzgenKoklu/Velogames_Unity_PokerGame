@@ -9,6 +9,9 @@ public enum PlayerAction { Fold, Check, Bet, Raise, Call }
 public class PlayerManager : MonoBehaviour
 {
     public static event Action<PlayerManager> OnPlayerFolded;
+    public event Action<PlayerAction> OnPlayerActionChanged;
+    public event Action<bool> OnPlayerActiveChanged;
+
     public float maxThinkTime = 10f; // Maximum time for make a move
     private Coroutine _runningCoroutine;
     public string PlayerName
@@ -18,10 +21,14 @@ public class PlayerManager : MonoBehaviour
     }
     [SerializeField] private string _playerName;
 
-    public PlayerAction PlayersAction
+    public PlayerAction PlayerAction
     {
         get => _playerAction;
-        set => _playerAction = value;
+        set
+        {
+            _playerAction = value;
+            OnPlayerActionChanged?.Invoke(_playerAction);
+        }
     }
     [SerializeField] private PlayerAction _playerAction;
 
@@ -78,20 +85,11 @@ public class PlayerManager : MonoBehaviour
         set
         {
             _isPlayerActive = value;
-
-            if (value == false)
-            {
-                _passivePlayerTint.SetActive(true);
-            }
-            else
-            {
-                _passivePlayerTint.SetActive(false);
-            }
+            OnPlayerActiveChanged?.Invoke(value);
         }
     }
     [SerializeField] private bool _isPlayerActive;
 
-    [SerializeField] private GameObject _passivePlayerTint;
     [SerializeField] private TextMeshPro _playerTotalStackText;
 
     public bool IsPlayerDealer
@@ -136,8 +134,6 @@ public class PlayerManager : MonoBehaviour
     private bool _isPlayerFolded;
 
     [SerializeField] private Slider _timebar;
-
-    [SerializeField] private GameObject _dealerIcon;
 
     private void Start()
     {
@@ -186,16 +182,11 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void OnDealerChanged(PlayerManager playerManager)
+    private void OnDealerChanged(PlayerManager player)
     {
-        if (_isPlayerDealer && playerManager == this)
-        {
-            _dealerIcon.SetActive(true);
-        }
-        else
+        if (!_isPlayerDealer && !player == this)
         {
             _isPlayerDealer = false;
-            _dealerIcon.SetActive(false);
         }
     }
 
@@ -203,9 +194,9 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-            PlayersAction = PlayerAction.Fold;
+            PlayerAction = PlayerAction.Fold;
             HasActedSinceLastRaise = true;
-            Debug.Log("Player has made the move to: " + PlayersAction);
+            //Debug.Log("Player has made the move to: " + PlayerAction);
 
             if (_runningCoroutine != null) // Check if coroutine is running
             {
@@ -213,6 +204,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             OnPlayerFolded?.Invoke(this);
+            IsPlayerActive = false;
             _isPlayerFolded = true;
             _isPlayerAllIn = false;
             UiManager.Instance.ResetFunctionsAndHideButtons();
@@ -224,9 +216,11 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-            PlayersAction = PlayerAction.Call;
+
+            PlayerAction = PlayerAction.Call;
             Debug.Log("current highest bet: " + BetManager.Instance.CurrentHighestBetAmount);
             var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - TotalBetInThisRound;
+
 
             int maxCallAmount = TotalStackAmount;
             if (callBetAmount >= maxCallAmount)
@@ -243,7 +237,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             HasActedSinceLastRaise = true;
-            Debug.Log("Player has made the move to: " + PlayersAction);
+            //Debug.Log("Player has made the move to: " + PlayerAction);
             _isPlayerFolded = false;
 
 
@@ -253,9 +247,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             UiManager.Instance.ResetFunctionsAndHideButtons();
-
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
-
         }
     }
 
@@ -263,10 +255,10 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-            PlayersAction = PlayerAction.Bet;
+            PlayerAction = PlayerAction.Bet;
 
             HasActedSinceLastRaise = true;
-            Debug.Log("Player has made the move to: " + PlayersAction);
+            //Debug.Log("Player has made the move to: " + PlayerAction);
             _isPlayerFolded = false;
             Debug.Log("Bet Amount: " + betAmount);
             BetManager.Instance.SetBet(this, betAmount);
@@ -299,12 +291,12 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-            PlayersAction = PlayerAction.Check;
+            PlayerAction = PlayerAction.Check;
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;
             _isPlayerAllIn = false;
             UiManager.Instance.ResetFunctionsAndHideButtons();
-            Debug.Log("Player has made the move to: " + PlayersAction);
+            //Debug.Log("Player has made the move to: " + PlayerAction);
 
             if (_runningCoroutine != null) // Check if coroutine is running
             {
@@ -335,11 +327,11 @@ public class PlayerManager : MonoBehaviour
         //      if (can check):  => check
         //      else:            => fold
 
-        _playerAction = PlayerAction.Call;
+        PlayerAction = PlayerAction.Call;
         var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - BetAmount;
         BetManager.Instance.SetBet(this, callBetAmount);
         HasActedSinceLastRaise = true;
-        Debug.Log("Our Player has made the move to: " + PlayersAction);
+        //Debug.Log("Our Player has made the move to: " + PlayerAction);
         UiManager.Instance.ResetFunctionsAndHideButtons();
         _isPlayerFolded = false;
         TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
@@ -372,25 +364,25 @@ public class PlayerManager : MonoBehaviour
 
         if (TurnManager.Instance.IsPreFlop)
         {
-            PlayersAction = PlayerHand.AiBotActionPreFlop();
+            PlayerAction = PlayerHand.AiBotActionPreFlop();
         }
         else //post flop, river, etc
         {
-            PlayersAction = PlayerHand.AiBotActionPostFlop();
+            PlayerAction = PlayerHand.AiBotActionPostFlop();
         }
 
         // Reset the previous player action to fold or null after each betting round ends
-        Debug.Log(name + " Made the move: " + PlayersAction);
+        //Debug.Log(name + " Made the move: " + PlayerAction);
 
         HasActedSinceLastRaise = true;
 
-        if (PlayersAction == PlayerAction.Fold)
+        if (PlayerAction == PlayerAction.Fold)
         {
             OnPlayerFolded?.Invoke(this);
             _isPlayerFolded = true;
             IsPlayerActive = false;
         }
-        else if (PlayersAction == PlayerAction.Bet)
+        else if (PlayerAction == PlayerAction.Bet)
         {
             _isPlayerFolded = false;
             IsPlayerActive = true;
