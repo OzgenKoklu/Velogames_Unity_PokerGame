@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using UnityEngine;
 
 public class BetManager : MonoBehaviour
@@ -12,26 +14,17 @@ public class BetManager : MonoBehaviour
     }
     private int _currentHighestBetAmount;
 
-    public int CurrentPot
+    public int TempPot
     {
-        get => _currentPot;
-        set => _currentPot = value;
+        get => _tempPot;
+        set => _tempPot = value;
     }
-    [SerializeField] private int _currentPot = 0;
+    [SerializeField] private int _tempPot = 0;
 
-    public Pot MainPot
-    {
-        get => _mainPot;
-        set => _mainPot = value;
-    }
-    [SerializeField] private Pot _mainPot;
+    public List<Pot> PotsList;
+    [SerializeField] private List<Pot> _potsList;
 
-    public List<Pot> SidePots
-    {
-        get => _sidePots;
-        set => _sidePots = value;
-    }
-    private List<Pot> _sidePots;
+    public Dictionary<PlayerManager, int> potContributionDictionary;
 
     public int BaseRaiseBetAmount
     {
@@ -45,7 +38,7 @@ public class BetManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        _currentPot = 0;
+        _tempPot = 0;
     }
 
     private void Start()
@@ -65,13 +58,16 @@ public class BetManager : MonoBehaviour
             SetBet(DealerManager.Instance.GetSmallBlind(), _baseRaiseAmount / 2);
             SetBet(DealerManager.Instance.GetBigBlind(), _baseRaiseAmount);
             _currentHighestBetAmount = DealerManager.Instance.GetBigBlind().BetAmount;
+            potContributionDictionary = new Dictionary<PlayerManager, int>();
             GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
+            
+           
         }
     }
 
     public void SetBet(PlayerManager player, int betAmount)
     {
-        player.BetAmount += betAmount;
+        player.BetAmount = betAmount;
         //Debug.Log(player.name + " bet " + betAmount);
     }
 
@@ -90,7 +86,7 @@ public class BetManager : MonoBehaviour
         foreach (var player in activePlayers)
         {
             if (player.IsPlayerAllIn) continue;
-            if (player.BetAmount != CurrentHighestBetAmount) return false;
+            if (player.TotalBetInThisRound != CurrentHighestBetAmount) return false;
         }
         //everyone has the same bet amount and its the highest bet amount
         return true;
@@ -108,68 +104,101 @@ public class BetManager : MonoBehaviour
 
     public void CollectBets(PlayerManager player)
     {
-        Debug.Log("collecting bets.");
-        int betAmount = player.BetAmount;
-        _currentPot += betAmount;
+        Debug.Log("Collecting Bets from player.");
+        player.TotalBetInThisRound += player.BetAmount;
         player.TotalStackAmount -= player.BetAmount;
-        player.TotalBetInThisRound += betAmount;
         player.BetAmount = 0;
 
-        if (player.IsPlayerAllIn)
+        if (potContributionDictionary.TryGetValue(player, out int currentBet))
         {
-            //if (!IsThereAnySidePots())
-            {
-
-            }
-        }
-    }
-
-   
-}
-
-public class Pot 
-{
-    private int _potContributionLimit; //represent individual contribution limit to the pot, set by the all in player
-    private int _potCurrency; //total amount of money in the pot, including the folded players money
-    private List<PlayerManager> _eligiblePlayerList; //All Players who are not folded and also paid at least the amount of the _potContributionLimit
-
-    public void SetPotLimit(int potLimit)
-    {
-        _potContributionLimit = potLimit;
-    }
-    public int GetPotLimit()
-    {
-        return _potContributionLimit;
-    }
-
-    public void CollectBetsToPot(int betAmount, out int remainder)
-    {
-        if(betAmount > _potContributionLimit)
-        {
-            _potCurrency += _potContributionLimit;
-            remainder = betAmount - _potContributionLimit;
+            // Player exists, update total bet
+            potContributionDictionary[player] = player.TotalBetInThisRound;
+            Debug.Log("Total bet in dictionary: " + potContributionDictionary[player]);
         }
         else
         {
-            _potCurrency += betAmount;
-            remainder = 0;
+            // New player, add entry to dictionary
+            potContributionDictionary.Add(player, player.TotalBetInThisRound);
+            Debug.Log("Total bet in dictionary: " + potContributionDictionary[player]);
         }
     }
 
-    public List<PlayerManager> PlayersEligibleForThisPot()
+    public void DevideIntoPots()
     {
-        return _eligiblePlayerList;
+        // a function that will work in showdown or whenever necessary. 
+
+        //Will take the current potContributionDictionary. 
+
+        //There are 5 players in this dictionary. We will check the amount they put to the pot. We will also check wheter they are IsPlayerAllIn or IsPlayerFolded.
+
+        //From there onwards we will create main pots and side pots if necessary. 
+
+
+        int playerCount = GameManager.Instance.Players.Count;
+
+        List<int> potDefiningBetValues = new List<int>();
+
+        //potDefiningBetValues = potContributionDictionary.Values.ToList();
+
+        foreach (var playerContribution in potContributionDictionary)
+        {
+            PlayerManager player = playerContribution.Key;
+            int playerBetAmount = playerContribution.Value;
+
+            if (player.IsFolded)
+            { //no pots are defined by folded players
+
+            }
+            else if (player.IsPlayerAllIn)
+            {
+                int indexOfValue = potDefiningBetValues.IndexOf(playerBetAmount);
+                if (indexOfValue == -1) //If same value exists do not need an extra pot
+                {
+                    potDefiningBetValues.Add(playerBetAmount);
+                    Debug.Log("Pot defining value added. " + playerBetAmount);
+                }
+            }
+            int playerBet = playerContribution.Value;
+
+        }
+
+        List<Pot> pots = new List<Pot>();
+
+        potDefiningBetValues.Sort();
+
+        foreach(var intiger in potDefiningBetValues)
+        {
+            Debug.Log("int: " + intiger);
+        }
+
+
+
+
+        // Loop through players in contribution dictionary
+       
     }
+}
+
+public class Pot
+{
+    public int potLimit = 0;
+    public int MoneyInPot = 0;
+  
+    public List<PlayerManager> _eligiblePlayerList;
+
 
     public void AddEligiblePlayer(PlayerManager player)
     {
-        _eligiblePlayerList.Add(player);
+        if(player != null && !_eligiblePlayerList.Contains(player))
+        {
+            _eligiblePlayerList.Add(player);
+        }  
     }
 
-    public bool IsPlayerEligibleForThisPot(PlayerManager player)
+    public bool IsPlayerEligibleForThisPot(PlayerManager player, Pot pot)
     {
         if (player.IsFolded) return false;
-        if(player.TotalBetInThisRound >= _potContributionLimit) return true;      
+        if (player.TotalBetInThisRound >= pot.potLimit) return true;
         return false;
     }
 }

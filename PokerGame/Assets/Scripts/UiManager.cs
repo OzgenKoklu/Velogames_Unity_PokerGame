@@ -49,7 +49,7 @@ public class UiManager : MonoBehaviour
 
         //hem burada, hem de SetActionbuttons'ý cagirdigimiz yerde ayný karþýlaþtýrmayý yapmamýz mantiksiz
         //bu yüzden daha iyi bir sekilde halledilmeli, ayni sekilde callbetAmountu da tek yerde hesaplasak daha iyi
-        if (player.BetAmount < BetManager.Instance.CurrentHighestBetAmount)
+        if (player.TotalBetInThisRound < BetManager.Instance.CurrentHighestBetAmount)
         {
             _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CallAction);
 
@@ -77,7 +77,7 @@ public class UiManager : MonoBehaviour
     private void GetBetAmounts(PlayerManager player)
     {
         _smallestBetAmount = BetManager.Instance.CurrentHighestBetAmount * 2;
-        _biggestBetAmount = player.TotalStackAmount - player.BetAmount;
+        _biggestBetAmount = player.TotalStackAmount;
     }
     private void ShowBettingWindow()
     {

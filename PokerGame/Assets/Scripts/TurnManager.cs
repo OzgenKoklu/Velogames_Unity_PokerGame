@@ -68,6 +68,7 @@ public class TurnManager : MonoBehaviour
                 //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
             case GameManager.GameState.Showdown:
+                BetManager.Instance.DevideIntoPots();
                 PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown();
                 CardVisualsManager.Instance.FlipAllCards();
                 CardVisualsManager.Instance.GetToShowdownPosition();
@@ -137,7 +138,7 @@ public class TurnManager : MonoBehaviour
         {
             // Proceed to collect bets into the pot, move to the next stage
             
-            BetManager.Instance.CurrentHighestBetAmount = 0;
+            //BetManager.Instance.CurrentHighestBetAmount = 0; bunu sildik çünkü highest bet'i showdown'a kadar tutucaz. (ki o bet'e erisebilene kadar raise/call etsinelr)
 
             switch (GameManager.Instance.GetMainGameState())
             {
@@ -208,7 +209,7 @@ public class TurnManager : MonoBehaviour
         //Show ile UI'da winning hand gösterecek bi mesaj. ShowWinningHand and player Name(indexten çikartilir) 
 
         //Main pot side pot ayarlamalari yapilacak. 
-        int totalPotToSlipt = BetManager.Instance.CurrentPot;
+        int totalPotToSlipt = BetManager.Instance.TempPot;
         if (winningHandResult.IsTie)
         {
             //pot split (not doing side / main pot for now)
@@ -225,7 +226,7 @@ public class TurnManager : MonoBehaviour
         }
 
 
-        BetManager.Instance.CurrentPot = 0; // set pot to zero.
+        BetManager.Instance.TempPot = 0; // set pot to zero.
         List<CardSO> WinningCardList = winningHandResult.WinningCardList;
         bool isItATie = winningHandResult.IsTie;
         CardVisualsManager.Instance.HighlightHand(WinningCardList, winningHandCardCodes, isItATie);

@@ -225,9 +225,10 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayersAction = PlayerAction.Call;
-            var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - BetAmount;
+            Debug.Log("current highest bet: " + BetManager.Instance.CurrentHighestBetAmount);
+            var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - TotalBetInThisRound;
 
-            int maxCallAmount = TotalStackAmount - BetAmount;
+            int maxCallAmount = TotalStackAmount;
             if (callBetAmount >= maxCallAmount)
             {
                 BetManager.Instance.SetBet(this, maxCallAmount);
@@ -282,7 +283,7 @@ public class PlayerManager : MonoBehaviour
                 _isPlayerAllIn = false;
             }
 
-            BetManager.Instance.CurrentHighestBetAmount += betAmount;
+            BetManager.Instance.CurrentHighestBetAmount = TotalBetInThisRound + betAmount;
             UiManager.Instance.ResetFunctionsAndHideButtons();
 
             if (_runningCoroutine != null) // Check if coroutine is running

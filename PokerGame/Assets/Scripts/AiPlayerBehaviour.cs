@@ -34,7 +34,7 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         int highestBetAmount = BetManager.Instance.CurrentHighestBetAmount;
 
-        int ourCurrentBetAmount = _playerManager.BetAmount;
+        int ourCurrentBetAmount = _playerManager.TotalBetInThisRound;
 
         float zeroBetFactor = highestBetAmount == 0 ? 0.5f : 1; // If highest bet is zero, weak hands will call more often, since they wont lose much.
 
@@ -44,6 +44,9 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         float combinedFactor = possibilityFactor * conservativeFactor * zeroBetFactor;
 
+        Debug.Log("Combined factor of player: " + _playerManager.PlayerName + " "+ combinedFactor + " HandStrength " + handStrength);
+
+        Debug.Log("Current Highest bet amount: " + highestBetAmount + "Our current bet amount: " + ourCurrentBetAmount);
 
         if (ourCurrentBetAmount < highestBetAmount)
         {
@@ -169,7 +172,7 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         int highestBetAmount = BetManager.Instance.CurrentHighestBetAmount;
 
-        int ourCurrentBetAmount = _playerManager.BetAmount;
+        int ourCurrentBetAmount = _playerManager.TotalBetInThisRound;
 
         ///!!! IMPORTANT !!! Conservative options are on the left for game-mechanics purposes. The conservative factor will increase the likelyhood of >
         /// selecting the conservative option. To avoid constant raises in betting rounds, AI players tendancy toward making brave moves lessens  over time
@@ -178,6 +181,10 @@ public class AiPlayerBehaviour : MonoBehaviour
         float conservativeFactor = CalculateConservativeFactor(handStrength);
 
         //Debug.Log("After Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
+
+        Debug.Log("conservative factor of player:(preflop) " + _playerManager.PlayerName + " " + conservativeFactor + " HandStrength " + handStrength);
+
+        Debug.Log("Current Highest bet amount: " + highestBetAmount + "Our current bet amount: " + ourCurrentBetAmount);
 
         if (ourCurrentBetAmount < highestBetAmount)
         {
@@ -262,8 +269,8 @@ public class AiPlayerBehaviour : MonoBehaviour
 
     private void CallAction()
     {
-        var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.BetAmount;
-        int maxCallAmount = _playerManager.TotalStackAmount - _playerManager.BetAmount;
+        var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.TotalBetInThisRound;
+        int maxCallAmount = _playerManager.TotalStackAmount;
         if (callBetAmount >= maxCallAmount)
         {
             BetManager.Instance.SetBet(_playerManager, maxCallAmount);
@@ -298,7 +305,7 @@ public class AiPlayerBehaviour : MonoBehaviour
             _playerManager.IsPlayerAllIn = true;
 
         }
-        BetManager.Instance.CurrentHighestBetAmount += raiseBetAmount;
+        BetManager.Instance.CurrentHighestBetAmount = _playerManager.TotalBetInThisRound + raiseBetAmount;
     }
 
     public int CalculateRaiseAmount(HandStrength handStrength)
@@ -308,7 +315,7 @@ public class AiPlayerBehaviour : MonoBehaviour
         int minimumRaiseAmount;
         if (currentHighestBet != 0)
         {
-            minimumRaiseAmount = currentHighestBet * 2 - _playerManager.BetAmount;
+            minimumRaiseAmount = currentHighestBet * 2 - _playerManager.TotalBetInThisRound;
         }
         else // flop and after 
         {
@@ -323,7 +330,7 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         // Ensure the raise does not exceed the player's total stack and adheres to the game's rules
         raiseAmount = Mathf.Max(raiseAmount, minimumRaiseAmount); // At least the minimum raise
-        int totalExpandableStack = _playerManager.TotalStackAmount - _playerManager.BetAmount;
+        int totalExpandableStack = _playerManager.TotalStackAmount;
         raiseAmount = Mathf.Min(raiseAmount, totalExpandableStack); // Do not exceed the player's stack
 
         return raiseAmount;
@@ -360,7 +367,7 @@ public class AiPlayerBehaviour : MonoBehaviour
 
     private float CalculateConservativeFactor(HandStrength handStrength)
     {
-        int currentBet = _playerManager.BetAmount;
+        int currentBet = _playerManager.TotalBetInThisRound;
         int currentStackAmount = _playerManager.TotalStackAmount;
         int highestBet = BetManager.Instance.CurrentHighestBetAmount;
 
