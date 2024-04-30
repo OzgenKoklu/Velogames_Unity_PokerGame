@@ -1,12 +1,14 @@
 
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static pheval.Rank;
 
 public class CardVisualsManager : MonoBehaviour
 {
     [SerializeField] private Transform _cardPrefab;
-    private List<CardBehaviour> allActiveCards = new List<CardBehaviour>();
+    private List<CardBehaviour> _allActiveCards = new List<CardBehaviour>();
+    private List<CardBehaviour> _allSpawnedCards = new List<CardBehaviour>();
 
     public static CardVisualsManager Instance { get; private set; }
     private void Awake()
@@ -31,8 +33,39 @@ public class CardVisualsManager : MonoBehaviour
         CardBehaviour cardObject = cardObjectTransform.GetComponent<CardBehaviour>();
         cardObject.SetCardScriptableObject(cardSO);
         cardObject.SetCardTransform(cardParent.GetCardFollowTransform());
-        allActiveCards.Add(cardObject);
+        _allSpawnedCards.Add(cardObject);
+        _allActiveCards.Add(cardObject);
         return cardObject;
+    }
+
+    public bool IsThereAnySpawnedCards()
+    {
+        if (_allSpawnedCards.Count != 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void DestroyAllActiveCards()
+    {
+        // Loop through each CardBehaviour in the list
+        foreach (CardBehaviour activeCard in _allSpawnedCards)
+        {
+            // Check if the activeCard has a valid attached GameObject
+            if (activeCard != null && activeCard.gameObject != null)
+            {
+                // Destroy the attached GameObject using Destroy()
+                Destroy(activeCard.gameObject);
+            }
+        }
+
+        // Clear the allActiveCards list (optional)
+        _allSpawnedCards.Clear();
+        _allActiveCards.Clear();
     }
 
     public void HighlightHand(List<CardSO> WinningCardList, string winningHandCode, bool isTie)
@@ -87,14 +120,14 @@ public class CardVisualsManager : MonoBehaviour
         foreach (var cardSO in cardSOList)
         {
             CardBehaviour cardToRemove = cardSO.CardBehavior;
-            allActiveCards.Remove(cardToRemove);
+            _allActiveCards.Remove(cardToRemove);
         }
     }
 
     //Triggering these two in showdown but it might happen earlier if all the active players go "All in" 
     public void GetToShowdownPosition()
     {
-        foreach (CardBehaviour cardBehaviour in allActiveCards)
+        foreach (CardBehaviour cardBehaviour in _allActiveCards)
         {
             cardBehaviour.GetToShowDownPosition();
         }
@@ -103,7 +136,7 @@ public class CardVisualsManager : MonoBehaviour
     //Triggering these two in showdown but it might happen earlier if all the active players go "All in" 
     public void FlipAllCards()
     {
-        foreach (CardBehaviour cardBehaviour in allActiveCards)
+        foreach (CardBehaviour cardBehaviour in _allActiveCards)
         {
             cardBehaviour.FlipCard();
         }

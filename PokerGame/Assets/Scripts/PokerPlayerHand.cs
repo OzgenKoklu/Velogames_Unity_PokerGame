@@ -51,6 +51,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
         }
         else // if player is AI or Online
         {
+            //her tur player elinin kaymasina sebep oluyor LOL
             float newXPosition = transform.position.x + (0.6f * (HoleCardsList.Count - 1));
             float newRotationAngle = initialRotationAngle + (rotationAngleMultiplier * (HoleCardsList.Count - 1));
 

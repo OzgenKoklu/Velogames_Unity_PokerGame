@@ -339,6 +339,14 @@ public class BetManager : MonoBehaviour
         return pots;
     }
 
+    public void ResetForTheNewRound()
+    {
+        CurrentHighestBetAmount = 0;
+        showdownPots?.Clear();
+        potContributionDictionary?.Clear();
+        BaseRaiseBetAmount = 10;
+    }
+
 }
 
 [Serializable]
@@ -362,11 +370,5 @@ public class Pot
             _eligiblePlayerList.Add(player);
         }
     }
-
-    public bool IsPlayerEligibleForThisPot(PlayerManager player, Pot pot)
-    {
-        if (player.IsFolded) return false;
-        if (player.TotalBetInThisRound >= pot.potLimit) return true;
-        return false;
-    }
+ 
 }

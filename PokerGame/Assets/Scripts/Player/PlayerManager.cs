@@ -90,6 +90,24 @@ public class PlayerManager : MonoBehaviour
     }
     [SerializeField] private bool _isPlayerActive;
 
+    public bool IsBusted
+    {
+        get => _isBusted;
+        set
+        {
+            _isBusted = value;
+            if (value == true)
+            {
+                IsPlayerActive = false;
+            }
+            else
+            {
+                IsPlayerActive = true;
+            }
+        }
+    }
+    private bool _isBusted;
+
     [SerializeField] private TextMeshPro _playerTotalStackText;
 
     public bool IsPlayerDealer
@@ -396,10 +414,32 @@ public class PlayerManager : MonoBehaviour
         _playerTotalStackText.text = $"${stackAmount:N0}";
     }
 
-    public void ResetTurnStatus()
+    public void ResetTurnStatus() //this is for turns inside the betting rounds
     {
         IsPlayerTurn = false;
         HasActedSinceLastRaise = false;
+        _isPlayerFolded = false; //Why? Probably should deleted it. 
+    }
+
+    public void ResetForTheNewRound()
+    {
+        IsPlayerTurn = false;
+        if (TotalStackAmount == 0)
+        {
+            IsBusted = true; //sets IsActive
+        }
+        else
+        {
+            IsBusted = false;
+        }
+        PlayerAction = PlayerAction.Check; //probably no need.
+        HasActedSinceLastRaise = false;
         _isPlayerFolded = false;
+        IsPlayerTurn = false;
+        IsPlayerAllIn = false;
+        IsFolded = false;
+
+        BetAmount = 0;
+        TotalBetInThisRound = 0;
     }
 }

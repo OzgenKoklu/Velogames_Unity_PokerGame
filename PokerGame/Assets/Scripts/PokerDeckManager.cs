@@ -2,6 +2,7 @@ using pheval;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static PokerHandEvaluator;
 
 public class PokerDeckManager : MonoBehaviour
@@ -30,7 +31,6 @@ public class PokerDeckManager : MonoBehaviour
         Instance = this;
         LoadDeck();
         InitializePlayers();
-        ShuffleDeck();
     }
 
     private void Start()
@@ -42,16 +42,10 @@ public class PokerDeckManager : MonoBehaviour
     {
         if (obj == GameManager.GameState.NewRound)
         {
+            ResetDeck(); //shuffles, adds the discard pile to the deck
             DealCardsToPlayers();
             //bu yaklaþým sýkýntýlý çünkü diðer scriptlerdeki "newRound'da olmasý gereken iþlemlerin tamamlandýðýna emin olmadan state'i ilerletiyor. 
             //Preflop'a geçiren aþama BetManager'dayken buradaki kart daðýtým iþlemleri olmadan ilerliyordu. Belki courotine baþlatýlmalý ve böylece paralel olarak ilerlemeli bazý iþlemler.
-            return;
-        }
-
-        if (obj == GameManager.GameState.PreFlop)
-        {
-
-
             return;
         }
 
@@ -90,12 +84,6 @@ public class PokerDeckManager : MonoBehaviour
             return;
         }
 
-        if (obj == GameManager.GameState.GameOver)
-        {
-            //reset the deck
-            ResetDeck();
-            return;
-        }
     }
 
     // Load all cards from DeckSO into the deck List
@@ -138,9 +126,24 @@ public class PokerDeckManager : MonoBehaviour
 
     public void ResetDeck()
     {
+        bool anySpawnedCards = CardVisualsManager.Instance.IsThereAnySpawnedCards();
+        if (anySpawnedCards)
+        {
+            CardVisualsManager.Instance.DestroyAllActiveCards();
+        }
+        _communityCards.ClearCards();
+        foreach (var playerHand in _playerHands)
+        {
+            if(playerHand.HoleCardsList.Count != 0)
+            {
+                playerHand.ClearCards();
+            }
+        }
+
         _pokerDeck.AddRange(_discardPile); // Add all cards from discard pile back to the deck
         _discardPile.Clear(); // Clear the discard pile
         ShuffleDeck(); // Shuffle the deck
+       
     }
 
     private void DrawInitialCommunityCards()
@@ -208,26 +211,6 @@ public class PokerDeckManager : MonoBehaviour
             _aiPlayerThreeHand,
             _aiPlayerFourHand
         };
-    }
-
-    public List<PokerPlayerHand> GetPlayerHands()
-    {
-        return _playerHands;
-    }
-
-    public List<List<CardSO>> GetAllPlayerHands()
-    {
-        List<List<CardSO>> allHands = new List<List<CardSO>>();
-
-        // Add each player's combined hand to the list
-
-        allHands.Add(_aiPlayerOneHand.GetCardListWithCommunityCardsAdded());
-        allHands.Add(_aiPlayerTwoHand.GetCardListWithCommunityCardsAdded());
-        allHands.Add(_playerHand.GetCardListWithCommunityCardsAdded()); // index 2
-        allHands.Add(_aiPlayerThreeHand.GetCardListWithCommunityCardsAdded());
-        allHands.Add(_aiPlayerFourHand.GetCardListWithCommunityCardsAdded());
-
-        return allHands;
     }
 
     public List<CardSO> CombineHandWithCommunityCards(List<CardSO> playerHand)

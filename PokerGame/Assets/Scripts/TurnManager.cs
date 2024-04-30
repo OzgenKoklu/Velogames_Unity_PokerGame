@@ -34,8 +34,7 @@ public class TurnManager : MonoBehaviour
         switch (state)
         {
             case GameManager.GameState.PreFlop:
-                _isPreFlop = true;
-                ResetAllPlayersActiveStatus(); //resetting flop/inactive status
+                _isPreFlop = true;      
                 SetFirstPlayer(IsPreFlop); //true for IsPreFlop
                 GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
                 break;
@@ -43,7 +42,6 @@ public class TurnManager : MonoBehaviour
                 OnPlayerTurn?.Invoke(CurrentPlayer);
                 break;
             case GameManager.GameState.Flop:
-
                 break;
             case GameManager.GameState.PostFlop:
                 _isPreFlop = false;
@@ -103,16 +101,7 @@ public class TurnManager : MonoBehaviour
         return;
     }
 
-    private void ResetAllPlayersActiveStatus()
-    {
-        var activePlayers = GameManager.Instance.ActivePlayers;
-        foreach (var player in activePlayers)
-        {
-            player.IsPlayerActive = true;
-            player.HasActedSinceLastRaise = false;
-            player.IsPlayerAllIn = false;
-        }
-    }
+
 
     private void ExecuteAIMovePostFlop()
     {
