@@ -50,6 +50,14 @@ public class PlayerUI : MonoBehaviour
         {
             _betRaiseCallMoneyText.gameObject.SetActive(true);
             _betRaiseCallMoneyText.text = betAmount.ToString() + " $";
+
+            if (player.IsPlayerAllIn)
+            {
+                _betRaiseCallMoneyText.text = betAmount.ToString() + " $ ALL IN ";
+            }
+        }else if(player == null)
+        {
+            _betRaiseCallMoneyText.gameObject.SetActive(false);
         }
     }
 

@@ -54,11 +54,13 @@ public class BetManager : MonoBehaviour
     }
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
-        _currentState = state;
+         _currentState = state;
 
         if (state == GameManager.GameState.Showdown)
         {
             showdownPots = DevideIntoPots();
+
+            OnBetUpdated?.Invoke(null, -1); // for resetting the bet amount
 
             int potCount = showdownPots.Count;
 
@@ -91,8 +93,7 @@ public class BetManager : MonoBehaviour
 
     private void DealerManager_OnDealerChanged(PlayerManager dealerPlayer)
     {
-        if (_currentState == GameManager.GameState.NewRound)
-        {
+        
             PlayerManager smallBlind = DealerManager.Instance.GetSmallBlind();
             SetBet(smallBlind, _baseRaiseAmount / 2);
             CollectBets(DealerManager.Instance.GetSmallBlind()); // rotus cekelim
@@ -103,10 +104,7 @@ public class BetManager : MonoBehaviour
           
             _currentHighestBetAmount = _baseRaiseAmount;
             
-            GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
-
-
-        }
+            GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);        
     }
 
     public void SetBet(PlayerManager player, int betAmount)

@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     private GameState _currentMainGameState;
     private GameState _currentGameState;
     private bool _isGameStarted = false;
+    private int _roundCount;
 
     public List<PlayerManager> Players => _players;
     [SerializeField] private List<PlayerManager> _players;
@@ -49,11 +50,13 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        _roundCount = 0;
     }
 
     private void Update()
     {
-        //Debug.Log(_currentGameState);
+        Debug.Log(_currentGameState);
     }
 
     private void Start()
@@ -81,6 +84,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGameRound()
     {
+        _roundCount += 1;
         BetManager.Instance.ResetForTheNewRound();
         ResetAllPlayersRoundStatus(); //resetting flop/inactive status
         SetGameState(GameState.NewRound);
@@ -109,11 +113,21 @@ public class GameManager : MonoBehaviour
         OnGameStateChanged?.Invoke(_currentGameState);
     }
 
+    public int GetBettingRoundCount()
+    {
+        return _roundCount;
+    }
+
     private void ResetAllPlayersRoundStatus()
     {
+        _activePlayers.Clear();
         foreach (var player in Players)
         {
             player.ResetForTheNewRound();
+            if (player.IsPlayerActive)
+            {
+                _activePlayers.Add(player);
+            }
         }
     }
 

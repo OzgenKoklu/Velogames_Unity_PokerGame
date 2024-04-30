@@ -21,7 +21,7 @@ public class DealerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        _currentDealer = GameManager.Instance.ActivePlayers[0];
+       
         GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
 
@@ -39,22 +39,17 @@ public class DealerManager : MonoBehaviour
 
         if (GameManager.Instance != null && players.Count > 0)
         {
+            int bettingRoundCount = GameManager.Instance.GetBettingRoundCount();
+            SelectDealerIndex(bettingRoundCount);
             // Check if GameManager instance and Players list are valid
-            // Debug.Log("GameManager and Players list are valid");
+             Debug.Log("GameManager and Players list are valid");
 
             // Attempt to set the IsPlayerDealer property
-            var currentDealerIndex = players.IndexOf(_currentDealer);
             _currentDealer.IsPlayerDealer = true;
             SetSmallAndBigBlind();
             //Debug.Log("Player set as dealer");
             OnDealerChanged?.Invoke(_currentDealer);
 
-            currentDealerIndex++;
-            // Check if the current dealer index is greater than the number of players
-            if (currentDealerIndex == players.Count)
-            {
-                currentDealerIndex = 0;
-            }
         }
         else
         {
@@ -81,26 +76,31 @@ public class DealerManager : MonoBehaviour
     {
         var players = GameManager.Instance.Players;
         var currentDealerIndex = players.IndexOf(_currentDealer);
+        var BlindIndex = currentDealerIndex + 1;
+        BlindIndex = BlindIndex % 5; // guarantees it wont be bigger than player count (0,1,2,3,4)
 
-        if (currentDealerIndex + 1 >= players.Count)
-        {
-            _smallBlind = players[0];
-        }
-        else
-        {
-            _smallBlind = players[players.IndexOf(_currentDealer) + 1];
-        }
+        //!!! write some conditions to support less than 3 active players. !!!
 
-        if (currentDealerIndex + 2 >= players.Count)
+        do
         {
-            _bigBlind = players[1];
-            _firstPlayerAfterBigBlind = players[players.IndexOf(_currentDealer) + 1];
-        }
-        else
+            _smallBlind = GameManager.Instance.Players[BlindIndex];
+            BlindIndex++; //will be used to find big blind so incrementing it is ok.
+            BlindIndex = BlindIndex % 5; 
+        } while (!_smallBlind.IsPlayerActive);
+
+        do
         {
-            _bigBlind = players[players.IndexOf(_currentDealer) + 2];
-            _firstPlayerAfterBigBlind = players[players.IndexOf(_bigBlind) + 1];
-        }
+            _bigBlind = GameManager.Instance.Players[BlindIndex];
+            BlindIndex++; //will be used to find firs player after big blind so incrementing is ok.
+            BlindIndex = BlindIndex % 5;
+        } while (!_bigBlind.IsPlayerActive);
+
+        do
+        {
+            _firstPlayerAfterBigBlind = GameManager.Instance.Players[BlindIndex];
+            BlindIndex++; //will be used to find firs player after big blind so incrementing is ok.
+            BlindIndex = BlindIndex % 5;
+        } while (!_firstPlayerAfterBigBlind.IsPlayerActive);
 
         OnSmallBlindChanged?.Invoke(_smallBlind);
         OnBigBlindChanged?.Invoke(_bigBlind);
@@ -144,6 +144,23 @@ public class DealerManager : MonoBehaviour
     public PlayerManager GetFirstPlayerAfterBigBlind()
     {
         return _firstPlayerAfterBigBlind;
+    }
+
+    public void SelectDealerIndex(int bettingRoundCount)
+    {
+        if(_currentDealer != null) _currentDealer.IsPlayerDealer = false;
+
+        int dealerIndex = bettingRoundCount - 1;
+        dealerIndex = dealerIndex % 5;
+        //Itterates through player index's until it finds a valid dealer
+        do
+        {
+            _currentDealer = GameManager.Instance.Players[dealerIndex];
+            dealerIndex++;
+            dealerIndex = dealerIndex % 5;
+        } while (!_currentDealer.IsPlayerActive);
+
+        Debug.Log("current dealer player set as: " + _currentDealer.name);
     }
 
     private void OnDisable()

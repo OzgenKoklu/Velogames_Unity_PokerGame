@@ -57,7 +57,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
             //her tur player elinin kaymasina sebep oluyor LOL
             float newXPosition = _handFollowTransform.position.x + (0.6f * (HoleCardsList.Count - 1));
             float newRotationAngle = initialRotationAngle + (rotationAngleMultiplier * (HoleCardsList.Count - 1));
-            Debug.Log("Hand follow transform x: " + _handFollowTransform.position.x + "New  x psition:" + newXPosition + " Hole cards count: "+ HoleCardsList.Count);
+           // Debug.Log("Hand follow transform x: " + _handFollowTransform.position.x + "New  x psition:" + newXPosition + " Hole cards count: "+ HoleCardsList.Count);
             cardTransform.localScale = Vector3.one * aiScaleMultiplier;
             cardTransform.SetPositionAndRotation(new Vector2(newXPosition, _handFollowTransform.position.y), Quaternion.AngleAxis(newRotationAngle, Vector3.forward));
         }
