@@ -12,6 +12,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     [SerializeField] private AiPlayerBehaviour _aiPlayerBehavior;
 
     [Header("Card Transform Values:")]
+    private Vector3 initialHandTransformPosition;
     [SerializeField] private float initialXOffset = -10.6f;
     [SerializeField] private float xOffsetMultiplier = 1.2f;
     [SerializeField] private float initialRotationAngle = 15f;
@@ -23,6 +24,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     private void Awake()
     {
         HoleCardsList = new List<CardSO>();
+        initialHandTransformPosition = _handFollowTransform.position;
     }
 
     public void AddCard(CardSO newCard)
@@ -37,11 +39,12 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     public void ClearCards()
     {
         HoleCardsList?.Clear();
+        _handFollowTransform.position = initialHandTransformPosition;
     }
 
     public Transform GetCardFollowTransform()
     {
-        Transform cardTransform = _handFollowTransform;
+        Transform cardTransform = _handFollowTransform.transform;
 
         if (_isPlayerUs)
         {
@@ -52,11 +55,11 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
         else // if player is AI or Online
         {
             //her tur player elinin kaymasina sebep oluyor LOL
-            float newXPosition = transform.position.x + (0.6f * (HoleCardsList.Count - 1));
+            float newXPosition = _handFollowTransform.position.x + (0.6f * (HoleCardsList.Count - 1));
             float newRotationAngle = initialRotationAngle + (rotationAngleMultiplier * (HoleCardsList.Count - 1));
-
+            Debug.Log("Hand follow transform x: " + _handFollowTransform.position.x + "New  x psition:" + newXPosition + " Hole cards count: "+ HoleCardsList.Count);
             cardTransform.localScale = Vector3.one * aiScaleMultiplier;
-            cardTransform.SetPositionAndRotation(new Vector2(newXPosition, transform.position.y), Quaternion.AngleAxis(newRotationAngle, Vector3.forward));
+            cardTransform.SetPositionAndRotation(new Vector2(newXPosition, _handFollowTransform.position.y), Quaternion.AngleAxis(newRotationAngle, Vector3.forward));
         }
 
         return cardTransform;
