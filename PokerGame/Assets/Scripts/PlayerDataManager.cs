@@ -8,16 +8,12 @@ public class PlayerDataManager : MonoBehaviour
 
     public const string FilePathForJson = "Assets/Resources/playerData.json";
 
-    private void OnEnable()
-    {
-
-    }
-
-
-
     private void Start()
     {
         MainPlayer.PlayerData = LoadPlayerData();
+
+        UpdateLocalFields();
+        //_mainPlayerData = MainPlayer.PlayerData;
 
         GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
         GameManager.Instance.OnTournamentStarted += GameManager_OnTournamentStarted;
@@ -25,19 +21,6 @@ public class PlayerDataManager : MonoBehaviour
         BetManager.Instance.OnMainPlayerWin += BetManager_OnMainPlayerWin;
     }
 
-    /*
-    public int Id { get; set; }
-    public string Name { get; set; }
-
-    //PLAYER STATS
-    public int CurrentBalance { get; set; } (maybe login bonus - > TotalMoney - 1000 (Tournament feed), + - whatever comes out of the tournament.
-    public int TournamentsWon { get; set; } --->Check 
-    public int TournamentsAttended { get; set; }--->Check 
-    public float PercentageOfHandsWon { get; set; }--->Check allhandWon/attended 
-    public float PercentageOfAllInsWon { get; set; }--->Check  allInWon/allInAttended
-    public float ShowDownsWon { get; set; } --->Check 
-    public float ShowDownsAttended { get; set; }--->Check 
-*/
     int _tournamentsAttended;
     int _tournamentsWon;
 
@@ -86,6 +69,8 @@ public class PlayerDataManager : MonoBehaviour
             {
                 _allInShowdownsAttended++;
             }
+
+            SavePlayerData();
         }
         else if (state == GameManager.GameState.EveryoneFolded)
         {
@@ -94,12 +79,17 @@ public class PlayerDataManager : MonoBehaviour
                 _allHandsAttended++;
                 _allHandsWon++;
             }
+
+            SavePlayerData();
         }
     }
 
     public void SavePlayerData()
     {
-        string jsonData = JsonUtility.ToJson(MainPlayer.PlayerData);
+        //if (_mainPlayerData == null) return; 
+        UpdatePlayerData();
+        PlayerData playerData = MainPlayer.PlayerData;
+        string jsonData = JsonUtility.ToJson(playerData);
 
         try
         {
@@ -112,9 +102,35 @@ public class PlayerDataManager : MonoBehaviour
         }
     }
 
+    private void UpdatePlayerData()
+    {
+        PlayerData playerData = MainPlayer.PlayerData;
+        playerData.TournamentsWon = _tournamentsWon;
+        playerData.TournamentsAttended = _tournamentsAttended;
+        playerData.AllHandsWon = _allHandsWon;
+        playerData.AllHandsAttended = _allHandsAttended;
+        playerData.AllInShowdownsWon = _allInShowdownsWon;
+        playerData.AllInShowdownsAttended = _allInShowdownsAttended;
+        playerData.ShowDownsWon = _showDownsWon;
+        playerData.ShowDownsAttended = _showDownsAttended;
+    }
+
+    private void UpdateLocalFields()
+    {
+        PlayerData playerData = MainPlayer.PlayerData;
+        _tournamentsWon = playerData.TournamentsWon;
+        _tournamentsAttended = playerData.TournamentsAttended;
+        _allHandsWon = playerData.AllHandsWon;
+        _allHandsAttended = playerData.AllHandsAttended;
+        _allInShowdownsWon = playerData.AllInShowdownsWon;
+        _allInShowdownsAttended = playerData.AllInShowdownsAttended;
+        _showDownsWon = playerData.ShowDownsWon;
+        _showDownsAttended = playerData.ShowDownsAttended;
+    }
+
     public PlayerData LoadPlayerData()
     {
-        PlayerData playerData = new PlayerData() { Name = "DefaultName" };
+        PlayerData playerData = new PlayerData();
         if (!File.Exists(FilePathForJson))
         {
             Debug.Log("Player data file not found. Creating a new one.");
