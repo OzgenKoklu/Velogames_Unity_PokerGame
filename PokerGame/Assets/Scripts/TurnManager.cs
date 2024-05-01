@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -34,7 +33,7 @@ public class TurnManager : MonoBehaviour
         switch (state)
         {
             case GameManager.GameState.PreFlop:
-                _isPreFlop = true;      
+                _isPreFlop = true;
                 SetFirstPlayer(IsPreFlop); //true for IsPreFlop
                 GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
                 break;
@@ -95,7 +94,7 @@ public class TurnManager : MonoBehaviour
             Debug.Log("After the flop, first player selected as: " + firstPlayer);
         }
 
-        if(firstPlayer != null)
+        if (firstPlayer != null)
         {
             CurrentPlayer = firstPlayer;
             _currentPlayerIndex = activePlayers.IndexOf(CurrentPlayer);

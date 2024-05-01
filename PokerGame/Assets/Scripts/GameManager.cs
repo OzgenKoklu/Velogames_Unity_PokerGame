@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     public static event Action<GameState> OnGameStateChanged; // !!! Reset static event if it need to be used in multiple scenes
-    [SerializeField] private Button _newRoundButton;
-
+    public event Action OnTournamentStarted;
+    public event Action OnMainPlayerWinsTheTournament;
     public enum GameState
     {
         NewRound,       // Setup for a new round of poker
@@ -62,7 +61,6 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         PlayerManager.OnPlayerFolded += PlayerManager_OnPlayerFolded;
-        _newRoundButton.onClick.AddListener(StartGameRound);
         StartGame();
     }
 
@@ -74,6 +72,7 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         _isGameStarted = true;
+        OnTournamentStarted?.Invoke();
         StartGameRound();
     }
 
@@ -84,11 +83,27 @@ public class GameManager : MonoBehaviour
 
     public void StartGameRound()
     {
-        _roundCount += 1;
         BetManager.Instance.ResetForTheNewRound();
         ResetAllPlayersRoundStatus(); //resetting flop/inactive status
-        SetGameState(GameState.NewRound);
-        //SetPlayerStacks();       
+
+        bool continueGame = CheckIfEnoughPlayersAreRemaining();
+
+        if (continueGame)
+        {
+            _roundCount += 1;
+            SetGameState(GameState.NewRound);
+        }
+        else
+        {
+            Debug.Log("Time To Conclude the game.  Winner: " + _activePlayers[0].PlayerName);
+
+            /// !!! REPLAY GAME BUTTON - WINNER ANOUNCEMENT - SAVE PLAYER DATA ETCETC
+            /// !!! DIKKAT
+            if (_activePlayers[0] == MainPlayer)
+            {
+                OnMainPlayerWinsTheTournament?.Invoke();
+            }
+        }
     }
 
     public void SetGameState(GameState newState)
@@ -111,6 +126,11 @@ public class GameManager : MonoBehaviour
         _currentGameState = newState;
 
         OnGameStateChanged?.Invoke(_currentGameState);
+    }
+
+    public bool CheckIfEnoughPlayersAreRemaining()
+    {
+        return (_activePlayers.Count > 1);
     }
 
     public int GetBettingRoundCount()
@@ -149,4 +169,6 @@ public class GameManager : MonoBehaviour
     {
         return _currentMainGameState;
     }
+
 }
+
