@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     public static event Action<GameState> OnGameStateChanged; // !!! Reset static event if it need to be used in multiple scenes
-    [SerializeField] private Button _newRoundButton;
 
     public enum GameState
     {
@@ -62,7 +60,6 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         PlayerManager.OnPlayerFolded += PlayerManager_OnPlayerFolded;
-        _newRoundButton.onClick.AddListener(StartGameRound);
         StartGame();
     }
 
@@ -149,4 +146,6 @@ public class GameManager : MonoBehaviour
     {
         return _currentMainGameState;
     }
+
 }
+

@@ -14,6 +14,25 @@ public class PlayerManager : MonoBehaviour
 
     public float maxThinkTime = 10f; // Maximum time for make a move
     private Coroutine _runningCoroutine;
+
+    public PlayerData PlayerData
+    {
+        get => _playerData;
+        set
+        {
+            _playerData = value;
+            if(_playerData.Name == "" || _playerData == null)
+            {
+                _playerData.Name = PlayerName;
+                //GameManager.Instance.SavePlayerData();
+            }
+
+
+        }
+        
+    }
+    private PlayerData _playerData;
+
     public string PlayerName
     {
         get => _playerName;
