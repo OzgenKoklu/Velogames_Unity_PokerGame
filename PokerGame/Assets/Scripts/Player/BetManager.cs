@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using TMPro;
 using UnityEngine;
 
 public class BetManager : MonoBehaviour
@@ -36,8 +38,13 @@ public class BetManager : MonoBehaviour
     }
     [SerializeField] private int _baseRaiseAmount = 10;
 
-    private GameManager.GameState _currentState;
+
     [SerializeField] public List<Pot> showdownPots;
+
+    //GECICI BURDA
+    [SerializeField] private TextMeshProUGUI _winningResultText;
+    private Coroutine _runningCoroutine;
+    private float _resultsTimer = 5f;
 
     private void Awake()
     {
@@ -53,8 +60,7 @@ public class BetManager : MonoBehaviour
         DealerManager.Instance.OnDealerChanged += DealerManager_OnDealerChanged;
     }
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
-    {
-         _currentState = state;
+    {      
 
         if (state == GameManager.GameState.Showdown)
         {
@@ -68,27 +74,53 @@ public class BetManager : MonoBehaviour
 
             CardVisualsManager.Instance.FlipAllCards();
             CardVisualsManager.Instance.GetToShowdownPosition();
-
+            string winningResult = "";
             for (int i = 0; i < potCount; i++)
             {
+                
                 var eligiblePlayersForThisPot = showdownPots[i]._eligiblePlayerList;
                 PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(eligiblePlayersForThisPot);
                 Debug.Log("Winning result for the pot index " + i + " is " + winningHandResult.WinnerList[0]);
+
+                winningResult = winningHandResult.WinnerList[0].PlayerName + " wins the main pot. Amount: " + showdownPots[i].MoneyInPot; 
                 HandleWinningHandResult(winningHandResult, showdownPots[i]);
             }
+            //GameManager.Instance.ConcludeBettingRound();
+
+            
+            _runningCoroutine = StartCoroutine(ResultsCoroutine(winningResult));
         }
         else if (state == GameManager.GameState.EveryoneFolded)
         {
             showdownPots = DevideIntoPots();
 
-            var player = GameManager.Instance.ActivePlayers;
+            List<PlayerManager> player = GameManager.Instance.ActivePlayers;
             Debug.Log("Before Money transfer, total chips : " + player[0].TotalStackAmount);
-
+            string winningResultText = player[0].PlayerName + " wins the blinds. Amount:" + showdownPots[0].MoneyInPot;
             player[0].TotalStackAmount += showdownPots[0].MoneyInPot;
             Debug.Log("After Money transfer, total chips : " + player[0].TotalStackAmount);
             showdownPots[0].MoneyInPot = 0;
+            //GameManager.Instance.ConcludeBettingRound();
 
+            
+            _runningCoroutine = StartCoroutine(ResultsCoroutine(winningResultText));
         }
+    }
+
+    IEnumerator ResultsCoroutine(string winningResult)
+    {
+        float startTime = Time.time;
+
+        _winningResultText.text = winningResult;
+
+        while (Time.time - startTime < _resultsTimer)
+        { 
+            yield return null; 
+        }
+
+        _winningResultText.text = "";
+
+        GameManager.Instance.StartGameRound();
     }
 
     private void DealerManager_OnDealerChanged(PlayerManager dealerPlayer)

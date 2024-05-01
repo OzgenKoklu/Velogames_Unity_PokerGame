@@ -21,7 +21,7 @@ public class DealerManager : MonoBehaviour
 
     private void OnEnable()
     {
-       
+
         GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
 
@@ -42,7 +42,7 @@ public class DealerManager : MonoBehaviour
             int bettingRoundCount = GameManager.Instance.GetBettingRoundCount();
             SelectDealerIndex(bettingRoundCount);
             // Check if GameManager instance and Players list are valid
-             Debug.Log("GameManager and Players list are valid");
+            Debug.Log("GameManager and Players list are valid");
 
             // Attempt to set the IsPlayerDealer property
             _currentDealer.IsPlayerDealer = true;
@@ -85,7 +85,7 @@ public class DealerManager : MonoBehaviour
         {
             _smallBlind = GameManager.Instance.Players[BlindIndex];
             BlindIndex++; //will be used to find big blind so incrementing it is ok.
-            BlindIndex = BlindIndex % 5; 
+            BlindIndex = BlindIndex % 5;
         } while (!_smallBlind.IsPlayerActive);
 
         do
@@ -108,6 +108,37 @@ public class DealerManager : MonoBehaviour
 
     public PlayerManager GetFirstActivePlayerFromDealer()
     {
+        bool isPlayerAvailableForTurn;
+        var players = GameManager.Instance.Players;
+        PlayerManager playerToCheck;
+        PlayerManager selectedPlayer = null;
+
+        int playerIndex = players.IndexOf(_smallBlind);
+        int loopLimit = players.Count;
+        int loopCounter = 0;
+
+        do
+        {
+            playerToCheck = players[playerIndex];
+
+            isPlayerAvailableForTurn = (!playerToCheck.IsPlayerAllIn && playerToCheck.IsPlayerActive);
+
+            if (isPlayerAvailableForTurn)
+            {
+                selectedPlayer = playerToCheck;
+                break;
+            }
+
+            playerIndex++;
+            loopCounter++;
+            playerIndex %= 5;
+
+        } while (isPlayerAvailableForTurn == false && loopCounter < loopLimit);
+
+        return selectedPlayer; // can return null, if null, means no one has to make any further move (
+                               // e.g.  2 players left, one is all in the other isnt. Game should not get stuck at that point due to this being null.
+
+        /*
         if (_smallBlind.IsPlayerActive && !_smallBlind.IsPlayerAllIn)
         {
             return _smallBlind;
@@ -139,6 +170,7 @@ public class DealerManager : MonoBehaviour
                 Debug.Log("No active player!");
             }
         }
+        */
     }
 
     public PlayerManager GetFirstPlayerAfterBigBlind()
@@ -148,7 +180,7 @@ public class DealerManager : MonoBehaviour
 
     public void SelectDealerIndex(int bettingRoundCount)
     {
-        if(_currentDealer != null) _currentDealer.IsPlayerDealer = false;
+        if (_currentDealer != null) _currentDealer.IsPlayerDealer = false;
 
         int dealerIndex = bettingRoundCount - 1;
         dealerIndex = dealerIndex % 5;

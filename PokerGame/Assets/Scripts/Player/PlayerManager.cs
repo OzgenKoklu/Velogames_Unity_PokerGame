@@ -96,6 +96,7 @@ public class PlayerManager : MonoBehaviour
         set
         {
             _isBusted = value;
+            OnPlayerActiveChanged?.Invoke(!value);
             if (value == true)
             {
                 IsPlayerActive = false;

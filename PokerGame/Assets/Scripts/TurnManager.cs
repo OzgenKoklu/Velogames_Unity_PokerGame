@@ -95,22 +95,18 @@ public class TurnManager : MonoBehaviour
             Debug.Log("After the flop, first player selected as: " + firstPlayer);
         }
 
-        CurrentPlayer = firstPlayer;
-        _currentPlayerIndex = activePlayers.IndexOf(CurrentPlayer);
-
-        return;
+        if(firstPlayer != null)
+        {
+            CurrentPlayer = firstPlayer;
+            _currentPlayerIndex = activePlayers.IndexOf(CurrentPlayer);
+        }
+        else
+        {
+            //If Player is null, means all players are all in, cant make a move.
+            // change the turn, flop>river> etc. 
+        }
     }
 
-
-
-    private void ExecuteAIMovePostFlop()
-    {
-        CurrentPlayer.PlayerAction = CurrentPlayer.PlayerHand.AiBotActionPostFlop();
-        //_previousPlayerAction = CurrentPlayer.PlayerAction; //dont forget to reset it to fold or Null after each betting round ends.
-        _playerMoveInfoText.text = CurrentPlayer.name + " Made the move: " + CurrentPlayer.PlayerAction;
-
-        //ChangePlayerTurn();
-    }
 
     public void ChangePlayerTurn(bool isPreviousPlayerFolded)
     {
