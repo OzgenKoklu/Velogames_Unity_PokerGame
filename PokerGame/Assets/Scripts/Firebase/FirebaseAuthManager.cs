@@ -3,8 +3,8 @@ using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
 using TMPro;
-using System.Xml;
 using System;
+using System.Collections;
 
 public class FirebaseAuthManager : MonoBehaviour
 {
@@ -17,8 +17,11 @@ public class FirebaseAuthManager : MonoBehaviour
     public FirebaseAuth auth;
     public FirebaseUser user;
 
-    public TMP_InputField email;
-    public TMP_InputField password;
+    public TMP_InputField registerEmail;
+    public TMP_InputField registerPassword;
+
+    public TMP_InputField loginEmail;
+    public TMP_InputField loginPassword;
 
     private void Awake()
     {
@@ -67,71 +70,110 @@ public class FirebaseAuthManager : MonoBehaviour
 
     public void RegisterButton()
     {
+        StartCoroutine(RegisterCoroutine());
+    }
+
+    private IEnumerator RegisterCoroutine()
+    {
         string message = "";
 
-        auth.CreateUserWithEmailAndPasswordAsync(email.text, password.text).ContinueWith(task =>
+        var authTask = auth.CreateUserWithEmailAndPasswordAsync(registerEmail.text, registerPassword.text);
+        yield return new WaitUntil(() => authTask.IsCompleted);
+
+        if (authTask.IsCanceled)
         {
-            if (task.IsCanceled)
-            {
-                Debug.LogError("CreateUserWithEmailAndPasswordAsync was canceled.");
-                return;
-            }
-            if (task.IsFaulted)
-            {
-                Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+            Debug.LogError("CreateUserWithEmailAndPasswordAsync was canceled.");
+            yield break;
+        }
+        if (authTask.IsFaulted)
+        {
+            Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + authTask.Exception);
 
-                FirebaseException firebaseException = task.Exception.GetBaseException() as FirebaseException;
-                AuthError errorCode = (AuthError)firebaseException.ErrorCode;
+            FirebaseException firebaseException = authTask.Exception.GetBaseException() as FirebaseException;
+            AuthError errorCode = (AuthError)firebaseException.ErrorCode;
 
-                message = "Register Failed!";
-                switch (errorCode)
-                {
-                    case AuthError.MissingEmail:
-                        message = "Missing Email";
-                        break;
-                    case AuthError.MissingPassword:
-                        message = "Missing Password";
-                        break;
-                    case AuthError.WeakPassword:
-                        message = "Weak Password";
-                        break;
-                    case AuthError.EmailAlreadyInUse:
-                        message = "Email Already In Use";
-                        break;
-                }
-            }
-            else
+            message = "Register Failed!";
+            switch (errorCode)
             {
-                // Firebase user has been created.
-                Firebase.Auth.AuthResult result = task.Result;
-                Debug.LogFormat("Firebase user created successfully: {0} ({1})",
-                    result.User.DisplayName, result.User.UserId);
-                message = "User created successfully.";
+                case AuthError.MissingEmail:
+                    message = "Missing Email";
+                    break;
+                case AuthError.MissingPassword:
+                    message = "Missing Password";
+                    break;
+                case AuthError.WeakPassword:
+                    message = "Weak Password";
+                    break;
+                case AuthError.EmailAlreadyInUse:
+                    message = "Email Already In Use";
+                    break;
             }
+        }
+        else
+        {
+            // Firebase user has been created.
+            Firebase.Auth.AuthResult result = authTask.Result;
+            Debug.LogFormat("Firebase user created successfully: {0} ({1})",
+                result.User.DisplayName, result.User.UserId);
+            message = "User created successfully.";
+        }
 
-            OnRegisterResultMessageChanged?.Invoke(message);
-        });
+        OnRegisterResultMessageChanged?.Invoke(message);
     }
 
     public void LoginButton()
     {
-        auth.SignInWithEmailAndPasswordAsync(email.text, password.text).ContinueWith(task =>
+        StartCoroutine(LoginCoroutine());
+    }
+
+    private IEnumerator LoginCoroutine()
+    {
+        string message = "";
+
+        var authTask = auth.SignInWithEmailAndPasswordAsync(loginEmail.text, loginPassword.text);
+        yield return new WaitUntil(() => authTask.IsCompleted);
+
+        if (authTask.IsCanceled)
         {
-            if (task.IsCanceled)
+            Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
+            message = "Login canceled.";
+            OnLoginResultMessageChanged?.Invoke(message);
+            yield break;
+        }
+        if (authTask.IsFaulted)
+        {
+            Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + authTask.Exception);
+
+            FirebaseException firebaseException = authTask.Exception.GetBaseException() as FirebaseException;
+            AuthError errorCode = (AuthError)firebaseException.ErrorCode;
+
+            switch (errorCode)
             {
-                Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
-                return;
-            }
-            if (task.IsFaulted)
-            {
-                Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
-                return;
+                case AuthError.MissingEmail:
+                    message = "Missing Email";
+                    break;
+                case AuthError.MissingPassword:
+                    message = "Missing Password";
+                    break;
+                case AuthError.WrongPassword:
+                    message = "Wrong Password";
+                    break;
+                case AuthError.InvalidEmail:
+                    message = "Invalid Email";
+                    break;
+                default:
+                    message = "Login Failed";
+                    break;
             }
 
-            Firebase.Auth.AuthResult result = task.Result;
-            Debug.LogFormat("User signed in successfully: {0} ({1})",
-                result.User.DisplayName, result.User.UserId);
-        });
+            OnLoginResultMessageChanged?.Invoke(message);
+            yield break;
+        }
+
+        Firebase.Auth.AuthResult result = authTask.Result;
+        Debug.LogFormat("User signed in successfully: {0} ({1})", result.User.DisplayName, result.User.UserId);
+        message = "Login successful.";
+        OnLoginResultMessageChanged?.Invoke(message);
     }
 
     public void LogoutButton()
