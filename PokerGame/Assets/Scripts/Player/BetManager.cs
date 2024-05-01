@@ -11,6 +11,7 @@ public class BetManager : MonoBehaviour
     public static BetManager Instance { get; private set; }
 
     public event Action<PlayerManager, int> OnBetUpdated;
+    public event Action OnMainPlayerWin;
 
     public int CurrentHighestBetAmount
     {
@@ -60,7 +61,7 @@ public class BetManager : MonoBehaviour
         DealerManager.Instance.OnDealerChanged += DealerManager_OnDealerChanged;
     }
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
-    {      
+    {
 
         if (state == GameManager.GameState.Showdown)
         {
@@ -75,19 +76,27 @@ public class BetManager : MonoBehaviour
             CardVisualsManager.Instance.FlipAllCards();
             CardVisualsManager.Instance.GetToShowdownPosition();
             string winningResult = "";
+            bool mainPlayerWinsAnyPot = false;
             for (int i = 0; i < potCount; i++)
             {
-                
+
                 var eligiblePlayersForThisPot = showdownPots[i]._eligiblePlayerList;
                 PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(eligiblePlayersForThisPot);
                 Debug.Log("Winning result for the pot index " + i + " is " + winningHandResult.WinnerList[0]);
 
-                winningResult = winningHandResult.WinnerList[0].PlayerName + " wins the main pot. Amount: " + showdownPots[i].MoneyInPot; 
+                if (!mainPlayerWinsAnyPot)
+                {
+                    mainPlayerWinsAnyPot = winningHandResult.WinnerList.Any(winner => winner == GameManager.Instance.MainPlayer);
+                }
+
+                winningResult = winningHandResult.WinnerList[0].PlayerName + " wins the main pot. Amount: " + showdownPots[i].MoneyInPot;
                 HandleWinningHandResult(winningHandResult, showdownPots[i]);
             }
             //GameManager.Instance.ConcludeBettingRound();
 
-            
+            if (mainPlayerWinsAnyPot) OnMainPlayerWin?.Invoke(); //does not include complicated win statistics like winning multiple pots. 
+
+
             _runningCoroutine = StartCoroutine(ResultsCoroutine(winningResult));
         }
         else if (state == GameManager.GameState.EveryoneFolded)
@@ -102,7 +111,7 @@ public class BetManager : MonoBehaviour
             showdownPots[0].MoneyInPot = 0;
             //GameManager.Instance.ConcludeBettingRound();
 
-            
+
             _runningCoroutine = StartCoroutine(ResultsCoroutine(winningResultText));
         }
     }
@@ -114,29 +123,31 @@ public class BetManager : MonoBehaviour
         _winningResultText.text = winningResult;
 
         while (Time.time - startTime < _resultsTimer)
-        { 
-            yield return null; 
+        {
+            yield return null;
         }
 
         _winningResultText.text = "";
+
+
 
         GameManager.Instance.StartGameRound();
     }
 
     private void DealerManager_OnDealerChanged(PlayerManager dealerPlayer)
     {
-        
-            PlayerManager smallBlind = DealerManager.Instance.GetSmallBlind();
-            SetBet(smallBlind, _baseRaiseAmount / 2);
-            CollectBets(DealerManager.Instance.GetSmallBlind()); // rotus cekelim
 
-            PlayerManager bigBlind = DealerManager.Instance.GetBigBlind();
-            SetBet(bigBlind, _baseRaiseAmount);
-            CollectBets(bigBlind);//rotus cekelim
-          
-            _currentHighestBetAmount = _baseRaiseAmount;
-            
-            GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);        
+        PlayerManager smallBlind = DealerManager.Instance.GetSmallBlind();
+        SetBet(smallBlind, _baseRaiseAmount / 2);
+        CollectBets(DealerManager.Instance.GetSmallBlind()); // rotus cekelim
+
+        PlayerManager bigBlind = DealerManager.Instance.GetBigBlind();
+        SetBet(bigBlind, _baseRaiseAmount);
+        CollectBets(bigBlind);//rotus cekelim
+
+        _currentHighestBetAmount = _baseRaiseAmount;
+
+        GameManager.Instance.SetGameState(GameManager.GameState.PreFlop);
     }
 
     public void SetBet(PlayerManager player, int betAmount)
@@ -400,5 +411,5 @@ public class Pot
             _eligiblePlayerList.Add(player);
         }
     }
- 
+
 }

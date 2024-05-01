@@ -21,7 +21,7 @@ public class PlayerManager : MonoBehaviour
         set
         {
             _playerData = value;
-            if(_playerData.Name == "" || _playerData == null)
+            if (_playerData.Name == "" || _playerData == null)
             {
                 _playerData.Name = PlayerName;
                 //GameManager.Instance.SavePlayerData();
@@ -29,7 +29,7 @@ public class PlayerManager : MonoBehaviour
 
 
         }
-        
+
     }
     private PlayerData _playerData;
 

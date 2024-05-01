@@ -1,5 +1,4 @@
 using System.IO;
-using UnityEditor.Build;
 using UnityEngine;
 
 public class PlayerDataManager : MonoBehaviour
@@ -11,12 +10,19 @@ public class PlayerDataManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
+
     }
+
+
 
     private void Start()
     {
         MainPlayer.PlayerData = LoadPlayerData();
+
+        GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
+        GameManager.Instance.OnTournamentStarted += GameManager_OnTournamentStarted;
+        GameManager.Instance.OnMainPlayerWinsTheTournament += GameManager_OnMainPlayerWinsTheTournament;
+        BetManager.Instance.OnMainPlayerWin += BetManager_OnMainPlayerWin;
     }
 
     /*
@@ -24,41 +30,69 @@ public class PlayerDataManager : MonoBehaviour
     public string Name { get; set; }
 
     //PLAYER STATS
-    public int CurrentBalance { get; set; }
-    public int TournamentsWon { get; set; }
-    public int TournamentsAttended { get; set; }
-    public float PercentageOfHandsWon { get; set; }
-    public float PercentageOfAllInsWon { get; set; }
-    public float ShowDownsWon { get; set; }
-    public float ShowDownsAttended { get; set; }
+    public int CurrentBalance { get; set; } (maybe login bonus - > TotalMoney - 1000 (Tournament feed), + - whatever comes out of the tournament.
+    public int TournamentsWon { get; set; } --->Check 
+    public int TournamentsAttended { get; set; }--->Check 
+    public float PercentageOfHandsWon { get; set; }--->Check allhandWon/attended 
+    public float PercentageOfAllInsWon { get; set; }--->Check  allInWon/allInAttended
+    public float ShowDownsWon { get; set; } --->Check 
+    public float ShowDownsAttended { get; set; }--->Check 
 */
-    int showDownsAttended;
-    int showDownsWon;
-    int allInShowdownsAttended;
-    int allInShowdownsWon;
-    int allHandsAttended;
-    int allHandsWon;
+    int _tournamentsAttended;
+    int _tournamentsWon;
+
+    int _showDownsAttended;
+    int _showDownsWon;
+
+    int _allInShowdownsAttended;
+    int _allInShowdownsWon;
+
+    int _allHandsAttended;
+    int _allHandsWon;
+
+
+    private void BetManager_OnMainPlayerWin()
+    {
+        if (MainPlayer.IsPlayerAllIn)
+        {
+            _allInShowdownsWon++;
+        }
+        _allHandsWon++;
+        _showDownsWon++;
+        Debug.Log("Main player won.");
+
+    }
+
+    private void GameManager_OnTournamentStarted()
+    {
+        _tournamentsAttended++;
+    }
+
+    private void GameManager_OnMainPlayerWinsTheTournament()
+    {
+        _tournamentsWon++;
+    }
 
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
-        if(state == GameManager.GameState.Showdown)
+        if (state == GameManager.GameState.Showdown)
         {
             if (MainPlayer.IsPlayerActive)
             {
-                allHandsAttended++;
-                showDownsAttended++;
+                _allHandsAttended++;
+                _showDownsAttended++;
             }
-            if(MainPlayer.IsPlayerAllIn)
+            if (MainPlayer.IsPlayerAllIn)
             {
-                allHandsAttended++;
-                allInShowdownsAttended++;
+                _allInShowdownsAttended++;
             }
-        }else if(state == GameManager.GameState.EveryoneFolded)
+        }
+        else if (state == GameManager.GameState.EveryoneFolded)
         {
-            if(MainPlayer.IsPlayerActive)
+            if (MainPlayer.IsPlayerActive)
             {
-                allHandsAttended++;
-                allHandsWon++;
+                _allHandsAttended++;
+                _allHandsWon++;
             }
         }
     }
