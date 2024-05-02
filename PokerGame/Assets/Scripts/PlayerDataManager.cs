@@ -6,6 +6,7 @@ using Firebase.Database;
 using Firebase.Extensions;
 using System;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class PlayerDataManager : MonoBehaviour
 {
@@ -49,7 +50,69 @@ public class PlayerDataManager : MonoBehaviour
         GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
         GameManager.Instance.OnTournamentStarted += GameManager_OnTournamentStarted;
         GameManager.Instance.OnMainPlayerWinsTheTournament += GameManager_OnMainPlayerWinsTheTournament;
+        GameManager.Instance.OnTournamentEnded += GameManager_OnTournamentEnded;
         BetManager.Instance.OnMainPlayerWin += BetManager_OnMainPlayerWin;
+
+
+        //for test
+        UploadPlayerDataToFirebaseForLeaderboard();
+    }
+
+    private void GameManager_OnTournamentEnded()
+    {
+        //Take Player Data _playerData. 
+        //Make some adjustments on it like getting win ratios etc.
+        //upload it to firebase leaderboards. 
+        //for now lets keep it simple, take HandWinRatio = (float) allHandsWon/allHandsAttended. 
+        //Upload it to firebase leaderboards with all the other necessary things.
+        UploadPlayerDataToFirebaseForLeaderboard();
+    }
+
+    private void UploadPlayerDataToFirebaseForLeaderboard()
+    {
+        // Calculate win ratios (optional, adjust calculations as needed)
+        float handWinRatio = _allHandsWon > 0 ? (float)_allHandsWon / _allHandsAttended : 0f;
+        float showdownWinRatio = _showDownsWon > 0 ? (float)_showDownsWon / _showDownsAttended : 0f;
+        float allInWinRatio = _allInShowdownsWon > 0 ? (float)_allInShowdownsWon / _allInShowdownsAttended : 0f;
+        // tournaments won vs attended da olur. 
+        // Prepare leaderboard entry data
+        Dictionary<string, object> leaderboardEntry = new Dictionary<string, object>()
+        {
+            { "playerId", FirebaseUserId }, // Replace with appropriate player ID field if different
+            { "playerName", _playerData.Name }, // Optional: Player name
+            { "handWinRatio", handWinRatio },
+            { "showdownWinRatio", showdownWinRatio },
+            { "allInWinRatio", allInWinRatio },
+         };
+
+        // Upload data to Firebase Realtime Database leaderboard path
+        string leaderboardPath = "leaderboards/pokerStats"; // Replace with your leaderboard path
+        DatabaseReference leaderboardRef = FirebaseDatabase.DefaultInstance.GetReference(leaderboardPath);
+
+        // Here, you can choose between two approaches:
+
+        // Option 1: Push data under a unique identifier (consider using ServerValue.Timestamp)
+        leaderboardRef.Push().SetValueAsync(leaderboardEntry)
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("Error uploading data to leaderboard: " + task.Exception.Message);
+                }
+                else
+                {
+                    Debug.Log("Player data uploaded to leaderboard successfully!");
+                }
+            });
+
+        // Option 2: Update data under player ID (assuming unique player IDs)
+        // leaderboardRef.Child(FirebaseUserId).SetValueAsync(leaderboardEntry)
+        //     .ContinueWithOnMainThread(task =>
+        //     {
+        //       // ... (handle success/failure)
+        //     });
+
+        // Choose the approach that best suits your leaderboard structure and data management needs.
     }
 
     private void Firebase_OnLoginSuccessful()

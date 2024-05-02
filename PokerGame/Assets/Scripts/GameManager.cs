@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public static event Action<GameState> OnGameStateChanged; // !!! Reset static event if it need to be used in multiple scenes
     public event Action OnTournamentStarted;
     public event Action OnMainPlayerWinsTheTournament;
+    public event Action OnTournamentEnded;
     public enum GameState
     {
         NewRound,       // Setup for a new round of poker
@@ -103,6 +104,9 @@ public class GameManager : MonoBehaviour
             {
                 OnMainPlayerWinsTheTournament?.Invoke();
             }
+
+            OnTournamentEnded?.Invoke();
+
         }
     }
 
