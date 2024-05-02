@@ -1,25 +1,165 @@
+using Firebase.Auth;
 using System.IO;
 using UnityEngine;
+using Firebase;
+using Firebase.Database;
+using Firebase.Extensions;
+using System;
 
 public class PlayerDataManager : MonoBehaviour
 {
-    [SerializeField] private PlayerManager MainPlayer;
-    [SerializeField] private PlayerData _mainPlayerData;
+    [SerializeField] private string FirebaseUserId; // Store Firebase user ID here
 
     public const string FilePathForJson = "Assets/Resources/playerData.json";
+    public const string FirebaseDataPath = "playerData";
 
+    //[SerializeField] private PlayerManager MainPlayer;
+    [SerializeField] private PlayerData _playerData;
+    private DatabaseReference _databaseReference;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+        _playerData = LoadPlayerData();
+
+    }
     private void Start()
     {
-        MainPlayer.PlayerData = LoadPlayerData();
-
-        UpdateLocalFields();
-        //_mainPlayerData = MainPlayer.PlayerData;
-
-        GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
-        GameManager.Instance.OnTournamentStarted += GameManager_OnTournamentStarted;
-        GameManager.Instance.OnMainPlayerWinsTheTournament += GameManager_OnMainPlayerWinsTheTournament;
-        BetManager.Instance.OnMainPlayerWin += BetManager_OnMainPlayerWin;
+        FirebaseAuthManager.Instance.OnLoginSuccessful += Firebase_OnLoginSuccessful;
     }
+
+    /*
+    MainPlayer.PlayerData = LoadPlayerData();
+
+    UpdateLocalFields();
+    //_mainPlayerData = MainPlayer.PlayerData;
+
+    GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
+    GameManager.Instance.OnTournamentStarted += GameManager_OnTournamentStarted;
+    GameManager.Instance.OnMainPlayerWinsTheTournament += GameManager_OnMainPlayerWinsTheTournament;
+    BetManager.Instance.OnMainPlayerWin += BetManager_OnMainPlayerWin;
+    */
+
+    private void Firebase_OnLoginSuccessful()
+    {
+        _databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;
+        if (user != null)
+        {
+            FirebaseUserId = user.UserId;
+            DownloadPlayerDataFromFirebase();
+        }
+        else
+        {
+            Debug.LogWarning("Firebase user not logged in. Waiting for login...");
+        }
+
+        DownloadPlayerDataFromFirebase();
+    }
+
+    private async void DownloadPlayerDataFromFirebase()
+    {
+        DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(FirebaseUserId);
+
+        try
+        {
+            DataSnapshot snapshot = await playerDataRef.GetValueAsync();
+
+            if (snapshot.Exists)
+            {
+                string downloadedJson = snapshot.GetValue(true).ToString();  // Use GetValue(true)
+                _playerData = JsonUtility.FromJson<PlayerData>(downloadedJson);
+                Debug.Log("Downloaded player data from Firebase.");
+            }
+            else
+            {
+                Debug.Log("No player data found for user. Creating new one locally and on Firebase.");
+                _playerData = GenerateNewPlayerData();
+                UploadPlayerDataToFirebase();
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error downloading player data: " + e.Message);
+        }
+        /*
+        playerDataRef.GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.LogError("Error downloading player data: " + task.Exception.Message);
+            }
+            else if (task.Result.Exists)
+            {
+                string downloadedJson = task.Result.GetRawValue().ToString();
+                _playerData = JsonUtility.FromJson<PlayerData>(downloadedJson);
+                Debug.Log("Downloaded player data from Firebase.");
+            }
+            else
+            {
+                Debug.Log("No player data found for user. Creating new one locally and on Firebase.");
+                _playerData = GenerateNewPlayerData();
+                UploadPlayerDataToFirebase();
+            }
+        });*/
+    }
+
+    private PlayerData GenerateNewPlayerData()
+    {
+        PlayerData newPlayerData = new PlayerData();
+        newPlayerData.Name = FirebaseUserId + "ID";
+        newPlayerData.Id = FirebaseUserId;
+
+        // Set all other data to zero (or your desired initial values)
+        //newPlayerData.TournamentsAttended = 0;
+        //newPlayerData.TournamentsWon = 0;
+        // ... other data fields ...
+
+        return newPlayerData;
+    }
+
+    private async void UploadPlayerDataToFirebase()
+    {
+        string jsonData = JsonUtility.ToJson(_playerData);
+
+        DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(FirebaseUserId);
+
+        try
+        {
+            await playerDataRef.SetValueAsync(jsonData);
+            Debug.Log("Player data uploaded to Firebase successfully!");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error uploading player data: " + e.Message + "\nInner Exception: " + e.InnerException.Message);
+        }
+
+        /* try
+         {
+             DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(FirebaseUserId);
+
+             playerDataRef.SetValueAsync(jsonData)
+                 .ContinueWithOnMainThread(task =>
+                 {
+                     if (task.IsFaulted)
+                     {
+                         Debug.LogError("Error uploading player data: " + task.Exception.Message);
+                     }
+                     else
+                     {
+                         Debug.Log("Player data uploaded to Firebase successfully!");
+                     }
+                 });
+
+
+         }catch(Exception e)
+         {
+             Debug.LogError("Error uploading player data: " + e.Message + "\nInner Exception: " + e.InnerException.Message);
+         }*/
+    }
+
+
 
     int _tournamentsAttended;
     int _tournamentsWon;
@@ -33,7 +173,7 @@ public class PlayerDataManager : MonoBehaviour
     int _allHandsAttended;
     int _allHandsWon;
 
-
+    /*
     private void BetManager_OnMainPlayerWin()
     {
         if (MainPlayer.IsPlayerAllIn)
@@ -128,6 +268,8 @@ public class PlayerDataManager : MonoBehaviour
         _showDownsAttended = playerData.ShowDownsAttended;
     }
 
+
+    */
     public PlayerData LoadPlayerData()
     {
         PlayerData playerData = new PlayerData();

@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 public class PlayerData
 {
-    public int Id; // { get; set; } // Set From FireBase Maybe. 
+    public string Id; // { get; set; } // Set From FireBase Maybe. 
     public string Name; // { get; set; }
 
     //PLAYER STATS
@@ -25,7 +25,7 @@ public class PlayerData
     public PlayerData()
     {
         // should generate random something but unity engine random does not work for constructor
-        Id = 0;
+        Id = "";
 
         // Generate random name
         Name = "Player" + Id.ToString(); // Combine "Player" with ID

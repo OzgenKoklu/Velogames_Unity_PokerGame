@@ -13,6 +13,8 @@ public class FirebaseAuthManager : MonoBehaviour
     public event Action<string> OnRegisterResultMessageChanged;
     public event Action<string> OnLoginResultMessageChanged;
 
+    public event Action OnLoginSuccessful;
+
     public DependencyStatus DependencyStatus;
     public FirebaseAuth auth;
     public FirebaseUser user;
@@ -48,6 +50,7 @@ public class FirebaseAuthManager : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
 
         auth.StateChanged += AuthStateChanged;
+
         AuthStateChanged(this, null);
     }
 
@@ -173,6 +176,7 @@ public class FirebaseAuthManager : MonoBehaviour
         Firebase.Auth.AuthResult result = authTask.Result;
         Debug.LogFormat("User signed in successfully: {0} ({1})", result.User.DisplayName, result.User.UserId);
         message = "Login successful.";
+        OnLoginSuccessful?.Invoke();
         OnLoginResultMessageChanged?.Invoke(message);
     }
 
