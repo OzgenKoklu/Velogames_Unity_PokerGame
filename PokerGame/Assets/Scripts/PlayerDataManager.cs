@@ -5,40 +5,52 @@ using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
 using System;
+using UnityEngine.SceneManagement;
 
 public class PlayerDataManager : MonoBehaviour
 {
+    public static PlayerDataManager Instance { get; private set; }
     [SerializeField] private string FirebaseUserId; // Store Firebase user ID here
+
+    public event Action OnSuccessfulPlayerDataHandling;
 
     public const string FilePathForJson = "Assets/Resources/playerData.json";
     public const string FirebaseDataPath = "playerData";
 
-    //[SerializeField] private PlayerManager MainPlayer;
+    [SerializeField] private PlayerManager MainPlayer;
     [SerializeField] private PlayerData _playerData;
     private DatabaseReference _databaseReference;
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
         DontDestroyOnLoad(gameObject);
-        _playerData = LoadPlayerData();
+        //_playerData = LoadPlayerData();
 
     }
     private void Start()
     {
         FirebaseAuthManager.Instance.OnLoginSuccessful += Firebase_OnLoginSuccessful;
+        GameSceneManager.Instance.OnSceneLoadCompleted += GameSceneManager_OnSceneLoadCompleted;
     }
 
-    /*
-    MainPlayer.PlayerData = LoadPlayerData();
+    private void GameSceneManager_OnSceneLoadCompleted(Scene scene)
+    {
+        if (scene.buildIndex != 1) return;
+        MainPlayer = GameManager.Instance.MainPlayer;
+        PlayerData playerData = MainPlayer.PlayerData;
+        playerData = _playerData;
 
-    UpdateLocalFields();
-    //_mainPlayerData = MainPlayer.PlayerData;
+        UpdateLocalFields();
 
-    GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
-    GameManager.Instance.OnTournamentStarted += GameManager_OnTournamentStarted;
-    GameManager.Instance.OnMainPlayerWinsTheTournament += GameManager_OnMainPlayerWinsTheTournament;
-    BetManager.Instance.OnMainPlayerWin += BetManager_OnMainPlayerWin;
-    */
+        GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
+        GameManager.Instance.OnTournamentStarted += GameManager_OnTournamentStarted;
+        GameManager.Instance.OnMainPlayerWinsTheTournament += GameManager_OnMainPlayerWinsTheTournament;
+        BetManager.Instance.OnMainPlayerWin += BetManager_OnMainPlayerWin;
+    }
 
     private void Firebase_OnLoginSuccessful()
     {
@@ -71,50 +83,28 @@ public class PlayerDataManager : MonoBehaviour
                 string downloadedJson = snapshot.GetValue(true).ToString();  // Use GetValue(true)
                 _playerData = JsonUtility.FromJson<PlayerData>(downloadedJson);
                 Debug.Log("Downloaded player data from Firebase.");
+                OnSuccessfulPlayerDataHandling?.Invoke();
             }
             else
             {
                 Debug.Log("No player data found for user. Creating new one locally and on Firebase.");
                 _playerData = GenerateNewPlayerData();
                 UploadPlayerDataToFirebase();
+                OnSuccessfulPlayerDataHandling?.Invoke();
             }
         }
         catch (Exception e)
         {
             Debug.LogError("Error downloading player data: " + e.Message);
         }
-        /*
-        playerDataRef.GetValueAsync().ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted)
-            {
-                Debug.LogError("Error downloading player data: " + task.Exception.Message);
-            }
-            else if (task.Result.Exists)
-            {
-                string downloadedJson = task.Result.GetRawValue().ToString();
-                _playerData = JsonUtility.FromJson<PlayerData>(downloadedJson);
-                Debug.Log("Downloaded player data from Firebase.");
-            }
-            else
-            {
-                Debug.Log("No player data found for user. Creating new one locally and on Firebase.");
-                _playerData = GenerateNewPlayerData();
-                UploadPlayerDataToFirebase();
-            }
-        });*/
     }
 
     private PlayerData GenerateNewPlayerData()
     {
         PlayerData newPlayerData = new PlayerData();
-        newPlayerData.Name = FirebaseUserId + "ID";
-        newPlayerData.Id = FirebaseUserId;
-
-        // Set all other data to zero (or your desired initial values)
-        //newPlayerData.TournamentsAttended = 0;
-        //newPlayerData.TournamentsWon = 0;
-        // ... other data fields ...
+        int fourLetterRandomValue = UnityEngine.Random.Range(1000, 10000);
+        newPlayerData.Name = "Player" + fourLetterRandomValue.ToString();
+        newPlayerData.Id = fourLetterRandomValue.ToString();
 
         return newPlayerData;
     }
@@ -135,31 +125,7 @@ public class PlayerDataManager : MonoBehaviour
             Debug.LogError("Error uploading player data: " + e.Message + "\nInner Exception: " + e.InnerException.Message);
         }
 
-        /* try
-         {
-             DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(FirebaseUserId);
-
-             playerDataRef.SetValueAsync(jsonData)
-                 .ContinueWithOnMainThread(task =>
-                 {
-                     if (task.IsFaulted)
-                     {
-                         Debug.LogError("Error uploading player data: " + task.Exception.Message);
-                     }
-                     else
-                     {
-                         Debug.Log("Player data uploaded to Firebase successfully!");
-                     }
-                 });
-
-
-         }catch(Exception e)
-         {
-             Debug.LogError("Error uploading player data: " + e.Message + "\nInner Exception: " + e.InnerException.Message);
-         }*/
     }
-
-
 
     int _tournamentsAttended;
     int _tournamentsWon;
@@ -173,7 +139,7 @@ public class PlayerDataManager : MonoBehaviour
     int _allHandsAttended;
     int _allHandsWon;
 
-    /*
+
     private void BetManager_OnMainPlayerWin()
     {
         if (MainPlayer.IsPlayerAllIn)
@@ -185,7 +151,6 @@ public class PlayerDataManager : MonoBehaviour
         Debug.Log("Main player won.");
 
     }
-
     private void GameManager_OnTournamentStarted()
     {
         _tournamentsAttended++;
@@ -198,6 +163,7 @@ public class PlayerDataManager : MonoBehaviour
 
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
+        Debug.Log("Player Data Manager State Changed -sub");
         if (state == GameManager.GameState.Showdown)
         {
             if (MainPlayer.IsPlayerActive)
@@ -233,6 +199,7 @@ public class PlayerDataManager : MonoBehaviour
 
         try
         {
+            UploadPlayerDataToFirebase();
             File.WriteAllText(FilePathForJson, jsonData);
             Debug.Log("Player data saved successfully!");
         }
@@ -244,6 +211,16 @@ public class PlayerDataManager : MonoBehaviour
 
     private void UpdatePlayerData()
     {
+
+        _playerData.TournamentsWon = _tournamentsWon;
+        _playerData.TournamentsAttended = _tournamentsAttended;
+        _playerData.AllHandsWon = _allHandsWon;
+        _playerData.AllHandsAttended = _allHandsAttended;
+        _playerData.AllInShowdownsWon = _allInShowdownsWon;
+        _playerData.AllInShowdownsAttended = _allInShowdownsAttended;
+        _playerData.ShowDownsWon = _showDownsWon;
+        _playerData.ShowDownsAttended = _showDownsAttended;
+        /*
         PlayerData playerData = MainPlayer.PlayerData;
         playerData.TournamentsWon = _tournamentsWon;
         playerData.TournamentsAttended = _tournamentsAttended;
@@ -252,12 +229,12 @@ public class PlayerDataManager : MonoBehaviour
         playerData.AllInShowdownsWon = _allInShowdownsWon;
         playerData.AllInShowdownsAttended = _allInShowdownsAttended;
         playerData.ShowDownsWon = _showDownsWon;
-        playerData.ShowDownsAttended = _showDownsAttended;
+        playerData.ShowDownsAttended = _showDownsAttended;*/
     }
 
     private void UpdateLocalFields()
     {
-        PlayerData playerData = MainPlayer.PlayerData;
+        PlayerData playerData = _playerData;
         _tournamentsWon = playerData.TournamentsWon;
         _tournamentsAttended = playerData.TournamentsAttended;
         _allHandsWon = playerData.AllHandsWon;
@@ -269,7 +246,7 @@ public class PlayerDataManager : MonoBehaviour
     }
 
 
-    */
+
     public PlayerData LoadPlayerData()
     {
         PlayerData playerData = new PlayerData();
