@@ -68,6 +68,8 @@ public class PlayerDataManager : MonoBehaviour
         UploadPlayerDataToFirebaseForLeaderboard();
     }
 
+
+
     private void UploadPlayerDataToFirebaseForLeaderboard()
     {
         // Calculate win ratios (optional, adjust calculations as needed)
@@ -78,45 +80,78 @@ public class PlayerDataManager : MonoBehaviour
         // Prepare leaderboard entry data
         Dictionary<string, object> leaderboardEntry = new Dictionary<string, object>()
         {
-            { "playerId", FirebaseUserId }, // Replace with appropriate player ID field if different
             { "playerName", _playerData.Name }, // Optional: Player name
-            { "handWinRatio", handWinRatio },
-            { "showdownWinRatio", showdownWinRatio },
-            { "allInWinRatio", allInWinRatio },
-         };
+            { "handWinRatio", Math.Round(handWinRatio, 2) }, // Round to 2 decimal places
+            { "showdownWinRatio", Math.Round(showdownWinRatio, 2) },
+            { "allInWinRatio", Math.Round(allInWinRatio, 2) },
+        };
 
         // Upload data to Firebase Realtime Database leaderboard path
         string leaderboardPath = "leaderboards/pokerStats"; // Replace with your leaderboard path
         DatabaseReference leaderboardRef = FirebaseDatabase.DefaultInstance.GetReference(leaderboardPath);
 
-        // Here, you can choose between two approaches:
+        leaderboardRef.Child(FirebaseUserId).SetValueAsync(leaderboardEntry)
+             .ContinueWithOnMainThread(task =>
+             {
+                 if (task.IsFaulted)
+                 {
+                     Debug.LogError("Error uploading data to leaderboard: " + task.Exception.Message);
+                 }
+                 else if (task.IsCompleted)
+                 {
+                     Debug.Log("Player data uploaded to leaderboard successfully!");
+                 }
+             });
+    }
 
-        // Option 1: Push data under a unique identifier (consider using ServerValue.Timestamp)
-        leaderboardRef.Push().SetValueAsync(leaderboardEntry)
-            .ContinueWithOnMainThread(task =>
+    // Method to fetch all leaderboard entries
+    private void GetAllLeaderboardEntries()
+    {
+        string leaderboardPath = "leaderboards/pokerStats"; // Replace with your leaderboard path
+        DatabaseReference leaderboardRef = FirebaseDatabase.DefaultInstance.GetReference(leaderboardPath);
+
+        leaderboardRef.GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted)
             {
-                if (task.IsFaulted)
-                {
-                    Debug.LogError("Error uploading data to leaderboard: " + task.Exception.Message);
-                }
-                else
-                {
-                    Debug.Log("Player data uploaded to leaderboard successfully!");
-                }
-            });
+                Debug.LogError("Error fetching leaderboard data: " + task.Exception.Message);
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                IEnumerable<DataSnapshot> children = snapshot.Children;
 
-        // Option 2: Update data under player ID (assuming unique player IDs)
-        // leaderboardRef.Child(FirebaseUserId).SetValueAsync(leaderboardEntry)
-        //     .ContinueWithOnMainThread(task =>
-        //     {
-        //       // ... (handle success/failure)
-        //     });
+                List<LeaderboardEntry> entries = new List<LeaderboardEntry>();
 
-        // Choose the approach that best suits your leaderboard structure and data management needs.
+                foreach (DataSnapshot child in children)
+                {
+                    // Deserialize the leaderboard entry data
+                    LeaderboardEntry entry = new LeaderboardEntry
+                    {
+
+                        PlayerName = child.Child("playerName").Value.ToString(),
+                        HandWinRatio = float.Parse(child.Child("handWinRatio").Value.ToString()),
+                        ShowdownWinRatio = float.Parse(child.Child("showdownWinRatio").Value.ToString()),
+                        AllInWinRatio = float.Parse(child.Child("allInWinRatio").Value.ToString())
+                    };
+
+                    entries.Add(entry);
+                }
+
+                // Now you have all leaderboard entries in the 'entries' list
+                foreach (var entry in entries)
+                {
+                    Debug.Log("Player Name: " + entry.PlayerName + ", Hand Win Ratio: " + entry.HandWinRatio + ", Showdown Win Ratio: " + entry.ShowdownWinRatio + ", All In Win Ratio: " + entry.AllInWinRatio);
+                }
+            }
+        });
     }
 
     private void Firebase_OnLoginSuccessful()
     {
+        // DENEME AMAÇLI BURDA !!!
+        GetAllLeaderboardEntries();
+
         _databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
         FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;
@@ -187,7 +222,6 @@ public class PlayerDataManager : MonoBehaviour
         {
             Debug.LogError("Error uploading player data: " + e.Message + "\nInner Exception: " + e.InnerException.Message);
         }
-
     }
 
     int _tournamentsAttended;
@@ -274,7 +308,6 @@ public class PlayerDataManager : MonoBehaviour
 
     private void UpdatePlayerData()
     {
-
         _playerData.TournamentsWon = _tournamentsWon;
         _playerData.TournamentsAttended = _tournamentsAttended;
         _playerData.AllHandsWon = _allHandsWon;
@@ -283,16 +316,6 @@ public class PlayerDataManager : MonoBehaviour
         _playerData.AllInShowdownsAttended = _allInShowdownsAttended;
         _playerData.ShowDownsWon = _showDownsWon;
         _playerData.ShowDownsAttended = _showDownsAttended;
-        /*
-        PlayerData playerData = MainPlayer.PlayerData;
-        playerData.TournamentsWon = _tournamentsWon;
-        playerData.TournamentsAttended = _tournamentsAttended;
-        playerData.AllHandsWon = _allHandsWon;
-        playerData.AllHandsAttended = _allHandsAttended;
-        playerData.AllInShowdownsWon = _allInShowdownsWon;
-        playerData.AllInShowdownsAttended = _allInShowdownsAttended;
-        playerData.ShowDownsWon = _showDownsWon;
-        playerData.ShowDownsAttended = _showDownsAttended;*/
     }
 
     private void UpdateLocalFields()
@@ -336,5 +359,14 @@ public class PlayerDataManager : MonoBehaviour
         return playerData;
 
     }
+}
+
+// Define a class to hold leaderboard entry data
+public class LeaderboardEntry
+{
+    public string PlayerName { get; set; }
+    public float HandWinRatio { get; set; }
+    public float ShowdownWinRatio { get; set; }
+    public float AllInWinRatio { get; set; }
 }
 
