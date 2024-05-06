@@ -55,6 +55,7 @@ public class PlayerDataManager : MonoBehaviour
 
 
         //for test
+        FirebaseAnalyticsManager.Instance.TestLogSessionDuration();
         UploadPlayerDataToFirebaseForLeaderboard();
     }
 

@@ -119,10 +119,57 @@ public class FirebaseAuthManager : MonoBehaviour
             Debug.LogFormat("Firebase user created successfully: {0} ({1})",
                 result.User.DisplayName, result.User.UserId);
             message = "User created successfully.";
+
+            OnSignUpSuccess("Email"); //apperantly the args can be Email, Facebook, Google etc
         }
 
         OnRegisterResultMessageChanged?.Invoke(message);
     }
+
+
+  
+    
+    ///vvvv !!! GECICI. BUNLARIN YERI BURASI DEGGIL
+    /// 
+    // After successfully signing up a user
+    void OnSignUpSuccess(string signUpMethod)
+    {
+        try
+        {
+            // Log the sign-up event with Firebase Analytics
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(
+                Firebase.Analytics.FirebaseAnalytics.EventSignUp,
+                new Firebase.Analytics.Parameter[] {
+            new Firebase.Analytics.Parameter(
+                Firebase.Analytics.FirebaseAnalytics.ParameterMethod, signUpMethod)
+                }
+            );
+            Debug.Log("On Sign Up Success, analytics triggered");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error: " + e.Message);
+        }
+    }
+
+    public void OnLoginSuccessfulFireBaseAnalytics(string signInMethod)
+    {
+        try
+        {
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(
+         Firebase.Analytics.FirebaseAnalytics.EventLogin,
+                new Firebase.Analytics.Parameter[] {
+                    new Firebase.Analytics.Parameter(
+                 Firebase.Analytics.FirebaseAnalytics.ParameterMethod, signInMethod),
+        }
+        );
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error: " + e.Message);
+        }
+    }
+    ///^^^^^^!!! GECICI. BUNLARIN YERI BURASI DEGGIL
 
     public void LoginButton()
     {
@@ -176,9 +223,11 @@ public class FirebaseAuthManager : MonoBehaviour
         Firebase.Auth.AuthResult result = authTask.Result;
         Debug.LogFormat("User signed in successfully: {0} ({1})", result.User.DisplayName, result.User.UserId);
         message = "Login successful.";
+        OnLoginSuccessfulFireBaseAnalytics("Email");
         OnLoginSuccessful?.Invoke();
         OnLoginResultMessageChanged?.Invoke(message);
     }
+
 
     public void LogoutButton()
     {
