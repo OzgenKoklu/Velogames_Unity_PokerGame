@@ -105,53 +105,12 @@ public class PlayerDataManager : MonoBehaviour
              });
     }
 
-    // Method to fetch all leaderboard entries
-    private void GetAllLeaderboardEntries()
-    {
-        string leaderboardPath = "leaderboards/pokerStats"; // Replace with your leaderboard path
-        DatabaseReference leaderboardRef = FirebaseDatabase.DefaultInstance.GetReference(leaderboardPath);
 
-        leaderboardRef.GetValueAsync().ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted)
-            {
-                Debug.LogError("Error fetching leaderboard data: " + task.Exception.Message);
-            }
-            else if (task.IsCompleted)
-            {
-                DataSnapshot snapshot = task.Result;
-                IEnumerable<DataSnapshot> children = snapshot.Children;
-
-                List<LeaderboardEntry> entries = new List<LeaderboardEntry>();
-
-                foreach (DataSnapshot child in children)
-                {
-                    // Deserialize the leaderboard entry data
-                    LeaderboardEntry entry = new LeaderboardEntry
-                    {
-
-                        PlayerName = child.Child("playerName").Value.ToString(),
-                        HandWinRatio = float.Parse(child.Child("handWinRatio").Value.ToString()),
-                        ShowdownWinRatio = float.Parse(child.Child("showdownWinRatio").Value.ToString()),
-                        AllInWinRatio = float.Parse(child.Child("allInWinRatio").Value.ToString())
-                    };
-
-                    entries.Add(entry);
-                }
-
-                // Now you have all leaderboard entries in the 'entries' list
-                foreach (var entry in entries)
-                {
-                    Debug.Log("Player Name: " + entry.PlayerName + ", Hand Win Ratio: " + entry.HandWinRatio + ", Showdown Win Ratio: " + entry.ShowdownWinRatio + ", All In Win Ratio: " + entry.AllInWinRatio);
-                }
-            }
-        });
-    }
 
     private void Firebase_OnLoginSuccessful()
     {
         // DENEME AMAÇLI BURDA !!!
-        GetAllLeaderboardEntries();
+        //GetAllLeaderboardEntries();
 
         _databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
@@ -361,13 +320,3 @@ public class PlayerDataManager : MonoBehaviour
 
     }
 }
-
-// Define a class to hold leaderboard entry data
-public class LeaderboardEntry
-{
-    public string PlayerName { get; set; }
-    public float HandWinRatio { get; set; }
-    public float ShowdownWinRatio { get; set; }
-    public float AllInWinRatio { get; set; }
-}
-
