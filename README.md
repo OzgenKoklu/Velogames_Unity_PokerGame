@@ -52,7 +52,7 @@ Ezgi Keserci : https://github.com/ezgiksrci
 
 As two developers, we didn't know how to play Texas Hold'em poker, not even a bit. We were clueless about the rules and anything related to it; we just knew it was played with a standard 52-card deck. On the first day, we only played video game versions of poker and attempted to grasp the rules to some extent. Ezgi played Velo and Zynga poker, while Ozgen played Poker Night 1 and 2 by Telltale Games. After a day of playing poker and making random moves, we thought we understood the game better, but in reality, we still lacked substantial knowledge. While writing the core game loop, we continuously searched for the rules and attempted to understand how things actually worked. We are proud to say that this period ended after we learned how the main and side pots functioned, nearly four weeks after initiating the project.
 
-<img src="Media/DevLog/DevLog-PlayingPokerNight.PNG" width="400"> 
+<img src="Media/DevLog/DevLog-PlayingPokerNight.png" width="400"> 
 
 "After 20 hours of Poker Night 1 & 2, I'm proud to say I know how Texas Hold'em Poker works. " - Ozgen 
 
@@ -86,7 +86,7 @@ At any given time, for a given hand rating, an AI player will make one of two ch
 
 Okay, we have everything ready, so we can complete the game now, right? WRONG. At the beginning, we thought that creating all the game "states" such as preflop, flop, river, etc., and transitioning between them until the showdown would be a walk in the park. However, as a game that depends on more than one condition, getting those conditions to work together was more complex than initially assumed. For example, an All-in player was an afterthought for our system. The game needs to stop taking any more actions from this player, and the pot logic should be rewritten because an all-in player means other players might go beyond their bet amount, necessitating a pot split. During these realizations, we discovered layers and layers of complexity within this seemingly simple project.
 
-<img src="Media/DevLog/DevLog1-CompletelyWorkingTurnLogic.PNG" width="700">   
+<img src="Media/DevLog/DevLog1-CompletelyWorkingTurnLogic.png" width="700">   
 
 Image: Pot split, winner selection, game loop completed. 30.04.2024
 
