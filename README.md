@@ -8,10 +8,11 @@ Made with Unity 2022.3.0f1 LTS
   <ol>
 	  <li><a href="#Introduction">Introduction</a></li>
 	  <li><a href="#GDD">GDD</a></li>
-	  <li><a href="#Team Members">Team Members</a></li>
-	  <li><a href="#Dev Log">Dev Log</a></li>
-	  <li><a href="#Known Bugs">Known Bugs</a></li>
+	  <li><a href="#Team-Members">Team-Members</a></li>
+	  <li><a href="#Dev-Log">Dev-Log</a></li>
+	  <li><a href="#Known-Bugs">Known-Bugs</a></li>
 	  <li><a href="#Videos">Videos</a></li>	
+	  <li><a href="#Project-Management">Project-Management</a></li>
 	  <li><a href="#Acknowledgements">Acknowledgements</a></li>
   </ol>
 
@@ -37,8 +38,8 @@ https://docs.google.com/document/d/1RrYZFcERAm4OzjKxE57lmc0hMOfWjcYncdkV3LErDXQ/
 
 ----------
 
-<!-- Team Members -->
-## Team Members: 
+<!-- Team-Members -->
+## Team-Members: 
 
 Özgen Köklü : https://github.com/OzgenKoklu
 
@@ -46,10 +47,10 @@ Ezgi Keserci : https://github.com/ezgiksrci
 
 ----------
 
-<!-- Dev Log -->
-## Dev Log
+<!-- Dev-Log -->
+## Dev-Log
 
-**1) Understanding Poker:**
+**1) Understanding Poker**
 
 As two developers, we didn't know how to play Texas Hold'em poker, not even a bit. We were clueless about the rules and anything related to it; we just knew it was played with a standard 52-card deck. On the first day, we only played video game versions of poker and attempted to grasp the rules to some extent. Ezgi played Velo and Zynga poker, while Ozgen played Poker Night 1 and 2 by Telltale Games. After a day of playing poker and making random moves, we thought we understood the game better, but in reality, we still lacked substantial knowledge. While writing the core game loop, we continuously searched for the rules and attempted to understand how things actually worked. We are proud to say that this period ended after we learned how the main and side pots functioned, nearly four weeks after initiating the project.
 
@@ -57,17 +58,17 @@ As two developers, we didn't know how to play Texas Hold'em poker, not even a bi
 
 "After 20 hours of Poker Night 1 & 2, I'm proud to say I know how Texas Hold'em Poker works. " - Ozgen 
 
-**2) Making Visual Mockup:**
+**2) Making Visual Mockup**
 
 We designed the scene based on references from Zynga and Velo poker. We generated the background using DALL-E and were careful about the size of the table; it should be neither too big nor too small. The game cards need to fit on it, while different player avatars should also be able to fit the screen, resembling the reference images. We made some aspect ratio adjustments with Adobe Photoshop's generative fill to create side areas, ensuring that the background looks great on all aspect ratios (16:9 or 21:9).
 
 <img src="Media/DevLog/DevLog0-SceneAdjustments.PNG" width="900"> 
 
-**3) Understanding What We Need:**
+**3) Understanding What We Need**
 
 We endeavored to grasp what was needed by dissecting the game design of poker. We required deck and card systems, a hand comparison algorithm, a core game loop to support progression, and AI bots to facilitate advancement. As two developers, one of us focused on hand comparison algorithms, while the other handled the core loop tasks such as adding dealer selection logic, etc.
 
-**4) Understanding Hand Comparison Algorithms:**
+**4) Understanding Hand Comparison Algorithms**
 
 We began developing the hand algorithms, starting with a more conventional approach. Our initial attempt involved searching through the hands using List methods like .Any, scanning for duplicate cards or a straight. However, this logic proved to have too many oversights. It was resource-intensive, failed to track 'Kicker Cards,' and required looping through the hands repeatedly to address tie situations. Despite attempting to rectify these oversights over the course of 3 or 4 days, we realized the script was becoming excessively lengthy. Further research revealed that hand evaluation was a nuanced topic, one that could easily evolve into a University 'Capstone Project' or a 'Master's Thesis.'
 
@@ -77,7 +78,7 @@ The old Code for evaluation:
 
 https://github.com/OzgenKoklu/Velogames_Unity_PokerGame/blob/a92c4baef895a47e9fc50958030df9cee6680eed/PokerGame/Assets/Scripts/PokerHandEvaluator.cs
 
-**5) AI bot Action:** 
+**5) AI bot Action** 
 
 AI bots were designed to act based on their hand strength. First, we evaluate the hand, assigning it a value from 1 to 7462, as mentioned in the earlier paragraph. We then assign a rating such as 'amazing' or 'strong' based on this value. For example, a three of a kind is a pretty good hand that rarely occurs, so it is considered a strong hand in our algorithm.
 
@@ -97,8 +98,8 @@ Firebase integration was a simple adaptation, yet none of us had any prior exper
 
 ----------
 
-<!-- Known Bugs -->
-## Known Bugs
+<!-- Known-Bugs -->
+## Known-Bugs
 
 Known Bugs to adress for the ??.05.2024 - Final Commit: 
 
@@ -118,10 +119,21 @@ NOTES
 
 ----------
 
+<!-- Project-Management -->
+## Project-Management
+
+Spreadsheet link (up-to-date): https://docs.google.com/spreadsheets/d/1jQAPprVrJPeO368_9v2G62CslmwMBqhsNotKzJfGaVM/
+
+**Image:** Kanban during development: (02.05.2024)
+
+<img src="Media/DevLog/ToDoListV2.PNG" width="900"> 
+
+----------
+
 <!-- Acknowledgements -->
 ## Acknowledgements
 
-A non profit project. 
+A non-profit project. 
 
 **Libraries:**
 
