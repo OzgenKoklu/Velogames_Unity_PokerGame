@@ -1,0 +1,119 @@
+﻿Game Design Document (GDD) for Offline Texas Hold'em Poker
+
+
+1. Game Overview
+
+
+Title: Offline Texas Hold'em Poker (TBD)
+
+
+Concept: A single-player Texas Hold'em poker game where the player competes against random-action bots. The game includes session management, progress tracking, leaderboards, and statistics.
+
+
+Genre: Card / Strategy
+
+
+Target Audience: Poker enthusiasts, casual gamers, and players looking to improve their poker skills.
+
+
+2. Gameplay
+
+
+2.1 Game Mechanics
+
+
+The game follows the basic rules of Texas Hold'em poker. The player competes against 4 bots that make random moves. Like Texas Hold’em, the game consists of several rounds, including Pre-Flop, Flop, Turn, and River. During each round, players can fold, check, call, bet, or raise based on their hand strength and strategic considerations. The game employs standard hand rankings, where hands such as a royal flush, straight flush, four of a kind, full house, flush, straight, three of a kind, two pair, one pair, and high card are ranked in descending order of strength.
+
+
+In the event that multiple players remain in the hand after the final round of betting, a showdown occurs where each player reveals their hand, and the player with the highest-ranking hand wins the pot. In case of a tie, the pot is split equally among the tied players. The game ends when one player accumulates all the chips or after a predetermined number of rounds have been played.
+
+
+2.2 Goals
+
+
+In this poker game, the player's primary objective is to outsmart the AI bots and accumulate chips by winning hands. By employing strategic gameplay and making calculated decisions, the player aims to consistently defeat the bots and increase their chip count.
+
+
+Furthermore, the player strives to achieve a commendable win ratio, indicating their proficiency and success in the game. On the leaderboard, players are ranked based on their win ratios, with those achieving the highest success rates occupying the top positions. This leaderboard serves as a measure of each player's skill and proficiency in the game, fostering a spirit of competition and encouraging players to improve their performance to climb the ranks.
+2.3 User Interface
+
+
+Card table with player's and bots' cards.
+Buttons for player actions (fold, check, call, bet, raise).
+Display for current pot, player's chips, and bot's chips.
+Menu for settings*, statistics, and leaderboard.
+
+
+2.4 Reference Material for Interface & Game Scene
+
+
+  
+  
+
+
+
+Reference - Velo Poker - Texas Holdem Game  - https://www.youtube.com/watch?v=7ODEuDzst3k
+
+
+
+
+3. Features
+
+
+Offline Gameplay, but Firebase will be used to authenticate, save, and track the player, so an online connection is needed for the game to work.
+
+
+Random-Action Bots: Bots make random decisions to simulate varied opponents.
+
+
+Session Management: Players can start, pause, and resume games.
+
+
+Leaderboard: Players will be able to see their win/attend ratios for various situations (e.g., all-in, showdown, etc.).
+
+
+Statistics: Firebase will keep track of game session lengths, screen time, sign-ups, sign-ins, logins, and all sorts of user-related data (for the developer side).
+
+
+4. Technology
+
+
+Engine: Unity
+Languages: C#, (other scripting languages if needed)
+
+
+Database: Firebase for cloud storage and leaderboards.
+
+
+Analytics: Firebase for tracking player behavior.
+
+
+5. Art and Sound
+
+
+Graphics: 2D card and table design, animations for dealing cards, and chip movement. *
+Sound: Background music, sound effects for cards, chips, and player actions. *
+
+
+6. Development Timeline
+
+
+-Understanding Poker
+-Unity scene prototyping 
+-Mechanics development (hand comparison, game state management, game state handling)
+-Firebase integration.
+
+
+7. Appendices
+
+
+Poker rules for newcomers: https://www.dummies.com/article/home-auto-hobbies/games/card-games/poker/playing-a-hand-of-seven-card-stud-poker-199748/
+Learn How to Play Poker:
+https://www.instructables.com/Learn-To-Play-Poker---Texas-Hold-Em-aka-Texas-Ho/
+Kevs’s hand strength algorithm repositories:
+https://github.com/HenryRLee/PokerHandEvaluator
+C#version:
+https://github.com/travisstaloch/PokerHandEvaluator.cs
+
+
+*: features might not be yet fully implemented but might be a backlog task.
