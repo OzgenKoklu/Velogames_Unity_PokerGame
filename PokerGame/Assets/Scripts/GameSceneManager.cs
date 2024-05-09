@@ -45,4 +45,14 @@ public class GameSceneManager : MonoBehaviour
         SceneManager.LoadScene(1); 
         PlayerDataManager.Instance.OnSuccessfulPlayerDataHandling -= Instance_OnSuccessfulPlayerDataHandling;
     }
+
+    public void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void LoadGameScene()
+    {
+        SceneManager.LoadScene(1);
+    }
 }
