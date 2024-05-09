@@ -12,18 +12,22 @@ public class FirebaseAuthManager : MonoBehaviour
 
     public event Action<string> OnRegisterResultMessageChanged;
     public event Action<string> OnLoginResultMessageChanged;
+    public event Action<string> OnLogoutResultMessageChanged;
+    public event Action<bool> OnAuthStateChanged;
 
     public event Action OnLoginSuccessful;
 
-    public DependencyStatus DependencyStatus;
-    public FirebaseAuth auth;
-    public FirebaseUser user;
+    [SerializeField] private DependencyStatus DependencyStatus;
+    [SerializeField] private FirebaseAuth auth;
+    [SerializeField] private FirebaseUser user;
 
-    public TMP_InputField registerEmail;
-    public TMP_InputField registerPassword;
+    [SerializeField] private TMP_InputField _registerEmail;
+    [SerializeField] private TMP_InputField _registerPassword;
 
-    public TMP_InputField loginEmail;
-    public TMP_InputField loginPassword;
+    [SerializeField] private TMP_InputField _loginEmail;
+    [SerializeField] private TMP_InputField _loginPassword;
+
+    [SerializeField] private TMP_Text _resultMessage;
 
     private void Awake()
     {
@@ -42,7 +46,6 @@ public class FirebaseAuthManager : MonoBehaviour
             }
         });
     }
-
 
     private void InitializeFirebase()
     {
@@ -68,6 +71,8 @@ public class FirebaseAuthManager : MonoBehaviour
             {
                 Debug.Log("Signed in " + user.UserId);
             }
+
+            OnAuthStateChanged?.Invoke(signedIn);
         }
     }
 
@@ -80,7 +85,7 @@ public class FirebaseAuthManager : MonoBehaviour
     {
         string message = "";
 
-        var authTask = auth.CreateUserWithEmailAndPasswordAsync(registerEmail.text, registerPassword.text);
+        var authTask = auth.CreateUserWithEmailAndPasswordAsync(_registerEmail.text, _registerPassword.text);
         yield return new WaitUntil(() => authTask.IsCompleted);
 
         if (authTask.IsCanceled)
@@ -126,11 +131,6 @@ public class FirebaseAuthManager : MonoBehaviour
         OnRegisterResultMessageChanged?.Invoke(message);
     }
 
-
-  
-    
-    ///vvvv !!! GECICI. BUNLARIN YERI BURASI DEGGIL
-    /// 
     // After successfully signing up a user
     void OnSignUpSuccess(string signUpMethod)
     {
@@ -152,6 +152,7 @@ public class FirebaseAuthManager : MonoBehaviour
         }
     }
 
+    // After successfully logging in a user
     public void OnLoginSuccessfulFireBaseAnalytics(string signInMethod)
     {
         try
@@ -169,7 +170,6 @@ public class FirebaseAuthManager : MonoBehaviour
             Debug.LogError("Error: " + e.Message);
         }
     }
-    ///^^^^^^!!! GECICI. BUNLARIN YERI BURASI DEGGIL
 
     public void LoginButton()
     {
@@ -180,7 +180,7 @@ public class FirebaseAuthManager : MonoBehaviour
     {
         string message = "";
 
-        var authTask = auth.SignInWithEmailAndPasswordAsync(loginEmail.text, loginPassword.text);
+        var authTask = auth.SignInWithEmailAndPasswordAsync(_loginEmail.text, _loginPassword.text);
         yield return new WaitUntil(() => authTask.IsCompleted);
 
         if (authTask.IsCanceled)
@@ -228,10 +228,10 @@ public class FirebaseAuthManager : MonoBehaviour
         OnLoginResultMessageChanged?.Invoke(message);
     }
 
-
     public void LogoutButton()
     {
         auth.SignOut();
+        OnLogoutResultMessageChanged?.Invoke("Logout successful.");
     }
 
     public void DeleteUserButton()
@@ -254,6 +254,12 @@ public class FirebaseAuthManager : MonoBehaviour
                 Debug.Log("User deleted successfully.");
             });
         }
+    }
+
+    public bool GetLoginStatus()
+    {
+        bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
+        return signedIn;
     }
 
     private void OnDestroy()

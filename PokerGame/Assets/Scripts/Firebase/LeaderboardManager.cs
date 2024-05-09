@@ -13,7 +13,6 @@ public class LeaderboardManager : MonoBehaviour
 
     private void Start()
     {
-        GetAllLeaderboardEntries();
     }
 
     // Method to fetch all leaderboard entries

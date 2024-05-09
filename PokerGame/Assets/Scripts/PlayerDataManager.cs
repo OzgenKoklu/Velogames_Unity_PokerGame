@@ -1,7 +1,6 @@
 using Firebase.Auth;
 using System.IO;
 using UnityEngine;
-using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
 using System;
@@ -109,9 +108,6 @@ public class PlayerDataManager : MonoBehaviour
 
     private void Firebase_OnLoginSuccessful()
     {
-        // DENEME AMAÇLI BURDA !!!
-        //GetAllLeaderboardEntries();
-
         _databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
         FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;

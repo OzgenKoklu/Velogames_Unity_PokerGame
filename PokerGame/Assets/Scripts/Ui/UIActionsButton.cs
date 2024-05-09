@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class OpenCloseButton : MonoBehaviour
+public class UIActionsButton : MonoBehaviour
 {
     private enum ButtonActionType
     {
@@ -11,13 +10,15 @@ public class OpenCloseButton : MonoBehaviour
         OpenClose,
         Back,
         Quit,
-        Pause
+        Pause,
+        ChangeScene
     }
 
     [SerializeField] private ButtonActionType _buttonAction;
     [SerializeField] private GameObject _buttonParentPanel;
     [SerializeField] private GameObject _openClosePanel;
     [SerializeField] private GameObject _backPanel;
+    [SerializeField] private int _nextSceneIndex;
 
     public void ButtonAction()
     {
@@ -38,6 +39,9 @@ public class OpenCloseButton : MonoBehaviour
             case ButtonActionType.Quit:
                 break;
             case ButtonActionType.Pause:
+                break;
+            case ButtonActionType.ChangeScene:
+                SceneManager.LoadScene(_nextSceneIndex);
                 break;
             default:
                 break;
