@@ -26,7 +26,18 @@ public class LeaderboardEntryObject : MonoBehaviour
 
     private void OnEnable()
     {
+        _leaderboardUIManager.OnLeaderboardUIManagerStateChanged += LeaderboardUIManager_OnLeaderboardUIManagerStateChanged;
         _leaderboardUIManager.OnLeaderboardEntryCreated += LeaderboardUIManager_OnLeaderboardEntryCreated;
+    }
+
+    private void LeaderboardUIManager_OnLeaderboardUIManagerStateChanged(bool isActive)
+    {
+        if (!isActive)
+        {
+            _leaderboardUIManager.OnLeaderboardUIManagerStateChanged -= LeaderboardUIManager_OnLeaderboardUIManagerStateChanged;
+            _leaderboardUIManager.OnLeaderboardEntryCreated -= LeaderboardUIManager_OnLeaderboardEntryCreated;
+            Destroy(this);
+        }
     }
 
     private void LeaderboardUIManager_OnLeaderboardEntryCreated(LeaderboardEntry entry, LeaderboardEntryObject entryObject)

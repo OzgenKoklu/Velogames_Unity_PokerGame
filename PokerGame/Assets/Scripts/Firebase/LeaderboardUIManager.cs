@@ -5,13 +5,14 @@ using UnityEngine;
 public class LeaderboardUIManager : MonoBehaviour
 {
     public event Action<LeaderboardEntry, LeaderboardEntryObject> OnLeaderboardEntryCreated;
+    public event Action<bool> OnLeaderboardUIManagerStateChanged;
 
     [SerializeField] private LeaderboardManager _leaderboardManager;
     [SerializeField] private LeaderboardEntryObject _leaderboardEntryObject;
     [SerializeField] private RectTransform _leaderboardEntryParent;
     [SerializeField] private float _leaderboardEntryHeight = 75f;
 
-    void Start()
+    void OnEnable()
     {
         _leaderboardManager.OnGetLeaderboardEntriesComplete += LeaderboardManager_OnGetLeaderboardEntriesComplete;
     }
@@ -28,8 +29,9 @@ public class LeaderboardUIManager : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         _leaderboardManager.OnGetLeaderboardEntriesComplete -= LeaderboardManager_OnGetLeaderboardEntriesComplete;
+        OnLeaderboardUIManagerStateChanged?.Invoke(false);
     }
 }

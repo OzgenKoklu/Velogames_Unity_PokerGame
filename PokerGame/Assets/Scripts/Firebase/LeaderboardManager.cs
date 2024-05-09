@@ -17,7 +17,7 @@ public class LeaderboardManager : MonoBehaviour
     }
 
     // Method to fetch all leaderboard entries
-    public void GetAllLeaderboardEntries()
+    private void GetAllLeaderboardEntries()
     {
         List<LeaderboardEntry> entries = new List<LeaderboardEntry>();
 
@@ -61,5 +61,11 @@ public class LeaderboardManager : MonoBehaviour
                 OnGetLeaderboardEntriesComplete?.Invoke(entries);
             }
         });
+    }
+
+    // Leaderboard Button Click Event
+    public void GetLeaderboard()
+    {
+        GetAllLeaderboardEntries();
     }
 }
