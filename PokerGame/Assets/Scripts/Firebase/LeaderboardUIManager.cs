@@ -9,7 +9,7 @@ public class LeaderboardUIManager : MonoBehaviour
     [SerializeField] private LeaderboardManager _leaderboardManager;
     [SerializeField] private LeaderboardEntryObject _leaderboardEntryObject;
     [SerializeField] private RectTransform _leaderboardEntryParent;
-    [SerializeField] private float _leaderboardEntryHeight = 95f;
+    [SerializeField] private float _leaderboardEntryHeight = 75f;
 
     void Start()
     {
