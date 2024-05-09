@@ -65,6 +65,18 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
+    public void SetTimeScale(bool isGamePaused)
+    {
+        if (isGamePaused)
+        {
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+        }
+    }
+
     private void PlayerManager_OnPlayerFolded(PlayerManager foldedPlayer)
     {
         _activePlayers.Remove(foldedPlayer);
