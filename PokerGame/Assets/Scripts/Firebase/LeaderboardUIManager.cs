@@ -15,10 +15,13 @@ public class LeaderboardUIManager : MonoBehaviour
     void OnEnable()
     {
         _leaderboardManager.OnGetLeaderboardEntriesComplete += LeaderboardManager_OnGetLeaderboardEntriesComplete;
+        ClearLeaderboardItems();
     }
 
     private void LeaderboardManager_OnGetLeaderboardEntriesComplete(List<LeaderboardEntry> leaderboardEntries)
     {
+        Debug.Log("Handling leaderboard entries");
+
         _leaderboardEntryParent.sizeDelta = new Vector2(_leaderboardEntryParent.sizeDelta.x, leaderboardEntries.Count * _leaderboardEntryHeight);
 
         foreach (LeaderboardEntry leaderboardEntry in leaderboardEntries)
@@ -26,6 +29,21 @@ public class LeaderboardUIManager : MonoBehaviour
             var leaderboardEntryObject = Instantiate(_leaderboardEntryObject, _leaderboardEntryParent);
             leaderboardEntryObject.gameObject.SetActive(true);
             OnLeaderboardEntryCreated?.Invoke(leaderboardEntry, leaderboardEntryObject);
+        }
+    }
+
+    private void ClearLeaderboardItems()
+    {
+        if (_leaderboardEntryParent.childCount > 2)
+        {
+            for (int i = 0; i < _leaderboardEntryParent.childCount; i++)
+            {
+                if (i == 0 || i == 1)
+                {
+                    continue;
+                }
+                Destroy(_leaderboardEntryParent.GetChild(i).gameObject);
+            }
         }
     }
 

@@ -34,7 +34,6 @@ public class LeaderboardEntryObject : MonoBehaviour
         {
             _leaderboardUIManager.OnLeaderboardUIManagerStateChanged -= LeaderboardUIManager_OnLeaderboardUIManagerStateChanged;
             _leaderboardUIManager.OnLeaderboardEntryCreated -= LeaderboardUIManager_OnLeaderboardEntryCreated;
-            Destroy(this);
         }
     }
 
@@ -57,8 +56,12 @@ public class LeaderboardEntryObject : MonoBehaviour
         _allInWinRatio.text = entry.AllInWinRatio.ToString();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        _leaderboardUIManager.OnLeaderboardEntryCreated -= LeaderboardUIManager_OnLeaderboardEntryCreated;
+        if (_leaderboardUIManager != null)
+        {
+            _leaderboardUIManager.OnLeaderboardUIManagerStateChanged -= LeaderboardUIManager_OnLeaderboardUIManagerStateChanged;
+            Destroy(this);
+        }
     }
 }
