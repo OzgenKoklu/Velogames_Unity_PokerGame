@@ -199,4 +199,9 @@ public class DealerManager : MonoBehaviour
     {
         GameManager.OnGameStateChanged -= GameManager_OnGameStateChanged;
     }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
 }

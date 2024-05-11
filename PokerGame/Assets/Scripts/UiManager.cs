@@ -125,6 +125,8 @@ public class UiManager : MonoBehaviour
     {
         RemoveAllListenersFromButtons();
 
+        _bettingPanelSlider.value = 0f;
+
         HideButtons();
 
         HideBettingWindow();
@@ -142,7 +144,12 @@ public class UiManager : MonoBehaviour
         _raiseOrBetButton.onClick.RemoveAllListeners();
         _bettingPanelCloseButton.onClick.RemoveAllListeners();
         _bettingPanelBetButton.onClick.RemoveAllListeners();
-        _bettingPanelSlider.onValueChanged.RemoveAllListeners();
-        _bettingPanelSlider.value = 0f;
+        _bettingPanelSlider.onValueChanged.RemoveAllListeners();     
+    }
+
+    private void OnDestroy()
+    {
+        RemoveAllListenersFromButtons();
+        Instance = null;
     }
 }

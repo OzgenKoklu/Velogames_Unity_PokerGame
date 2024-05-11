@@ -209,4 +209,9 @@ public class PokerHandEvaluator : MonoBehaviour
             return HandStrength.Weak;
         }
     }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
 }

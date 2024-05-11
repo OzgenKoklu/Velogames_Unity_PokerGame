@@ -462,4 +462,26 @@ public class PlayerManager : MonoBehaviour
         BetAmount = 0;
         TotalBetInThisRound = 0;
     }
+
+    private void OnDisable()
+    {
+        if (DealerManager.Instance != null)
+        {
+            DealerManager.Instance.OnDealerChanged -= OnDealerChanged;
+        }
+        if (TurnManager.Instance != null)
+        {
+            TurnManager.Instance.OnPlayerTurn -= TurnManager_OnPlayerTurn;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        ResetStaticData();
+    }
+    public static void ResetStaticData()
+    {
+        OnPlayerFolded = null;
+    }
+
 }

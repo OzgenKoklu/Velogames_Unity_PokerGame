@@ -162,4 +162,21 @@ public class PlayerUI : MonoBehaviour
     {
         _betRaiseCallMoneyText.gameObject.SetActive(false);
     }
+
+    private void OnDisable()
+    {
+        if (DealerManager.Instance != null)
+        {
+            DealerManager.Instance.OnDealerChanged -= DealerManager_OnDealerChanged;
+            DealerManager.Instance.OnSmallBlindChanged -= DealerManager_OnSmallBlindChanged;
+            DealerManager.Instance.OnBigBlindChanged -= DealerManager_OnBigBlindChanged;
+        }
+        if (BetManager.Instance != null)
+        {
+            BetManager.Instance.OnBetUpdated -= BetManager_OnBetUpdated;
+        }
+        //TurnManager.Instance.OnPlayerTurn -= TurnManager_OnPlayerTurn;
+        _player.OnPlayerActiveChanged -= Player_OnPlayerActiveChanged;
+        _player.OnPlayerActionChanged -= Player_OnPlayerActionChanged;
+    }
 }

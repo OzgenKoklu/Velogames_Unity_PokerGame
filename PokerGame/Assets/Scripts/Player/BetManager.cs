@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BetManager : MonoBehaviour
@@ -49,6 +50,7 @@ public class BetManager : MonoBehaviour
 
     private void Awake()
     {
+
         Instance = this;
         _tempPot = 0;
         showdownPots = new List<Pot>();
@@ -161,6 +163,11 @@ public class BetManager : MonoBehaviour
     {
         GameManager.OnGameStateChanged -= GameManager_OnGameStateChanged;
         DealerManager.Instance.OnDealerChanged -= DealerManager_OnDealerChanged;
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
     }
 
     public bool AreAllActivePlayersBetsEqual()
@@ -388,6 +395,12 @@ public class BetManager : MonoBehaviour
         BaseRaiseBetAmount = 10;
     }
 
+
+
+
+
+    
+    
 }
 
 [Serializable]

@@ -222,4 +222,10 @@ public class PokerDeckManager : MonoBehaviour
         //this is important in winning player selection algoritm. (for tie situations)
         return combinedHand;
     }
+
+    private void OnDestroy()
+    {
+        GameManager.OnGameStateChanged -= GameManager_OnGameStateChanged;
+        Instance = null;
+    }
 }

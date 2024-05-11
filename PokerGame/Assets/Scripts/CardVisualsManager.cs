@@ -142,4 +142,8 @@ public class CardVisualsManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        PlayerManager.OnPlayerFolded -= PlayerManager_OnPlayerFolded;
+    }
 }

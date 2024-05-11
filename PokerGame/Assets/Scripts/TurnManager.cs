@@ -221,4 +221,10 @@ public class TurnManager : MonoBehaviour
         }
         return true;
     }
+
+    private void OnDestroy()
+    {
+        GameManager.OnGameStateChanged -= GameManager_OnGameStateChanged;
+        Instance = null;
+    }
 }

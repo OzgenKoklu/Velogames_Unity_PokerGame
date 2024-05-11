@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+          //  DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -186,5 +186,16 @@ public class GameManager : MonoBehaviour
         return _currentMainGameState;
     }
 
+    private void OnDestroy()
+    {
+        ResetStaticData();
+        PlayerManager.OnPlayerFolded -= PlayerManager_OnPlayerFolded;
+        Instance = null;
+    }
+
+    public static void ResetStaticData()
+    {
+        OnGameStateChanged = null;
+    }
 }
 

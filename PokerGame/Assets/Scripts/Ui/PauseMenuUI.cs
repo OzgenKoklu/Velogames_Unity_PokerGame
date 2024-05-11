@@ -58,7 +58,7 @@ public class PauseMenuUI : MonoBehaviour
         GameSceneManager.Instance.ReturnToMainMenu();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         _pauseMenuButton.onClick.RemoveAllListeners();
         _continueGameButton.onClick.RemoveAllListeners();
