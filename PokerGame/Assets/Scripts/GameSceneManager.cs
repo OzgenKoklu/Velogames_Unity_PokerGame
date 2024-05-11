@@ -34,18 +34,6 @@ public class GameSceneManager : MonoBehaviour
         }
     }
 
-
-    private void Start()
-    {
-        PlayerDataManager.Instance.OnSuccessfulPlayerDataHandling += Instance_OnSuccessfulPlayerDataHandling;
-    }
-
-    private void Instance_OnSuccessfulPlayerDataHandling()
-    {
-        SceneManager.LoadScene(1); 
-        PlayerDataManager.Instance.OnSuccessfulPlayerDataHandling -= Instance_OnSuccessfulPlayerDataHandling;
-    }
-
     public void ReturnToMainMenu()
     {
         SceneManager.LoadScene(0);
@@ -53,6 +41,9 @@ public class GameSceneManager : MonoBehaviour
 
     public void LoadGameScene()
     {
-        SceneManager.LoadScene(1);
+        if (PlayerDataManager.Instance.IsPlayerDataHandlingSuccessful == true)
+        {
+            SceneManager.LoadScene(1);
+        }
     }
 }

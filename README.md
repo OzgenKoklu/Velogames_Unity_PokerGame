@@ -2,6 +2,8 @@
 
 Made with Unity 2022.3.0f1 LTS 
 
+<img src="Media/GameLogo.png" width="800">
+
 ----------
 <!-- TABLE OF SECTIONS -->
   # Sections

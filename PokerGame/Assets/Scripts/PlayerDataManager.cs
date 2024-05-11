@@ -20,6 +20,7 @@ public class PlayerDataManager : MonoBehaviour
     [SerializeField] private PlayerManager MainPlayer;
     [SerializeField] private PlayerData _playerData;
     private DatabaseReference _databaseReference;
+    public bool IsPlayerDataHandlingSuccessful { get; private set; }
 
     private void Awake()
     {
@@ -34,7 +35,16 @@ public class PlayerDataManager : MonoBehaviour
     private void Start()
     {
         FirebaseAuthManager.Instance.OnLoginSuccessful += Firebase_OnLoginSuccessful;
+        FirebaseAuthManager.Instance.OnAuthStateChanged += FirebaseAuthManager_OnAuthStateChanged;
         GameSceneManager.Instance.OnSceneLoadCompleted += GameSceneManager_OnSceneLoadCompleted;
+    }
+
+    private void FirebaseAuthManager_OnAuthStateChanged(bool isSignedIn)
+    {
+        if (isSignedIn)
+        {
+            Firebase_OnLoginSuccessful();
+        }
     }
 
     private void GameSceneManager_OnSceneLoadCompleted(Scene scene)
@@ -126,6 +136,7 @@ public class PlayerDataManager : MonoBehaviour
 
     private async void DownloadPlayerDataFromFirebase()
     {
+        IsPlayerDataHandlingSuccessful = false;
         DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(FirebaseUserId);
 
         try
@@ -137,18 +148,19 @@ public class PlayerDataManager : MonoBehaviour
                 string downloadedJson = snapshot.GetValue(true).ToString();  // Use GetValue(true)
                 _playerData = JsonUtility.FromJson<PlayerData>(downloadedJson);
                 Debug.Log("Downloaded player data from Firebase.");
-                OnSuccessfulPlayerDataHandling?.Invoke();
+                IsPlayerDataHandlingSuccessful = true;
             }
             else
             {
                 Debug.Log("No player data found for user. Creating new one locally and on Firebase.");
                 _playerData = GenerateNewPlayerData();
                 UploadPlayerDataToFirebase();
-                OnSuccessfulPlayerDataHandling?.Invoke();
+                IsPlayerDataHandlingSuccessful = true;
             }
         }
         catch (Exception e)
         {
+            IsPlayerDataHandlingSuccessful = false;
             Debug.LogError("Error downloading player data: " + e.Message);
         }
     }
