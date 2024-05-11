@@ -133,19 +133,24 @@ Spreadsheet link (up-to-date): https://docs.google.com/spreadsheets/d/1jQAPprVrJ
 ## Firebase-Integration
 
 Firebase - Realtime Database - Data
+
 <img src="Media/FirebaseImages/Firebase-RealtimeDatabase-Rules.png" width="500"> 
 
 Firebase - Realtime Database - Rules
+
 <img src="Media/FirebaseImages/Firebase-RealtimeDatabase-Data.png" width="500"> 
 
 Unity - Leaderboards shown in the UI
+
 <img src="Media/FirebaseImages/Firebase-Leaderboards-2.png" width="500"> 
 
 Firebase - Analytics - Dashboard
+
 <img src="Media/FirebaseImages/Firebase-Analytics-1-Dashboard.png" width="500"> 
 
 Firebase - Analytics - Events
-<img src="Media/FirebaseImages/Firebaase-Analytics-2-Events.png" width="500"> 
+
+<img src="Media/FirebaseImages/Firebase-Analytics-2-Events.png" width="500"> 
 
 ----------
 
