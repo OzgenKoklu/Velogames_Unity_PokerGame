@@ -15,6 +15,7 @@ Made with Unity 2022.3.0f1 LTS
 	  <li><a href="#Known-Bugs">Known-Bugs</a></li>
 	  <li><a href="#Videos">Videos</a></li>	
 	  <li><a href="#Project-Management">Project-Management</a></li>
+	  <li><a href="#Firebase-Integration">Firebase-Integration</a></li>  
 	  <li><a href="#Acknowledgements">Acknowledgements</a></li>
   </ol>
 
@@ -113,11 +114,9 @@ Known Bugs to adress for the ??.05.2024 - Final Commit:
 <!-- Videos -->
 ## Videos
 
-??.05.2024 - Working in editor: 
+11.05.2024 - Working in editor: 
 
-NOTES
-
-[![Youtube Link](https://img.youtube.com/vi/YOUTUBELINK/0.jpg)](https://youtu.be/YOUTUBELINK)
+[![Youtube Link](https://img.youtube.com/vi/wYx2yHuBuBg/0.jpg)](https://youtu.be/wYx2yHuBuBg)
 
 ----------
 
@@ -129,6 +128,24 @@ Spreadsheet link (up-to-date): https://docs.google.com/spreadsheets/d/1jQAPprVrJ
 **Image:** Kanban during development: (02.05.2024)
 
 <img src="Media/DevLog/ToDoListV2.PNG" width="900"> 
+
+<!-- Firebase-Integration -->
+## Firebase-Integration
+
+Firebase - Realtime Database - Data
+<img src="Media/FirebaseImages/Firebase-RealtimeDatabase-Rules.png" width="500"> 
+
+Firebase - Realtime Database - Rules
+<img src="Media/FirebaseImages/Firebase-RealtimeDatabase-Data.png" width="500"> 
+
+Unity - Leaderboards shown in the UI
+<img src="Media/FirebaseImages/Firebase-Leaderboards-2.png" width="500"> 
+
+Firebase - Analytics - Dashboard
+<img src="Media/FirebaseImages/Firebase-Analytics-1-Dashboard.png" width="500"> 
+
+Firebase - Analytics - Events
+<img src="Media/FirebaseImages/Firebaase-Analytics-2-Events.png" width="500"> 
 
 ----------
 
