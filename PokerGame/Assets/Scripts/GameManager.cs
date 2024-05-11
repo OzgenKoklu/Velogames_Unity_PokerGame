@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-          //  DontDestroyOnLoad(gameObject);
+            //  DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -164,15 +164,6 @@ public class GameManager : MonoBehaviour
             {
                 _activePlayers.Add(player);
             }
-        }
-    }
-
-    private void SetPlayerStacks()
-    {
-        foreach (var player in _activePlayers)
-        {
-            //will need to change this.
-            player.TotalStackAmount = 1000;
         }
     }
 

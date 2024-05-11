@@ -11,10 +11,11 @@ using System;
 public class FirebaseAnalyticsManager : MonoBehaviour
 {
     public static FirebaseAnalyticsManager Instance { get; private set; }
-    private bool isInitialized = false;
-    public DependencyStatus DependencyStatus;
+
     public FirebaseAnalytics Analytics;
-    private DateTime appOpenTime;
+    public DependencyStatus DependencyStatus;
+    private bool _isInitialized = false;
+    private DateTime _appOpenTime;
 
     void Awake()
     {
@@ -24,7 +25,6 @@ public class FirebaseAnalyticsManager : MonoBehaviour
 
     void Start()
     {
-
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
             DependencyStatus = task.Result;
@@ -38,7 +38,6 @@ public class FirebaseAnalyticsManager : MonoBehaviour
             }
         });
     }
-
 
     private void InitializeFirebase()
     {
@@ -58,7 +57,7 @@ public class FirebaseAnalyticsManager : MonoBehaviour
                 FirebaseAnalytics.SetUserId(FirebaseAuth.DefaultInstance.CurrentUser.UserId);
             }
             Debug.Log("Initialization of the firebase analytics complete.");
-            isInitialized = true;
+            _isInitialized = true;
             LogAppOpenEvent();
         }
         catch (Exception e)
@@ -72,7 +71,7 @@ public class FirebaseAnalyticsManager : MonoBehaviour
     {
         try
         {
-            if (!isInitialized)
+            if (!_isInitialized)
             {
                 Debug.LogError("Firebase Analytics is not initialized yet.");
                 return;
@@ -108,7 +107,7 @@ public class FirebaseAnalyticsManager : MonoBehaviour
     {
         try
         {
-            if (!isInitialized)
+            if (!_isInitialized)
             {
                 Debug.LogError("Firebase Analytics is not initialized yet.");
                 return;
@@ -128,14 +127,14 @@ public class FirebaseAnalyticsManager : MonoBehaviour
     void OnApplicationQuit()
     {
         // Calculate session duration and log the event when the application quits
-        TimeSpan sessionDuration = DateTime.Now - appOpenTime;
+        TimeSpan sessionDuration = DateTime.Now - _appOpenTime;
         LogSessionDurationEvent(sessionDuration.TotalMinutes);
     }
 
     public void TestLogSessionDuration()
     {
         Debug.Log("Testing Analytics - Logout Duration");
-        TimeSpan sessionDuration = DateTime.Now - appOpenTime;
+        TimeSpan sessionDuration = DateTime.Now - _appOpenTime;
         LogSessionDurationEvent(sessionDuration.TotalMinutes);
     }
 
@@ -143,7 +142,7 @@ public class FirebaseAnalyticsManager : MonoBehaviour
     private void LogAppOpenEvent()
     {
         FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventAppOpen);
-        appOpenTime = DateTime.Now;
+        _appOpenTime = DateTime.Now;
     }
     private void LogSessionDurationEvent(double durationInMinutes)
     {

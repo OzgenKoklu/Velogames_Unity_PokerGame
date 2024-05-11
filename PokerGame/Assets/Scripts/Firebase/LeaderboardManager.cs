@@ -61,7 +61,6 @@ public class LeaderboardManager : MonoBehaviour
         }
     }
 
-
     // Leaderboard Button Click Event
     public void GetLeaderboard()
     {
