@@ -1,16 +1,15 @@
-
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static pheval.Rank;
 
 public class CardVisualsManager : MonoBehaviour
 {
+    public static CardVisualsManager Instance { get; private set; }
+
     [SerializeField] private Transform _cardPrefab;
     private List<CardBehaviour> _allActiveCards = new List<CardBehaviour>();
     private List<CardBehaviour> _allSpawnedCards = new List<CardBehaviour>();
 
-    public static CardVisualsManager Instance { get; private set; }
+
     private void Awake()
     {
         Instance = this;
@@ -40,27 +39,15 @@ public class CardVisualsManager : MonoBehaviour
 
     public bool IsThereAnySpawnedCards()
     {
-        if (_allSpawnedCards.Count != 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return _allSpawnedCards.Count != 0;
     }
 
     public void DestroyAllActiveCards()
     {
         // Loop through each CardBehaviour in the list
-        foreach (CardBehaviour activeCard in _allSpawnedCards)
+        foreach (var activeCard in _allSpawnedCards)
         {
-            // Check if the activeCard has a valid attached GameObject
-            if (activeCard != null && activeCard.gameObject != null)
-            {
-                // Destroy the attached GameObject using Destroy()
-                Destroy(activeCard.gameObject);
-            }
+            Destroy(activeCard.gameObject);
         }
 
         // Clear the allActiveCards list (optional)

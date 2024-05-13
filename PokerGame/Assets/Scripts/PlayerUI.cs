@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -55,7 +52,8 @@ public class PlayerUI : MonoBehaviour
             {
                 _betRaiseCallMoneyText.text = betAmount.ToString() + " $ ALL IN ";
             }
-        }else if(player == null)
+        }
+        else if (player == null)
         {
             _betRaiseCallMoneyText.gameObject.SetActive(false);
         }
@@ -101,11 +99,6 @@ public class PlayerUI : MonoBehaviour
     {
         _passivePlayerTint.SetActive(!isPlayerActive);
     }
-
-    //private void TurnManager_OnPlayerTurn(PlayerManager player)
-    //{
-    //    throw new NotImplementedException();
-    //}
 
     private void DealerManager_OnDealerChanged(PlayerManager player)
     {

@@ -1,26 +1,25 @@
 using System;
-using UnityEngine;
 
 [Serializable]
 public class PlayerData
 {
-    public string Id; // { get; set; } // Set From FireBase Maybe. 
-    public string Name; // { get; set; }
+    public string Id;
+    public string Name; 
 
     //PLAYER STATS
-    public int CurrentBalance;// { get; set; }
+    public int CurrentBalance;
 
-    public int TournamentsWon;// { get; set; }
-    public int TournamentsAttended;// { get; set; }
+    public int TournamentsWon;
+    public int TournamentsAttended;
 
-    public int AllHandsWon;// { get; set; }
-    public int AllHandsAttended;// { get; set; }
+    public int AllHandsWon;
+    public int AllHandsAttended;
 
-    public int AllInShowdownsWon;// { get; set; }
-    public int AllInShowdownsAttended;// { get; set; }
+    public int AllInShowdownsWon;
+    public int AllInShowdownsAttended;
 
-    public int ShowDownsWon;// { get; set; }
-    public int ShowDownsAttended;// { get; set; }
+    public int ShowDownsWon;
+    public int ShowDownsAttended;
 
     public PlayerData()
     {

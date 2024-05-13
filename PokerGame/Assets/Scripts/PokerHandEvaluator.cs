@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using pheval;
-using static pheval.Rank;
-using UnityEngine.UIElements;
 using static AiPlayerBehaviour;
-using static PokerHandEvaluator;
 
 public class PokerHandEvaluator : MonoBehaviour
 {
@@ -69,7 +65,7 @@ public class PokerHandEvaluator : MonoBehaviour
     }
 
     public WinningHandResults SelectTheWinnerForTheShowdown(List<PlayerManager> eligiblePlayerList)
-    {       
+    {
         List<PlayerManager> playersWithBestHand = new List<PlayerManager>();
         int bestRank = 7462; //not a magical number, just the weakest possible hand rank
 

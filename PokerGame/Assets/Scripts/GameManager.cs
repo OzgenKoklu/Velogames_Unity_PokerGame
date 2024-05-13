@@ -41,22 +41,13 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            //  DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
+        Instance = this;
         _roundCount = 0;
     }
 
     private void Update()
     {
-        Debug.Log(_currentGameState);
+        //Debug.Log(_currentGameState);
     }
 
     private void Start()
@@ -67,14 +58,7 @@ public class GameManager : MonoBehaviour
 
     public void SetTimeScale(bool isGamePaused)
     {
-        if (isGamePaused)
-        {
-            Time.timeScale = 0;
-        }
-        else
-        {
-            Time.timeScale = 1;
-        }
+        Time.timeScale = isGamePaused ? 0 : 1;
     }
 
     private void PlayerManager_OnPlayerFolded(PlayerManager foldedPlayer)
@@ -89,10 +73,7 @@ public class GameManager : MonoBehaviour
         StartGameRound();
     }
 
-    public bool IsGameStarted()
-    {
-        return _isGameStarted;
-    }
+    public bool IsGameStarted() => _isGameStarted;
 
     public void StartGameRound()
     {
@@ -103,7 +84,7 @@ public class GameManager : MonoBehaviour
 
         if (continueGame)
         {
-            _roundCount += 1;
+            _roundCount++;
             SetGameState(GameState.NewRound);
         }
         else
@@ -144,15 +125,8 @@ public class GameManager : MonoBehaviour
         OnGameStateChanged?.Invoke(_currentGameState);
     }
 
-    public bool CheckIfEnoughPlayersAreRemaining()
-    {
-        return (_activePlayers.Count > 1);
-    }
-
-    public int GetBettingRoundCount()
-    {
-        return _roundCount;
-    }
+    public bool CheckIfEnoughPlayersAreRemaining() => ActivePlayers.Count > 1;
+    public int GetBettingRoundCount() => _roundCount;
 
     private void ResetAllPlayersRoundStatus()
     {
@@ -167,15 +141,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public GameState GetState()
-    {
-        return _currentGameState;
-    }
-
-    public GameState GetMainGameState()
-    {
-        return _currentMainGameState;
-    }
+    public GameState GetState() => _currentGameState;
+    public GameState GetMainGameState() => _currentMainGameState;
 
     private void OnDestroy()
     {
@@ -184,9 +151,5 @@ public class GameManager : MonoBehaviour
         Instance = null;
     }
 
-    public static void ResetStaticData()
-    {
-        OnGameStateChanged = null;
-    }
+    public static void ResetStaticData() => OnGameStateChanged = null;
 }
-

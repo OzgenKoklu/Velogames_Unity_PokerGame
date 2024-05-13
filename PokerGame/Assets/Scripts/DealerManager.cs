@@ -21,7 +21,6 @@ public class DealerManager : MonoBehaviour
 
     private void OnEnable()
     {
-
         GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
 
@@ -41,15 +40,11 @@ public class DealerManager : MonoBehaviour
         {
             int bettingRoundCount = GameManager.Instance.GetBettingRoundCount();
             SelectDealerIndex(bettingRoundCount);
-            // Check if GameManager instance and Players list are valid
-            Debug.Log("GameManager and Players list are valid");
+            //Debug.Log("GameManager and Players list are valid"); // Check if GameManager instance and Players list are valid
 
-            // Attempt to set the IsPlayerDealer property
             _currentDealer.IsPlayerDealer = true;
             SetSmallAndBigBlind();
-            //Debug.Log("Player set as dealer");
             OnDealerChanged?.Invoke(_currentDealer);
-
         }
         else
         {
@@ -76,30 +71,30 @@ public class DealerManager : MonoBehaviour
     {
         var players = GameManager.Instance.Players;
         var currentDealerIndex = players.IndexOf(_currentDealer);
-        var BlindIndex = currentDealerIndex + 1;
-        BlindIndex = BlindIndex % 5; // guarantees it wont be bigger than player count (0,1,2,3,4)
+        var blindIndex = currentDealerIndex + 1;
+        blindIndex = blindIndex % 5; // guarantees it wont be bigger than player count (0,1,2,3,4)
 
         //!!! write some conditions to support less than 3 active players. !!!
 
         do
         {
-            _smallBlind = GameManager.Instance.Players[BlindIndex];
-            BlindIndex++; //will be used to find big blind so incrementing it is ok.
-            BlindIndex = BlindIndex % 5;
+            _smallBlind = GameManager.Instance.Players[blindIndex];
+            blindIndex++; //will be used to find big blind so incrementing it is ok.
+            blindIndex = blindIndex % 5;
         } while (!_smallBlind.IsPlayerActive);
 
         do
         {
-            _bigBlind = GameManager.Instance.Players[BlindIndex];
-            BlindIndex++; //will be used to find firs player after big blind so incrementing is ok.
-            BlindIndex = BlindIndex % 5;
+            _bigBlind = GameManager.Instance.Players[blindIndex];
+            blindIndex++; //will be used to find firs player after big blind so incrementing is ok.
+            blindIndex = blindIndex % 5;
         } while (!_bigBlind.IsPlayerActive);
 
         do
         {
-            _firstPlayerAfterBigBlind = GameManager.Instance.Players[BlindIndex];
-            BlindIndex++; //will be used to find firs player after big blind so incrementing is ok.
-            BlindIndex = BlindIndex % 5;
+            _firstPlayerAfterBigBlind = GameManager.Instance.Players[blindIndex];
+            blindIndex++; //will be used to find firs player after big blind so incrementing is ok.
+            blindIndex = blindIndex % 5;
         } while (!_firstPlayerAfterBigBlind.IsPlayerActive);
 
         OnSmallBlindChanged?.Invoke(_smallBlind);
@@ -137,40 +132,6 @@ public class DealerManager : MonoBehaviour
 
         return selectedPlayer; // can return null, if null, means no one has to make any further move (
                                // e.g.  2 players left, one is all in the other isnt. Game should not get stuck at that point due to this being null.
-
-        /*
-        if (_smallBlind.IsPlayerActive && !_smallBlind.IsPlayerAllIn)
-        {
-            return _smallBlind;
-        }
-        else if (_bigBlind.IsPlayerActive && !_bigBlind.IsPlayerAllIn)
-        {
-            return _bigBlind;
-        }
-        else if (_firstPlayerAfterBigBlind.IsPlayerActive && !_firstPlayerAfterBigBlind.IsPlayerAllIn)
-        {
-            return _firstPlayerAfterBigBlind;
-        }
-        else
-        {
-            var players = GameManager.Instance.Players;
-            var firstPlayerAfterBigBlindIndex = players.IndexOf(_firstPlayerAfterBigBlind);
-
-            if (players[firstPlayerAfterBigBlindIndex + 1].IsPlayerActive && !players[firstPlayerAfterBigBlindIndex + 1].IsPlayerAllIn)
-            {
-                return players[firstPlayerAfterBigBlindIndex + 1];
-            }
-            else if (players[firstPlayerAfterBigBlindIndex + 2].IsPlayerActive && !players[firstPlayerAfterBigBlindIndex + 2].IsPlayerAllIn)
-            {
-                return players[firstPlayerAfterBigBlindIndex + 2];
-            }
-            else
-            {
-                return null;
-                Debug.Log("No active player!");
-            }
-        }
-        */
     }
 
     public PlayerManager GetFirstPlayerAfterBigBlind()

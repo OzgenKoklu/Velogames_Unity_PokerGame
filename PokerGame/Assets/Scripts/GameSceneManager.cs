@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,13 +6,21 @@ public class GameSceneManager : MonoBehaviour
 {
     public static GameSceneManager Instance { get; private set; }
     public event Action<Scene> OnSceneLoadCompleted;
+
+    private readonly int _mainMenuSceneIndex = 0;
+    private readonly int _mainGameSceneIndex = 1;
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
-        DontDestroyOnLoad(gameObject);
+        else
+        {
+            Destroy(gameObject);
+        }
+       
     }
 
     private void OnEnable()
@@ -25,25 +31,22 @@ public class GameSceneManager : MonoBehaviour
     {
         Debug.Log("Scene " + scene.name + " has loaded!");
 
-        if (SceneManager.GetActiveScene().buildIndex == 1)  // Assuming GameManager is in scene 1
-        {
-            if (GameManager.Instance != null) // Check if GameManager exists
-            {
-                OnSceneLoadCompleted?.Invoke(scene);
-            }
+        if (scene.buildIndex == _mainGameSceneIndex && GameManager.Instance != null) 
+        {         
+                OnSceneLoadCompleted?.Invoke(scene);          
         }
     }
 
     public void ReturnToMainMenu()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(_mainMenuSceneIndex);
     }
 
     public void LoadGameScene()
     {
-        if (PlayerDataManager.Instance.IsPlayerDataHandlingSuccessful == true)
+        if (PlayerDataManager.Instance.IsPlayerDataHandlingSuccessful)
         {
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene(_mainGameSceneIndex);
         }
     }
 }

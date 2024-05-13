@@ -12,8 +12,6 @@ public class PlayerDataManager : MonoBehaviour
     public static PlayerDataManager Instance { get; private set; }
     [SerializeField] private string FirebaseUserId; // Store Firebase user ID here
 
-    public event Action OnSuccessfulPlayerDataHandling;
-
     public const string FilePathForJson = "Assets/Resources/playerData.json";
     public const string FirebaseDataPath = "playerData";
 

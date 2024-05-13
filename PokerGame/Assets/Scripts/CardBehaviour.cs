@@ -46,14 +46,15 @@ public class CardBehaviour : MonoBehaviour
 
     public void GetToShowDownPosition()
     {
-        if (CardSO.CardParent is CommunityCards) return; // no need to change position
-        this.transform.SetPositionAndRotation(transform.position, Quaternion.identity);
+        if (CardSO.CardParent is CommunityCards) return;
+
+        transform.SetPositionAndRotation(transform.position, Quaternion.identity);
     }
 
-    public void SetCardTransform(Transform transform)
+    public void SetCardTransform(Transform newTransform)
     {
-        this.transform.SetPositionAndRotation(transform.position, transform.rotation);
-        this.transform.localScale = transform.localScale;
+        transform.SetPositionAndRotation(newTransform.position, newTransform.rotation);
+        transform.localScale = newTransform.localScale;
     }
 
 

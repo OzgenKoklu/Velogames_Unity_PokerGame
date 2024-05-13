@@ -1,32 +1,14 @@
-using System;
 using UnityEngine;
-using static AiPlayerBehaviour;
+
 
 public class AiPlayerBehaviour : MonoBehaviour
 {
     [SerializeField] private PlayerManager _playerManager;
     [SerializeField] private PokerPlayerHand _pokerPlayerHand;
-
-    /*Ranks from pheval library for hand strenght reference
-     public static Category GetCategory(int rank)
-       {
-           if (rank > 6185) return Category.HighCard;        // 1277 high card
-           if (rank > 3325) return Category.OnePair;         // 2860 one pair
-           if (rank > 2467) return Category.TwoPair;         //  858 two pair
-           if (rank > 1609) return Category.ThreeOfAKind;  //  858 three-kind
-           if (rank > 1599) return Category.Straight;         //   10 straights
-           if (rank > 322) return Category.Flush;            // 1277 flushes
-           if (rank > 166) return Category.FullHouse;       //  156 full house
-           if (rank > 10) return Category.FourOfAKind;   //  156 four-kind
-           return Category.StraightFlush;                    //   10 straight-flushes
-    }*/
     public enum HandStrength { Amazing, Strong, Medium, WeakPlus, Weak }
 
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Need to refactoring !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // *** POSTFLOP DECISIONS ***
-    // **************************
+    // *** POSTFLOP DECISIONS ***
     //5-7 card Decision making (post flop), maybe it should take bluffs into account, like if the earlier player bets, the player will become likely to fold or something. 
     public PlayerAction DecidePostFlop(HandStrength handStrength)
     {
@@ -44,7 +26,7 @@ public class AiPlayerBehaviour : MonoBehaviour
 
         float combinedFactor = possibilityFactor * conservativeFactor * zeroBetFactor;
 
-        Debug.Log("Combined factor of player: " + _playerManager.PlayerName + " "+ combinedFactor + " HandStrength " + handStrength);
+        Debug.Log("Combined factor of player: " + _playerManager.PlayerName + " " + combinedFactor + " HandStrength " + handStrength);
 
         Debug.Log("Current Highest bet amount: " + highestBetAmount + "Our current bet amount: " + ourCurrentBetAmount);
 
@@ -269,21 +251,11 @@ public class AiPlayerBehaviour : MonoBehaviour
 
     private void CallAction()
     {
-        var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.TotalBetInThisRound;
+        int callBetAmount = BetManager.Instance.CurrentHighestBetAmount - _playerManager.TotalBetInThisRound;
         int maxCallAmount = _playerManager.TotalStackAmount;
-        if (callBetAmount >= maxCallAmount)
-        {
-            BetManager.Instance.SetBet(_playerManager, maxCallAmount);
-            //Player IS all IN!
-            //SIDE POT MAIN POT ACTIONS
-            //DO NOT GET ANY INPUT UNTIL SHOWDOWN
-            _playerManager.IsPlayerAllIn = true;
-        }
-        else
-        {
-            BetManager.Instance.SetBet(_playerManager, callBetAmount);
-        }
 
+        BetManager.Instance.SetBet(_playerManager, Mathf.Min(callBetAmount, maxCallAmount));
+        _playerManager.IsPlayerAllIn = callBetAmount >= maxCallAmount;
     }
 
     private void BetAction(HandStrength handStrength)
@@ -294,72 +266,35 @@ public class AiPlayerBehaviour : MonoBehaviour
     {
         int raiseBetAmount = CalculateRaiseAmount(handStrength);
 
-        // Set the raise amount in the bet manager, and also the highest bet. 
         BetManager.Instance.SetBet(_playerManager, raiseBetAmount);
 
-        if (_playerManager.BetAmount >= _playerManager.TotalStackAmount)
-        {
-            //Player is All In.
-            //SIDE POT MAIN POT ACTIONS
-            //Do Not Get Any Input Until Showdown.
-            _playerManager.IsPlayerAllIn = true;
-
-        }
+        _playerManager.IsPlayerAllIn = _playerManager.BetAmount >= _playerManager.TotalStackAmount;
         BetManager.Instance.CurrentHighestBetAmount = _playerManager.TotalBetInThisRound + raiseBetAmount;
     }
 
     public int CalculateRaiseAmount(HandStrength handStrength)
     {
-        // Calculate the minimum raise amount
         int currentHighestBet = BetManager.Instance.CurrentHighestBetAmount;
-        int minimumRaiseAmount;
-        if (currentHighestBet != 0)
-        {
-            minimumRaiseAmount = currentHighestBet * 2 - _playerManager.TotalBetInThisRound;
-        }
-        else // flop and after 
-        {
-            minimumRaiseAmount = BetManager.Instance.GetMinimumRaiseAmount();
-        }
-
-        // Define a multiplier based on hand strength
+        int minimumRaiseAmount = currentHighestBet != 0 ? currentHighestBet * 2 - _playerManager.TotalBetInThisRound : BetManager.Instance.GetMinimumRaiseAmount();
         int raiseMultiplier = GetRandomMultiplier(handStrength);
 
-        // Calculate the proposed raise amount
         int raiseAmount = minimumRaiseAmount * raiseMultiplier;
 
-        // Ensure the raise does not exceed the player's total stack and adheres to the game's rules
-        raiseAmount = Mathf.Max(raiseAmount, minimumRaiseAmount); // At least the minimum raise
-        int totalExpandableStack = _playerManager.TotalStackAmount;
-        raiseAmount = Mathf.Min(raiseAmount, totalExpandableStack); // Do not exceed the player's stack
-
+        raiseAmount = Mathf.Clamp(raiseAmount, minimumRaiseAmount, _playerManager.TotalStackAmount);
         return raiseAmount;
+    }
+
+    private float GetHandStrengthAdjustment(HandStrength handStrength)
+    {
+        return handStrength == HandStrength.Amazing ? 0.3f :
+               handStrength == HandStrength.Strong ? 0.5f :
+               handStrength == HandStrength.Medium ? 0.7f :
+               handStrength == HandStrength.WeakPlus ? 1.0f : 1.5f;
     }
 
     public int GetRandomMultiplier(HandStrength handStrength)
     {
-        float exponent;
-        switch (handStrength)
-        {
-            case HandStrength.Amazing:
-                exponent = 0.3f; // Strong skew towards higher values
-                break;
-            case HandStrength.Strong:
-                exponent = 0.5f; // Moderate skew towards higher values
-                break;
-            case HandStrength.Medium:
-                exponent = 0.7f; // Slight skew towards higher values
-                break;
-            case HandStrength.WeakPlus:
-                exponent = 1.0f; // Uniform distribution
-                break;
-            case HandStrength.Weak:
-                exponent = 1.5f; // Skew towards lower values
-                break;
-            default:
-                exponent = 1.0f; // Uniform distribution for undefined cases
-                break;
-        }
+        float exponent = GetHandStrengthAdjustment(handStrength);
 
         float skewedRandom = Mathf.Pow(UnityEngine.Random.value, exponent);
         return (int)(skewedRandom * 4) + 1; // Scaling to get a value from 1 to 4
@@ -371,45 +306,10 @@ public class AiPlayerBehaviour : MonoBehaviour
         int currentStackAmount = _playerManager.TotalStackAmount;
         int highestBet = BetManager.Instance.CurrentHighestBetAmount;
 
-        if (highestBet == 0) return 1; //and avoid deviding by zero.
-
-        float betProximity = MathF.Abs((float)(currentBet - highestBet) / highestBet);
-        float stackRisk = (float)(highestBet) / currentStackAmount;
-
-        /*
-
-        !!! Might use hand strenght or not for the post flop !!!. At this moment, I think its not needed since we already take hand strenght into acount 
-        // In the DecidePreFlop Method. 
-        float strengthAdjustment = 0f;
-
-        switch (handStrength)
-        {
-            case HandStrength.Amazing:
-                strengthAdjustment = 0f;
-                break;
-            case HandStrength.Strong:
-                strengthAdjustment = 0.2f;
-                break;
-            case HandStrength.Medium:
-                strengthAdjustment = 0.4f;
-                break;
-            case HandStrength.WeakPlus:
-                strengthAdjustment = 0.6f;
-                break;
-            case HandStrength.Weak:
-                strengthAdjustment = 0.8f;
-                break;
-            default:
-                strengthAdjustment = 0.4f;
-                break;
-        }*/
-
-        // Calculate the conservative factor, aiming for a result close to 1 for low risk and potentially as high as 4 for high risk
-        float conservativeFactor = betProximity + stackRisk; // + strengthAdjustment;
+        float betProximity = Mathf.Abs((float)(currentBet - highestBet) / highestBet);
+        float stackRisk = (float)highestBet / currentStackAmount;
         //Debug.Log("Before Clamp - ConservativeFactor: " + " for " + _playerManager.name + ": " + conservativeFactor);
-        // Clamp the result to a reasonable range if needed
-        return Mathf.Clamp(conservativeFactor, 1, 4);
-
+        return Mathf.Clamp(betProximity + stackRisk, 1, 4);
     }
 
     //this is for making players taking braver actions when the amount of community cards available are less. There are still 2 cards remaining for flop
@@ -417,16 +317,12 @@ public class AiPlayerBehaviour : MonoBehaviour
     {
         int communityCardsCount = CommunityCards.Instance.GetCardList().Count;
 
-        switch (communityCardsCount)
+        return communityCardsCount switch
         {
-            case 3: //still 2 more cards will be drawn
-                return 1.0f;
-            case 4:
-                return 1.2f;
-            case 5:
-                return 1.4f;
-            default:
-                return 1.0f; // Default neutral case   
-        }
+            3 => 1.0f,
+            4 => 1.2f,
+            5 => 1.4f,
+            _ => 1.0f
+        };
     }
 }

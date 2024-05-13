@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static AiPlayerBehaviour;
 
 public class PokerPlayerHand : MonoBehaviour, ICardParent
 {
@@ -18,7 +17,6 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     [SerializeField] private float initialRotationAngle = 15f;
     [SerializeField] private float rotationAngleMultiplier = -30f;
     [SerializeField] private float initialYPosition = -4f;
-    [SerializeField] private float aiRotationAngle = 20f;
     [SerializeField] private float aiScaleMultiplier = 0.6f;
 
     private void Awake()
