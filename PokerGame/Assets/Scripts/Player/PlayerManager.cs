@@ -202,7 +202,7 @@ public class PlayerManager : MonoBehaviour
                 //player can Fold, Check, Bet
             }
 
-            UiManager.Instance.SetActionButtonsForPlayer();
+            UIManager.Instance.SetActionButtonsForPlayer();
 
             _runningCoroutine = StartCoroutine(TenSecondTimerForMainPlayer());
 
@@ -241,7 +241,7 @@ public class PlayerManager : MonoBehaviour
             IsPlayerActive = false;
             _isPlayerFolded = true;
             _isPlayerAllIn = false;
-            UiManager.Instance.ResetFunctionsAndHideButtons();
+            UIManager.Instance.ResetFunctionsAndHideButtons();
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
         }
     }
@@ -280,7 +280,7 @@ public class PlayerManager : MonoBehaviour
                 StopCoroutine(_runningCoroutine); // Stop the stored coroutine
             }
 
-            UiManager.Instance.ResetFunctionsAndHideButtons();
+            UIManager.Instance.ResetFunctionsAndHideButtons();
             TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
         }
     }
@@ -310,7 +310,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             BetManager.Instance.CurrentHighestBetAmount = TotalBetInThisRound + betAmount;
-            UiManager.Instance.ResetFunctionsAndHideButtons();
+            UIManager.Instance.ResetFunctionsAndHideButtons();
 
             if (_runningCoroutine != null) // Check if coroutine is running
             {
@@ -329,7 +329,7 @@ public class PlayerManager : MonoBehaviour
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;
             _isPlayerAllIn = false;
-            UiManager.Instance.ResetFunctionsAndHideButtons();
+            UIManager.Instance.ResetFunctionsAndHideButtons();
             //Debug.Log("Player has made the move to: " + PlayerAction);
 
             if (_runningCoroutine != null) // Check if coroutine is running
@@ -366,7 +366,7 @@ public class PlayerManager : MonoBehaviour
         BetManager.Instance.SetBet(this, callBetAmount);
         HasActedSinceLastRaise = true;
         //Debug.Log("Our Player has made the move to: " + PlayerAction);
-        UiManager.Instance.ResetFunctionsAndHideButtons();
+        UIManager.Instance.ResetFunctionsAndHideButtons();
         _isPlayerFolded = false;
         TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
     }

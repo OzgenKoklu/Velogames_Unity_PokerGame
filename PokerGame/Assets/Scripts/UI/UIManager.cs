@@ -2,9 +2,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UiManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
-    public static UiManager Instance { get; private set; }
+    public static UIManager Instance { get; private set; }
 
     [SerializeField] private GameObject _actionButtons;
     [SerializeField] private Button _foldButton;
@@ -13,7 +13,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _callOrCheckButtonText;
     [SerializeField] private TextMeshProUGUI _raiseOrBetButtonText;
 
-    //BettingPanel
+    [Header("Betting Panel")]
     [SerializeField] private GameObject _bettingPanel;
     [SerializeField] private Button _bettingPanelCloseButton;
     [SerializeField] private Button _bettingPanelBetButton;
@@ -142,7 +142,7 @@ public class UiManager : MonoBehaviour
         _raiseOrBetButton.onClick.RemoveAllListeners();
         _bettingPanelCloseButton.onClick.RemoveAllListeners();
         _bettingPanelBetButton.onClick.RemoveAllListeners();
-        _bettingPanelSlider.onValueChanged.RemoveAllListeners();     
+        _bettingPanelSlider.onValueChanged.RemoveAllListeners();
     }
 
     private void OnDestroy()
