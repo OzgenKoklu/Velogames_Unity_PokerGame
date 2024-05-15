@@ -1271,7 +1271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxThinkTime: 10
+  maxThinkTime: 2
   _playerName: Scarlet (P2)
   _playerAction: 0
   _playerHand: {fileID: 1230832290}
@@ -1556,7 +1556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxThinkTime: 10
+  maxThinkTime: 2
   _playerName: Otto (P4)
   _playerAction: 0
   _playerHand: {fileID: 2010368667}
@@ -2561,7 +2561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxThinkTime: 10
+  maxThinkTime: 2
   _playerName: Richard (P5)
   _playerAction: 0
   _playerHand: {fileID: 276828756}
@@ -4417,7 +4417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxThinkTime: 5
+  maxThinkTime: 10
   _playerName: Player (P3)
   _playerAction: 0
   _playerHand: {fileID: 1199791274}
@@ -6108,10 +6108,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 883366938}
-  - component: {fileID: 883366941}
+  - component: {fileID: 883366939}
   - component: {fileID: 883366940}
   m_Layer: 0
-  m_Name: UIManager
+  m_Name: UiManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6132,24 +6132,7 @@ Transform:
   m_Father: {fileID: 169778092}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &883366940
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 883366937}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b445dd708e43cf40a115d5f2913f3e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _pauseMenuPanel: {fileID: 1489212908}
-  _pauseMenuButton: {fileID: 1493075}
-  _continueGameButton: {fileID: 1395655124}
-  _newRoundButton: {fileID: 582222070}
-  _mainMenuButton: {fileID: 783508074}
---- !u!114 &883366941
+--- !u!114 &883366939
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6175,6 +6158,23 @@ MonoBehaviour:
   _smallestBetAmount: 0
   _biggestBetAmount: 0
   _selectedBetAmount: 0
+--- !u!114 &883366940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883366937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b445dd708e43cf40a115d5f2913f3e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pauseMenuPanel: {fileID: 1489212908}
+  _pauseMenuButton: {fileID: 1493075}
+  _continueGameButton: {fileID: 1395655124}
+  _newRoundButton: {fileID: 582222070}
+  _mainMenuButton: {fileID: 783508074}
 --- !u!1 &887600527
 GameObject:
   m_ObjectHideFlags: 0
@@ -7738,7 +7738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxThinkTime: 10
+  maxThinkTime: 2
   _playerName: Catherina (P1)
   _playerAction: 0
   _playerHand: {fileID: 264449917}
