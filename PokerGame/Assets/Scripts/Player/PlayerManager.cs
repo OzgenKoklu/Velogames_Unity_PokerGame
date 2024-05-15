@@ -12,7 +12,7 @@ public class PlayerManager : MonoBehaviour
     public event Action<PlayerAction> OnPlayerActionChanged;
     public event Action<bool> OnPlayerActiveChanged;
 
-    public float maxThinkTime = 10f; // Maximum time for make a move
+    [SerializeField] private float _maxThinkTime = 10f; // Maximum time for make a move
     private Coroutine _runningCoroutine;
 
     public PlayerData PlayerData
@@ -26,10 +26,7 @@ public class PlayerManager : MonoBehaviour
                 _playerData.Name = PlayerName;
                 //GameManager.Instance.SavePlayerData();
             }
-
-
         }
-
     }
     private PlayerData _playerData;
 
@@ -209,7 +206,6 @@ public class PlayerManager : MonoBehaviour
 
             _runningCoroutine = StartCoroutine(TenSecondTimerForMainPlayer());
 
-
             //Burada previous Action'ı bizim playerın actionına eşitlememiz lazım
             // _previousPlayerAction = CurrentPlayer.PlayerAction;
             //check if player is last in this turn or not, if last, change state to flop, else, change player turn
@@ -351,13 +347,13 @@ public class PlayerManager : MonoBehaviour
         float startTime = Time.time;
 
         // Initialize the timebar
-        _timebar.maxValue = maxThinkTime;
-        _timebar.value = maxThinkTime;
+        _timebar.maxValue = _maxThinkTime;
+        _timebar.value = _maxThinkTime;
 
-        while (Time.time - startTime < maxThinkTime)
+        while (Time.time - startTime < _maxThinkTime)
         {
             // Update the timebar
-            _timebar.value = maxThinkTime - (Time.time - startTime);
+            _timebar.value = _maxThinkTime - (Time.time - startTime);
             yield return null; // Wait until next frame
         }
 
@@ -378,17 +374,17 @@ public class PlayerManager : MonoBehaviour
     IEnumerator AiBotMoveWithRandomWait()
     {
         // Generate a random wait time between 0 to 10 seconds
-        float waitTime = UnityEngine.Random.Range(2f, maxThinkTime);
+        float waitTime = UnityEngine.Random.Range(2f, _maxThinkTime);
         float startTime = Time.time;
 
         // Initialize the timebar
-        _timebar.maxValue = maxThinkTime;
-        _timebar.value = maxThinkTime;
+        _timebar.maxValue = _maxThinkTime;
+        _timebar.value = _maxThinkTime;
 
         while (Time.time - startTime < waitTime)
         {
             // Update the timebar
-            _timebar.value = maxThinkTime - (Time.time - startTime);
+            _timebar.value = _maxThinkTime - (Time.time - startTime);
             yield return null; // Wait until next frame
         }
 
@@ -483,5 +479,4 @@ public class PlayerManager : MonoBehaviour
     {
         OnPlayerFolded = null;
     }
-
 }

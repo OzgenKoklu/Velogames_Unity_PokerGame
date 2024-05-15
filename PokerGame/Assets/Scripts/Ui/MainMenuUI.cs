@@ -1,6 +1,6 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
+using TMPro;
 
 public class MainMenuUI : MonoBehaviour
 {
@@ -8,6 +8,7 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private Button _logoutButton;
     [SerializeField] private Button _registerButton;
     [SerializeField] private Button _playButton;
+    [SerializeField] private Button _profileButton;
     [SerializeField] private TMP_Text _resultMessage;
 
     private void Start()
@@ -25,9 +26,11 @@ public class MainMenuUI : MonoBehaviour
 
     private void SetUIObjectsVisibilty(bool isSignedIn)
     {
+        _playButton.gameObject.SetActive(isSignedIn);
+        _profileButton.gameObject.SetActive(isSignedIn);
         _logoutButton.gameObject.SetActive(isSignedIn);
         _resultMessage.gameObject.SetActive(isSignedIn);
-        _playButton.gameObject.SetActive(isSignedIn);
+
         _loginButton.gameObject.SetActive(!isSignedIn);
         _registerButton.gameObject.SetActive(!isSignedIn);
     }

@@ -18,16 +18,14 @@ public class FirebaseAuthManager : MonoBehaviour
     public event Action OnLoginSuccessful;
 
     [SerializeField] private DependencyStatus DependencyStatus;
-    [SerializeField] private FirebaseAuth auth;
-    [SerializeField] private FirebaseUser user;
+    [SerializeField] private FirebaseAuth _auth;
+    [SerializeField] private FirebaseUser _user;
 
     [SerializeField] private TMP_InputField _registerEmail;
     [SerializeField] private TMP_InputField _registerPassword;
 
     [SerializeField] private TMP_InputField _loginEmail;
     [SerializeField] private TMP_InputField _loginPassword;
-
-    [SerializeField] private TMP_Text _resultMessage;
 
     private void Awake()
     {
@@ -50,26 +48,26 @@ public class FirebaseAuthManager : MonoBehaviour
     private void InitializeFirebase()
     {
         Debug.Log("Setting up Firebase Auth");
-        auth = FirebaseAuth.DefaultInstance;
+        _auth = FirebaseAuth.DefaultInstance;
 
-        auth.StateChanged += AuthStateChanged;
+        _auth.StateChanged += AuthStateChanged;
 
         AuthStateChanged(this, null);
     }
 
     private void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
-        if (auth.CurrentUser != user)
+        if (_auth.CurrentUser != _user)
         {
-            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
-            if (!signedIn && user != null)
+            bool signedIn = _user != _auth.CurrentUser && _auth.CurrentUser != null;
+            if (!signedIn && _user != null)
             {
-                Debug.Log("Signed out " + user.UserId);
+                Debug.Log("Signed out " + _user.UserId);
             }
-            user = auth.CurrentUser;
+            _user = _auth.CurrentUser;
             if (signedIn)
             {
-                Debug.Log("Signed in " + user.UserId);
+                Debug.Log("Signed in " + _user.UserId);
             }
 
             OnAuthStateChanged?.Invoke(signedIn);
@@ -85,7 +83,7 @@ public class FirebaseAuthManager : MonoBehaviour
     {
         string message = "";
 
-        var authTask = auth.CreateUserWithEmailAndPasswordAsync(_registerEmail.text, _registerPassword.text);
+        var authTask = _auth.CreateUserWithEmailAndPasswordAsync(_registerEmail.text, _registerPassword.text);
         yield return new WaitUntil(() => authTask.IsCompleted);
 
         if (authTask.IsCanceled)
@@ -180,7 +178,7 @@ public class FirebaseAuthManager : MonoBehaviour
     {
         string message = "";
 
-        var authTask = auth.SignInWithEmailAndPasswordAsync(_loginEmail.text, _loginPassword.text);
+        var authTask = _auth.SignInWithEmailAndPasswordAsync(_loginEmail.text, _loginPassword.text);
         yield return new WaitUntil(() => authTask.IsCompleted);
 
         if (authTask.IsCanceled)
@@ -230,15 +228,15 @@ public class FirebaseAuthManager : MonoBehaviour
 
     public void LogoutButton()
     {
-        auth.SignOut();
+        _auth.SignOut();
         OnLogoutResultMessageChanged?.Invoke("Logout successful.");
     }
 
     public void DeleteUserButton()
     {
-        if (user != null)
+        if (_user != null)
         {
-            user.DeleteAsync().ContinueWithOnMainThread(task =>
+            _user.DeleteAsync().ContinueWithOnMainThread(task =>
             {
                 if (task.IsCanceled)
                 {
@@ -258,13 +256,13 @@ public class FirebaseAuthManager : MonoBehaviour
 
     public bool GetLoginStatus()
     {
-        bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
+        bool signedIn = _user != _auth.CurrentUser && _auth.CurrentUser != null;
         return signedIn;
     }
 
     private void OnDestroy()
     {
-        auth.StateChanged -= AuthStateChanged;
-        auth = null;
+        _auth.StateChanged -= AuthStateChanged;
+        _auth = null;
     }
 }

@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class AuthUIManager : MonoBehaviour
 {
-    public TMP_Text registerResultMessage;
-    public TMP_Text loginResultMessage;
+    [SerializeField] private TMP_Text _registerResultMessage;
+    [SerializeField] private TMP_Text _loginResultMessage;
 
     private void Start()
     {
@@ -14,11 +14,11 @@ public class AuthUIManager : MonoBehaviour
 
     private void FirebaseAuthManager_OnLoginResultMessageChanged(string message)
     {
-        loginResultMessage.text = message;
+        _loginResultMessage.text = message;
     }
 
     private void FirebaseAuthManager_OnRegisterResultMessageChanged(string message)
     {
-        registerResultMessage.text = message;
+        _registerResultMessage.text = message;
     }
 }

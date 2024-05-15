@@ -10,7 +10,7 @@ using System.Collections.Generic;
 public class PlayerDataManager : MonoBehaviour
 {
     public static PlayerDataManager Instance { get; private set; }
-    [SerializeField] private string FirebaseUserId; // Store Firebase user ID here
+    [SerializeField] private string _firebaseUserId; // Store Firebase user ID here
 
     public const string FilePathForJson = "Assets/Resources/playerData.json";
     public const string FirebaseDataPath = "playerData";
@@ -98,7 +98,7 @@ public class PlayerDataManager : MonoBehaviour
         string leaderboardPath = "leaderboards/pokerStats"; // Replace with your leaderboard path
         DatabaseReference leaderboardRef = FirebaseDatabase.DefaultInstance.GetReference(leaderboardPath);
 
-        leaderboardRef.Child(FirebaseUserId).SetValueAsync(leaderboardEntry)
+        leaderboardRef.Child(_firebaseUserId).SetValueAsync(leaderboardEntry)
              .ContinueWithOnMainThread(task =>
              {
                  if (task.IsFaulted)
@@ -112,8 +112,6 @@ public class PlayerDataManager : MonoBehaviour
              });
     }
 
-
-
     private void Firebase_OnLoginSuccessful()
     {
         _databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
@@ -121,7 +119,7 @@ public class PlayerDataManager : MonoBehaviour
         FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;
         if (user != null)
         {
-            FirebaseUserId = user.UserId;
+            _firebaseUserId = user.UserId;
             DownloadPlayerDataFromFirebase();
         }
         else
@@ -135,7 +133,7 @@ public class PlayerDataManager : MonoBehaviour
     private async void DownloadPlayerDataFromFirebase()
     {
         IsPlayerDataHandlingSuccessful = false;
-        DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(FirebaseUserId);
+        DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(_firebaseUserId);
 
         try
         {
@@ -177,7 +175,7 @@ public class PlayerDataManager : MonoBehaviour
     {
         string jsonData = JsonUtility.ToJson(_playerData);
 
-        DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(FirebaseUserId);
+        DatabaseReference playerDataRef = _databaseReference.Child(FirebaseDataPath).Child(_firebaseUserId);
 
         try
         {
@@ -297,7 +295,10 @@ public class PlayerDataManager : MonoBehaviour
         _showDownsAttended = playerData.ShowDownsAttended;
     }
 
-
+    public PlayerData GetPlayerData()
+    {
+        return _playerData;
+    }
 
     public PlayerData LoadPlayerData()
     {
