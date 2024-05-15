@@ -2,9 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
+using System.Text;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BetManager : MonoBehaviour
@@ -31,7 +30,7 @@ public class BetManager : MonoBehaviour
     public List<Pot> PotsList;
     [SerializeField] private List<Pot> _potsList;
 
-    public Dictionary<PlayerManager, int> potContributionDictionary;
+    public Dictionary<PlayerManager, int> PotContributionDictionary;
 
     public int BaseRaiseBetAmount
     {
@@ -45,16 +44,17 @@ public class BetManager : MonoBehaviour
 
     //GECICI BURDA
     [SerializeField] private TextMeshProUGUI _winningResultText;
+    [SerializeField] private TextMeshProUGUI _potAmountResultText;
+
     private Coroutine _runningCoroutine;
     private float _resultsTimer = 5f;
 
     private void Awake()
     {
-
         Instance = this;
         _tempPot = 0;
         showdownPots = new List<Pot>();
-        potContributionDictionary = new Dictionary<PlayerManager, int>();
+        PotContributionDictionary = new Dictionary<PlayerManager, int>();
     }
 
     private void Start()
@@ -68,6 +68,8 @@ public class BetManager : MonoBehaviour
         if (state == GameManager.GameState.Showdown)
         {
             showdownPots = DevideIntoPots();
+
+            UpdatePotAmountText(false);
 
             OnBetUpdated?.Invoke(null, -1); // for resetting the bet amount
 
@@ -104,6 +106,7 @@ public class BetManager : MonoBehaviour
         else if (state == GameManager.GameState.EveryoneFolded)
         {
             showdownPots = DevideIntoPots();
+            UpdatePotAmountText(false);
 
             List<PlayerManager> player = GameManager.Instance.ActivePlayers;
             Debug.Log("Before Money transfer, total chips : " + player[0].TotalStackAmount);
@@ -238,18 +241,21 @@ public class BetManager : MonoBehaviour
         player.TotalStackAmount -= player.BetAmount;
         player.BetAmount = 0;
 
-        if (potContributionDictionary.TryGetValue(player, out int currentBet))
+        if (PotContributionDictionary.TryGetValue(player, out int currentBet))
         {
             // Player exists, update total bet
-            potContributionDictionary[player] = player.TotalBetInThisRound;
-            Debug.Log("Total bet in dictionary: " + potContributionDictionary[player]);
+            PotContributionDictionary[player] = player.TotalBetInThisRound;
+            Debug.Log("Total bet in dictionary: " + PotContributionDictionary[player]);
         }
         else
         {
             // New player, add entry to dictionary
-            potContributionDictionary.Add(player, player.TotalBetInThisRound);
-            Debug.Log("Total bet in dictionary: " + potContributionDictionary[player]);
+            PotContributionDictionary.Add(player, player.TotalBetInThisRound);
+            Debug.Log("Total bet in dictionary: " + PotContributionDictionary[player]);
         }
+
+        UpdatePotAmountText(true);
+       
     }
 
 
@@ -268,7 +274,7 @@ public class BetManager : MonoBehaviour
 
         //potDefiningBetValues = potContributionDictionary.Values.ToList();
 
-        foreach (var playerContribution in potContributionDictionary)
+        foreach (var playerContribution in PotContributionDictionary)
         {
             PlayerManager player = playerContribution.Key;
             int playerBetAmount = playerContribution.Value;
@@ -391,16 +397,49 @@ public class BetManager : MonoBehaviour
     {
         CurrentHighestBetAmount = 0;
         showdownPots?.Clear();
-        potContributionDictionary?.Clear();
+        PotContributionDictionary?.Clear();
         BaseRaiseBetAmount = 10;
     }
 
+    public void UpdatePotAmountText(bool isBeforePotSplit)
+    {
+        if (isBeforePotSplit)
+        {       
+            // string potSplitIndicator = GameManager.Instance.IsAnyPlayerAllIn() ? " - Pot Will Split" : "";
+            _potAmountResultText.text = "Pot Size: $" + GetTotalPotAmount().ToString(); //+ potSplitIndicator;
+            //might add an inditacion that pot will split during showdown. But one player being all in does not mean
+            //pot will split, everyone can bet the same amount: resulting one main pot and no side pots.
+        }
+        else //pots have already splitted or does not need a split.
+        {
+            StringBuilder potTextBuilder = new StringBuilder();
 
+            // Main pot
+            potTextBuilder.Append($"Main Pot: ${showdownPots[0].MoneyInPot}");
 
+            // Side pots
+            for (int i = 1; i < showdownPots.Count; i++)
+            {
+                potTextBuilder.Append($"Side Pot {i}: ${showdownPots[i].MoneyInPot}");
+            }
 
+            _potAmountResultText.text = potTextBuilder.ToString();
+        }     
+    }
 
-    
-    
+    public int GetTotalPotAmount()
+    {
+        int totalPotAmount = 0;
+
+        // Loop through each entry in the dictionary
+        foreach (KeyValuePair<PlayerManager, int> entry in PotContributionDictionary)
+        {
+            // Add the contribution to the total
+            totalPotAmount += entry.Value;
+        }
+
+        return totalPotAmount;
+    }
 }
 
 [Serializable]
