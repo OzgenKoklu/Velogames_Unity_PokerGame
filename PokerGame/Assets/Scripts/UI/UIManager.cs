@@ -100,7 +100,6 @@ public class UIManager : MonoBehaviour
         {
             _bettingPanelBetAmountText.text = $"ALL IN (${betAmount:N0})";
         }
-
     }
 
     private int GetBetAmountValue(float normalizedSliderValue)
@@ -122,11 +121,8 @@ public class UIManager : MonoBehaviour
     public void ResetFunctionsAndHideButtons()
     {
         RemoveAllListenersFromButtons();
-
         _bettingPanelSlider.value = 0f;
-
         HideButtons();
-
         HideBettingWindow();
     }
 

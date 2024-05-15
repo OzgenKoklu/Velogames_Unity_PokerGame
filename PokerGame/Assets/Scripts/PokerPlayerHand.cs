@@ -11,18 +11,18 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     [SerializeField] private AiPlayerBehaviour _aiPlayerBehavior;
 
     [Header("Card Transform Values:")]
-    private Vector3 initialHandTransformPosition;
+    private Vector3 _initialHandTransformPosition;
     [SerializeField] private float initialXOffset = -10.6f;
-    [SerializeField] private float xOffsetMultiplier = 1.2f;
-    [SerializeField] private float initialRotationAngle = 15f;
-    [SerializeField] private float rotationAngleMultiplier = -30f;
-    [SerializeField] private float initialYPosition = -4f;
-    [SerializeField] private float aiScaleMultiplier = 0.6f;
+    [SerializeField] private float _xOffsetMultiplier = 1.2f;
+    [SerializeField] private float _initialRotationAngle = 15f;
+    [SerializeField] private float _rotationAngleMultiplier = -30f;
+    [SerializeField] private float _initialYPosition = -4f;
+    [SerializeField] private float _aiScaleMultiplier = 0.6f;
 
     private void Awake()
     {
         HoleCardsList = new List<CardSO>();
-        initialHandTransformPosition = _handFollowTransform.position;
+        _initialHandTransformPosition = _handFollowTransform.position;
     }
 
     public void AddCard(CardSO newCard)
@@ -37,7 +37,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     public void ClearCards()
     {
         HoleCardsList?.Clear();
-        _handFollowTransform.position = initialHandTransformPosition;
+        _handFollowTransform.position = _initialHandTransformPosition;
     }
 
     public Transform GetCardFollowTransform()
@@ -46,17 +46,17 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
 
         if (_isPlayerUs)
         {
-            float newXPosition = initialXOffset + (xOffsetMultiplier * (HoleCardsList.Count - 1));
-            float newRotationAngle = initialRotationAngle + (rotationAngleMultiplier * (HoleCardsList.Count - 1));
-            cardTransform.SetPositionAndRotation(new Vector2(newXPosition, initialYPosition), Quaternion.AngleAxis(newRotationAngle, Vector3.forward));
+            float newXPosition = initialXOffset + (_xOffsetMultiplier * (HoleCardsList.Count - 1));
+            float newRotationAngle = _initialRotationAngle + (_rotationAngleMultiplier * (HoleCardsList.Count - 1));
+            cardTransform.SetPositionAndRotation(new Vector2(newXPosition, _initialYPosition), Quaternion.AngleAxis(newRotationAngle, Vector3.forward));
         }
         else // if player is AI or Online
         {
             //her tur player elinin kaymasina sebep oluyor LOL
             float newXPosition = _handFollowTransform.position.x + (0.6f * (HoleCardsList.Count - 1));
-            float newRotationAngle = initialRotationAngle + (rotationAngleMultiplier * (HoleCardsList.Count - 1));
-           // Debug.Log("Hand follow transform x: " + _handFollowTransform.position.x + "New  x psition:" + newXPosition + " Hole cards count: "+ HoleCardsList.Count);
-            cardTransform.localScale = Vector3.one * aiScaleMultiplier;
+            float newRotationAngle = _initialRotationAngle + (_rotationAngleMultiplier * (HoleCardsList.Count - 1));
+            // Debug.Log("Hand follow transform x: " + _handFollowTransform.position.x + "New  x psition:" + newXPosition + " Hole cards count: "+ HoleCardsList.Count);
+            cardTransform.localScale = Vector3.one * _aiScaleMultiplier;
             cardTransform.SetPositionAndRotation(new Vector2(newXPosition, _handFollowTransform.position.y), Quaternion.AngleAxis(newRotationAngle, Vector3.forward));
         }
 

@@ -250,11 +250,9 @@ public class PlayerManager : MonoBehaviour
     {
         if (this == GameManager.Instance.MainPlayer)
         {
-
             PlayerAction = PlayerAction.Call;
             Debug.Log("current highest bet: " + BetManager.Instance.CurrentHighestBetAmount);
             var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - TotalBetInThisRound;
-
 
             int maxCallAmount = TotalStackAmount;
             if (callBetAmount >= maxCallAmount)
@@ -271,9 +269,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             HasActedSinceLastRaise = true;
-            //Debug.Log("Player has made the move to: " + PlayerAction);
             _isPlayerFolded = false;
-
 
             if (_runningCoroutine != null) // Check if coroutine is running
             {
@@ -292,7 +288,6 @@ public class PlayerManager : MonoBehaviour
             PlayerAction = PlayerAction.Bet;
 
             HasActedSinceLastRaise = true;
-            //Debug.Log("Player has made the move to: " + PlayerAction);
             _isPlayerFolded = false;
             Debug.Log("Bet Amount: " + betAmount);
             BetManager.Instance.SetBet(this, betAmount);
@@ -330,7 +325,6 @@ public class PlayerManager : MonoBehaviour
             _isPlayerFolded = false;
             _isPlayerAllIn = false;
             UIManager.Instance.ResetFunctionsAndHideButtons();
-            //Debug.Log("Player has made the move to: " + PlayerAction);
 
             if (_runningCoroutine != null) // Check if coroutine is running
             {
@@ -406,7 +400,6 @@ public class PlayerManager : MonoBehaviour
         }
 
         // Reset the previous player action to fold or null after each betting round ends
-        //Debug.Log(name + " Made the move: " + PlayerAction);
 
         HasActedSinceLastRaise = true;
 
@@ -448,13 +441,13 @@ public class PlayerManager : MonoBehaviour
         {
             IsBusted = false;
         }
+
         PlayerAction = PlayerAction.Check; //probably no need.
         HasActedSinceLastRaise = false;
         _isPlayerFolded = false;
         IsPlayerTurn = false;
         IsPlayerAllIn = false;
         IsFolded = false;
-
         BetAmount = 0;
         TotalBetInThisRound = 0;
     }

@@ -36,7 +36,6 @@ public class PlayerUI : MonoBehaviour
         DealerManager.Instance.OnSmallBlindChanged += DealerManager_OnSmallBlindChanged;
         DealerManager.Instance.OnBigBlindChanged += DealerManager_OnBigBlindChanged;
         BetManager.Instance.OnBetUpdated += BetManager_OnBetUpdated;
-        //TurnManager.Instance.OnPlayerTurn += TurnManager_OnPlayerTurn;
         _player.OnPlayerActiveChanged += Player_OnPlayerActiveChanged;
         _player.OnPlayerActionChanged += Player_OnPlayerActionChanged;
     }
@@ -168,7 +167,6 @@ public class PlayerUI : MonoBehaviour
         {
             BetManager.Instance.OnBetUpdated -= BetManager_OnBetUpdated;
         }
-        //TurnManager.Instance.OnPlayerTurn -= TurnManager_OnPlayerTurn;
         _player.OnPlayerActiveChanged -= Player_OnPlayerActiveChanged;
         _player.OnPlayerActionChanged -= Player_OnPlayerActionChanged;
     }

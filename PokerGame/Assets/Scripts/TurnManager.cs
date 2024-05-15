@@ -64,14 +64,6 @@ public class TurnManager : MonoBehaviour
                 SetFirstPlayer(IsPreFlop); //false for IsPreFlop
                 //PlayerTurn'e gecis bu sefer Poker Deck Manager'da. Bu yaklasımı sevmiyorum
                 break;
-            case GameManager.GameState.Showdown:
-
-
-                break;
-            case GameManager.GameState.PotDistribution:
-                break;
-            case GameManager.GameState.GameOver:
-                break;
             default:
                 break;
         }
@@ -111,7 +103,6 @@ public class TurnManager : MonoBehaviour
     {
         if (GameManager.Instance.GetState() != GameManager.GameState.PlayerTurn) return;
         BetManager.Instance.CollectBets(CurrentPlayer);
-
 
         CurrentPlayer.IsPlayerTurn = false;
 
@@ -204,7 +195,6 @@ public class TurnManager : MonoBehaviour
             player.ResetTurnStatus();
         }
     }
-
 
     private bool AreAllActivePlayersChecked()
     {

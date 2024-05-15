@@ -118,8 +118,6 @@ public class PokerHandEvaluator : MonoBehaviour
         return winningHandResults;
     }
 
-
-
     public struct WinningHandResults
     {
         public List<CardSO> WinningCardList;

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class MainMenuUI : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private Button _playButton;
     [SerializeField] private Button _profileButton;
     [SerializeField] private TMP_Text _resultMessage;
+
+    [SerializeField] private int _resultMessageAppearanceTime;
 
     private void Start()
     {
@@ -35,9 +38,21 @@ public class MainMenuUI : MonoBehaviour
         _registerButton.gameObject.SetActive(!isSignedIn);
     }
 
-    public void SetResultMessage(string message)
+    private void SetResultMessage(string message)
     {
         _resultMessage.text = message;
+        StartCoroutine(ClearResultMessageField());
+    }
+
+    private IEnumerator ClearResultMessageField()
+    {
+        yield return new WaitForSeconds(_resultMessageAppearanceTime);
+        _resultMessage.text = "";
+    }
+
+    private void OnDisable()
+    {
+        _resultMessage.text = "";
     }
 
     private void OnDestroy()

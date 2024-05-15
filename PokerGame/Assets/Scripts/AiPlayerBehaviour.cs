@@ -8,7 +8,6 @@ public class AiPlayerBehaviour : MonoBehaviour
     public enum HandStrength { Amazing, Strong, Medium, WeakPlus, Weak }
 
     // *** POSTFLOP DECISIONS ***
-    // *** POSTFLOP DECISIONS ***
     //5-7 card Decision making (post flop), maybe it should take bluffs into account, like if the earlier player bets, the player will become likely to fold or something. 
     public PlayerAction DecidePostFlop(HandStrength handStrength)
     {
@@ -262,6 +261,7 @@ public class AiPlayerBehaviour : MonoBehaviour
     {
         RaiseAction(handStrength);
     }
+
     private void RaiseAction(HandStrength handStrength)
     {
         int raiseBetAmount = CalculateRaiseAmount(handStrength);

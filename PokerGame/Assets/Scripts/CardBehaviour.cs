@@ -29,7 +29,6 @@ public class CardBehaviour : MonoBehaviour
             }
             else
             {
-                //facedown sprite eklenecek
                 _cardFaceSpriteRenderer.sprite = _cardBackSpriteRenderer.sprite;
             }
         }
@@ -57,10 +56,11 @@ public class CardBehaviour : MonoBehaviour
         transform.localScale = newTransform.localScale;
     }
 
-
     public void SetCardAsSelected()
     {
-        _selectedVisualGameObject?.SetActive(true);
-        Debug.Log("Card Selected: " + CardSO.CardCode);
+        if (_selectedVisualGameObject != null)
+        {
+            _selectedVisualGameObject.SetActive(true);
+        }
     }
 }

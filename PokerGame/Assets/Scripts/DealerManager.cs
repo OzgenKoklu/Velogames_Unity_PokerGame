@@ -40,7 +40,6 @@ public class DealerManager : MonoBehaviour
         {
             int bettingRoundCount = GameManager.Instance.GetBettingRoundCount();
             SelectDealerIndex(bettingRoundCount);
-            //Debug.Log("GameManager and Players list are valid"); // Check if GameManager instance and Players list are valid
 
             _currentDealer.IsPlayerDealer = true;
             SetSmallAndBigBlind();
@@ -152,8 +151,6 @@ public class DealerManager : MonoBehaviour
             dealerIndex++;
             dealerIndex = dealerIndex % 5;
         } while (!_currentDealer.IsPlayerActive);
-
-        Debug.Log("current dealer player set as: " + _currentDealer.name);
     }
 
     private void OnDisable()

@@ -39,8 +39,7 @@ public class BetManager : MonoBehaviour
     }
     [SerializeField] private int _baseRaiseAmount = 10;
 
-
-    [SerializeField] public List<Pot> showdownPots;
+    [SerializeField] private List<Pot> _showdownPots;
 
     //GECICI BURDA
     [SerializeField] private TextMeshProUGUI _winningResultText;
@@ -53,7 +52,7 @@ public class BetManager : MonoBehaviour
     {
         Instance = this;
         _tempPot = 0;
-        showdownPots = new List<Pot>();
+        _showdownPots = new List<Pot>();
         PotContributionDictionary = new Dictionary<PlayerManager, int>();
     }
 
@@ -64,16 +63,15 @@ public class BetManager : MonoBehaviour
     }
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
-
         if (state == GameManager.GameState.Showdown)
         {
-            showdownPots = DevideIntoPots();
+            _showdownPots = DevideIntoPots();
 
             UpdatePotAmountText(false);
 
             OnBetUpdated?.Invoke(null, -1); // for resetting the bet amount
 
-            int potCount = showdownPots.Count;
+            int potCount = _showdownPots.Count;
 
             Debug.Log("Number of pots for the showdown: " + potCount);
 
@@ -83,8 +81,7 @@ public class BetManager : MonoBehaviour
             bool mainPlayerWinsAnyPot = false;
             for (int i = 0; i < potCount; i++)
             {
-
-                var eligiblePlayersForThisPot = showdownPots[i]._eligiblePlayerList;
+                var eligiblePlayersForThisPot = _showdownPots[i].EligiblePlayerList;
                 PokerHandEvaluator.WinningHandResults winningHandResult = PokerHandEvaluator.Instance.SelectTheWinnerForTheShowdown(eligiblePlayersForThisPot);
                 Debug.Log("Winning result for the pot index " + i + " is " + winningHandResult.WinnerList[0]);
 
@@ -93,29 +90,27 @@ public class BetManager : MonoBehaviour
                     mainPlayerWinsAnyPot = winningHandResult.WinnerList.Any(winner => winner == GameManager.Instance.MainPlayer);
                 }
 
-                winningResult = winningHandResult.WinnerList[0].PlayerName + " wins the main pot. Amount: " + showdownPots[i].MoneyInPot;
-                HandleWinningHandResult(winningHandResult, showdownPots[i]);
+                winningResult = winningHandResult.WinnerList[0].PlayerName + " wins the main pot. Amount: " + _showdownPots[i].MoneyInPot;
+                HandleWinningHandResult(winningHandResult, _showdownPots[i]);
             }
             //GameManager.Instance.ConcludeBettingRound();
 
             if (mainPlayerWinsAnyPot) OnMainPlayerWin?.Invoke(); //does not include complicated win statistics like winning multiple pots. 
 
-
             _runningCoroutine = StartCoroutine(ResultsCoroutine(winningResult));
         }
         else if (state == GameManager.GameState.EveryoneFolded)
         {
-            showdownPots = DevideIntoPots();
+            _showdownPots = DevideIntoPots();
             UpdatePotAmountText(false);
 
             List<PlayerManager> player = GameManager.Instance.ActivePlayers;
             Debug.Log("Before Money transfer, total chips : " + player[0].TotalStackAmount);
-            string winningResultText = player[0].PlayerName + " wins the blinds. Amount:" + showdownPots[0].MoneyInPot;
-            player[0].TotalStackAmount += showdownPots[0].MoneyInPot;
+            string winningResultText = player[0].PlayerName + " wins the blinds. Amount:" + _showdownPots[0].MoneyInPot;
+            player[0].TotalStackAmount += _showdownPots[0].MoneyInPot;
             Debug.Log("After Money transfer, total chips : " + player[0].TotalStackAmount);
-            showdownPots[0].MoneyInPot = 0;
+            _showdownPots[0].MoneyInPot = 0;
             //GameManager.Instance.ConcludeBettingRound();
-
 
             _runningCoroutine = StartCoroutine(ResultsCoroutine(winningResultText));
         }
@@ -134,14 +129,11 @@ public class BetManager : MonoBehaviour
 
         _winningResultText.text = "";
 
-
-
         GameManager.Instance.StartGameRound();
     }
 
     private void DealerManager_OnDealerChanged(PlayerManager dealerPlayer)
     {
-
         PlayerManager smallBlind = DealerManager.Instance.GetSmallBlind();
         SetBet(smallBlind, _baseRaiseAmount / 2);
         CollectBets(DealerManager.Instance.GetSmallBlind()); // rotus cekelim
@@ -198,8 +190,6 @@ public class BetManager : MonoBehaviour
         return _baseRaiseAmount;
     }
 
-    // DÜZELTÝLECEK!!!!!!!!!
-    //bu fonksiyonun betle Le bi ilgisi yok o yüzden aslinda game manager'a tasinmasý mantikli olabilir. buradan yapilacak seylerin oradan yapilmasý dogru olabilir.
     private void HandleWinningHandResult(PokerHandEvaluator.WinningHandResults winningHandResult, Pot potInHand)
     {
         string winningHandType = winningHandResult.WinningHandType;
@@ -226,7 +216,6 @@ public class BetManager : MonoBehaviour
         {
             winningPlayerList[0].TotalStackAmount += totalPotToSlipt;
         }
-
 
         potInHand.MoneyInPot = 0; // set pot to zero.
         List<CardSO> WinningCardList = winningHandResult.WinningCardList;
@@ -255,7 +244,6 @@ public class BetManager : MonoBehaviour
         }
 
         UpdatePotAmountText(true);
-       
     }
 
 
@@ -266,7 +254,6 @@ public class BetManager : MonoBehaviour
         // Will take the current potContributionDictionary. 
 
         // From there onwards we will create main pots and side pots if necessary. 
-
 
         int playerCount = GameManager.Instance.Players.Count;
 
@@ -289,7 +276,6 @@ public class BetManager : MonoBehaviour
                 }
             }
             //int playerBet = playerContribution.Value;
-
         }
 
         potDefiningBetValues.Sort();
@@ -305,25 +291,24 @@ public class BetManager : MonoBehaviour
             foreach (var definingValue in potDefiningBetValues)
             {
                 Debug.Log("Pot defining value: " + definingValue);
-                currentPot.potLimit = definingValue;
-                currentPot.isLastPot = false; //contribution amount is a 
+                currentPot.PotLimit = definingValue;
+                currentPot.IsLastPot = false; //contribution amount is a 
                 Pot sidePot = new();
                 pots.Add(sidePot);
                 currentPot = sidePot;
             }
         }
 
-
         //Decide eligible players for each bet.
         var activePlayers = GameManager.Instance.ActivePlayers;
         // Loop through players in contribution dictionary
         foreach (var pot in pots)
         {
-            if (!pot.isLastPot)
+            if (!pot.IsLastPot)
             {
                 foreach (var player in activePlayers)
                 {
-                    if (player.TotalBetInThisRound >= pot.potLimit)
+                    if (player.TotalBetInThisRound >= pot.PotLimit)
                     {
                         pot.AddEligiblePlayer(player);
                         Debug.Log("Eligible player added to" + pot + " player. " + player.PlayerName);
@@ -349,17 +334,17 @@ public class BetManager : MonoBehaviour
         var allPlayers = GameManager.Instance.Players;
         foreach (var pot in pots)
         {
-            if (!pot.isLastPot)
+            if (!pot.IsLastPot)
             {
                 foreach (var player in allPlayers)
                 {
-                    if (player.TotalBetInThisRound >= pot.potLimit)
+                    if (player.TotalBetInThisRound >= pot.PotLimit)
                     {
-                        pot.MoneyInPot += pot.potLimit;
-                        player.TotalBetInThisRound -= pot.potLimit;
+                        pot.MoneyInPot += pot.PotLimit;
+                        player.TotalBetInThisRound -= pot.PotLimit;
 
                     }
-                    else if (player.TotalBetInThisRound < pot.potLimit)
+                    else if (player.TotalBetInThisRound < pot.PotLimit)
                     {
                         pot.MoneyInPot += player.TotalBetInThisRound;
                         player.TotalBetInThisRound = 0;
@@ -396,7 +381,7 @@ public class BetManager : MonoBehaviour
     public void ResetForTheNewRound()
     {
         CurrentHighestBetAmount = 0;
-        showdownPots?.Clear();
+        _showdownPots?.Clear();
         PotContributionDictionary?.Clear();
         BaseRaiseBetAmount = 10;
     }
@@ -404,7 +389,7 @@ public class BetManager : MonoBehaviour
     public void UpdatePotAmountText(bool isBeforePotSplit)
     {
         if (isBeforePotSplit)
-        {       
+        {
             // string potSplitIndicator = GameManager.Instance.IsAnyPlayerAllIn() ? " - Pot Will Split" : "";
             _potAmountResultText.text = "Pot Size: $" + GetTotalPotAmount().ToString(); //+ potSplitIndicator;
             //might add an inditacion that pot will split during showdown. But one player being all in does not mean
@@ -415,16 +400,16 @@ public class BetManager : MonoBehaviour
             StringBuilder potTextBuilder = new StringBuilder();
 
             // Main pot
-            potTextBuilder.Append($"Main Pot: ${showdownPots[0].MoneyInPot}");
+            potTextBuilder.Append($"Main Pot: ${_showdownPots[0].MoneyInPot}");
 
             // Side pots
-            for (int i = 1; i < showdownPots.Count; i++)
+            for (int i = 1; i < _showdownPots.Count; i++)
             {
-                potTextBuilder.Append($"Side Pot {i}: ${showdownPots[i].MoneyInPot}");
+                potTextBuilder.Append($"Side Pot {i}: ${_showdownPots[i].MoneyInPot}");
             }
 
             _potAmountResultText.text = potTextBuilder.ToString();
-        }     
+        }
     }
 
     public int GetTotalPotAmount()
@@ -445,23 +430,21 @@ public class BetManager : MonoBehaviour
 [Serializable]
 public class Pot
 {
-    public int potLimit = int.MaxValue; //lets assume no one is all in, everyone is eligible for the main pot while there is no real pot limit set
+    public int PotLimit = int.MaxValue; //lets assume no one is all in, everyone is eligible for the main pot while there is no real pot limit set
     public int MoneyInPot = 0;
-    public bool isLastPot = true; //contribution amount is a factor to be eligible if false
+    public bool IsLastPot = true; //contribution amount is a factor to be eligible if false
 
-    public List<PlayerManager> _eligiblePlayerList;
-
+    public List<PlayerManager> EligiblePlayerList;
 
     public void AddEligiblePlayer(PlayerManager player)
     {
-        if (_eligiblePlayerList == null)
+        if (EligiblePlayerList == null)
         {
-            _eligiblePlayerList = new List<PlayerManager>();
+            EligiblePlayerList = new List<PlayerManager>();
         }
-        if (player != null && !_eligiblePlayerList.Contains(player))
+        if (player != null && !EligiblePlayerList.Contains(player))
         {
-            _eligiblePlayerList.Add(player);
+            EligiblePlayerList.Add(player);
         }
     }
-
 }

@@ -20,7 +20,7 @@ public class GameSceneManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-       
+
     }
 
     private void OnEnable()
@@ -31,9 +31,9 @@ public class GameSceneManager : MonoBehaviour
     {
         Debug.Log("Scene " + scene.name + " has loaded!");
 
-        if (scene.buildIndex == _mainGameSceneIndex && GameManager.Instance != null) 
-        {         
-                OnSceneLoadCompleted?.Invoke(scene);          
+        if (scene.buildIndex == _mainGameSceneIndex && GameManager.Instance != null)
+        {
+            OnSceneLoadCompleted?.Invoke(scene);
         }
     }
 

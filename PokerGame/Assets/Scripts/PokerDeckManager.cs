@@ -21,7 +21,6 @@ public class PokerDeckManager : MonoBehaviour
     [SerializeField] private GameObject _communityCardsGameObject;
     private List<PokerPlayerHand> _playerHands;
 
-
     private void Awake()
     {
         Instance = this;
@@ -34,9 +33,9 @@ public class PokerDeckManager : MonoBehaviour
         GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
 
-    private void GameManager_OnGameStateChanged(GameManager.GameState obj)
+    private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
-        if (obj == GameManager.GameState.NewRound)
+        if (state == GameManager.GameState.NewRound)
         {
             ResetDeck(); //shuffles, adds the discard pile to the deck
             DealCardsToPlayers();
@@ -45,7 +44,7 @@ public class PokerDeckManager : MonoBehaviour
             return;
         }
 
-        if (obj == GameManager.GameState.Flop)
+        if (state == GameManager.GameState.Flop)
         {
             DrawInitialCommunityCards(); //normally should draw in flop. Lets draw and hide for now. 
 
@@ -59,7 +58,7 @@ public class PokerDeckManager : MonoBehaviour
             return;
         }
 
-        if (obj == GameManager.GameState.Turn)
+        if (state == GameManager.GameState.Turn)
         {
             //draw 4th card for community cards
             DrawOneMoreCommunityCard();
@@ -70,7 +69,7 @@ public class PokerDeckManager : MonoBehaviour
             return;
         }
 
-        if (obj == GameManager.GameState.River)
+        if (state == GameManager.GameState.River)
         {
             //draw 5th card for community cards
             DrawOneMoreCommunityCard();
@@ -79,11 +78,10 @@ public class PokerDeckManager : MonoBehaviour
             GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
             return;
         }
-
     }
 
     // Load all cards from DeckSO into the deck List
-    void LoadDeck()
+    private void LoadDeck()
     {
         foreach (CardSO card in _deckSO.Cardlist)
         {
@@ -92,7 +90,7 @@ public class PokerDeckManager : MonoBehaviour
     }
 
     // Shuffle the deck with random index'
-    void ShuffleDeck()
+    private void ShuffleDeck()
     {
         for (int i = 0; i < _pokerDeck.Count; i++)
         {
@@ -104,7 +102,7 @@ public class PokerDeckManager : MonoBehaviour
     }
 
     // Draw a card from the deck
-    public CardSO DrawCard()
+    private CardSO DrawCard()
     {
         if (_pokerDeck.Count > 0)
         {
@@ -120,7 +118,7 @@ public class PokerDeckManager : MonoBehaviour
         }
     }
 
-    public void ResetDeck()
+    private void ResetDeck()
     {
         bool anySpawnedCards = CardVisualsManager.Instance.IsThereAnySpawnedCards();
         if (anySpawnedCards)
@@ -130,7 +128,7 @@ public class PokerDeckManager : MonoBehaviour
         _communityCards.ClearCards();
         foreach (var playerHand in _playerHands)
         {
-            if(playerHand.HoleCardsList.Count != 0)
+            if (playerHand.HoleCardsList.Count != 0)
             {
                 playerHand.ClearCards();
             }
@@ -139,7 +137,7 @@ public class PokerDeckManager : MonoBehaviour
         _pokerDeck.AddRange(_discardPile); // Add all cards from discard pile back to the deck
         _discardPile.Clear(); // Clear the discard pile
         ShuffleDeck(); // Shuffle the deck
-       
+
     }
 
     private void DrawInitialCommunityCards()
@@ -197,6 +195,7 @@ public class PokerDeckManager : MonoBehaviour
     {
         return DrawCard();
     }
+
     private void InitializePlayers()
     {
         _playerHands = new List<PokerPlayerHand>
@@ -213,7 +212,7 @@ public class PokerDeckManager : MonoBehaviour
     {
         List<CardSO> communityCards = _communityCards.GetCardList();
         List<CardSO> combinedHand = new List<CardSO>(communityCards);
-        combinedHand.AddRange(playerHand); 
+        combinedHand.AddRange(playerHand);
         //first cards are always community cards,
         //this is important in winning player selection algoritm. (for tie situations)
         return combinedHand;

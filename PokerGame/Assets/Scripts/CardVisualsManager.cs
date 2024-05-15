@@ -9,7 +9,6 @@ public class CardVisualsManager : MonoBehaviour
     private List<CardBehaviour> _allActiveCards = new List<CardBehaviour>();
     private List<CardBehaviour> _allSpawnedCards = new List<CardBehaviour>();
 
-
     private void Awake()
     {
         Instance = this;
@@ -94,11 +93,8 @@ public class CardVisualsManager : MonoBehaviour
 
                     CardBehaviour cardBehaviour = cardSO.CardBehavior;
                     cardBehaviour.SetCardAsSelected();
-                    Debug.Log(firstKey + "from cardlist card > " + cardSO + "  will be highlighted");
                 }
-
             }
-
         }
     }
 

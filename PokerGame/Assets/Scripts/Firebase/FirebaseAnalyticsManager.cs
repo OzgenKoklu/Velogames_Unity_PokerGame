@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Firebase;
@@ -6,7 +5,6 @@ using Firebase.Analytics;
 using Firebase.Auth;
 using Firebase.Extensions;
 using System;
-
 
 public class FirebaseAnalyticsManager : MonoBehaviour
 {
