@@ -40,30 +40,46 @@ public class UIManager : MonoBehaviour
         _selectedBetAmount = _smallestBetAmount;
 
         _foldButton.onClick.AddListener(player.FoldAction);
-        _raiseOrBetButton.onClick.AddListener(ShowBettingWindow);
-        _bettingPanelCloseButton.onClick.AddListener(HideBettingWindow);
-        _bettingPanelBetButton.onClick.AddListener(OnBetButtonClick);
-        _bettingPanelSlider.onValueChanged.AddListener(Slider_OnValueChanged);
 
+        if (_smallestBetAmount - player.TotalBetInThisRound > player.TotalStackAmount)
+        {
+            _raiseOrBetButtonText.text = "ALL IN";
+            _raiseOrBetButton.onClick.AddListener(PlayerAllIn);
+
+        }
+        else //player can bet or raise naturally
+        {
+            _raiseOrBetButton.onClick.AddListener(ShowBettingWindow);
+            _bettingPanelCloseButton.onClick.AddListener(HideBettingWindow);
+            _bettingPanelBetButton.onClick.AddListener(OnBetButtonClick);
+            _bettingPanelSlider.onValueChanged.AddListener(Slider_OnValueChanged);
+
+            if (player.TotalBetInThisRound < BetManager.Instance.CurrentHighestBetAmount)
+            {
+                _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CallAction);
+
+                var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - player.BetAmount;
+                _callOrCheckButtonText.text = "CALL" + "(" + callBetAmount.ToString() + ")";
+                _raiseOrBetButtonText.text = "RAISE";
+            }
+            else  //player is big blind, biggest bet == current bet 
+            {
+                _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CheckAction);
+
+                _callOrCheckButtonText.text = "CHECK";
+                _raiseOrBetButtonText.text = "BET";
+            }
+        }
         //hem burada, hem de SetActionbuttons'ý cagirdigimiz yerde ayný karþýlaþtýrmayý yapmamýz mantiksiz
         //bu yüzden daha iyi bir sekilde halledilmeli, ayni sekilde callbetAmountu da tek yerde hesaplasak daha iyi
-        if (player.TotalBetInThisRound < BetManager.Instance.CurrentHighestBetAmount)
-        {
-            _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CallAction);
-
-            var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - player.BetAmount;
-            _callOrCheckButtonText.text = "CALL" + "(" + callBetAmount.ToString() + ")";
-            _raiseOrBetButtonText.text = "RAISE";
-        }
-        else  //player is big blind, biggest bet == current bet 
-        {
-            _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CheckAction);
-
-            _callOrCheckButtonText.text = "CHECK";
-            _raiseOrBetButtonText.text = "BET";
-        }
 
         HideBettingWindow();
+    }
+
+    private void PlayerAllIn()
+    {
+        PlayerManager player = GameManager.Instance.MainPlayer;
+        player.BetAction(player.TotalStackAmount);
     }
 
     private void OnBetButtonClick()
