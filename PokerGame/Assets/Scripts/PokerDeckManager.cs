@@ -8,6 +8,7 @@ public class PokerDeckManager : MonoBehaviour
     public static PokerDeckManager Instance { get; private set; }
 
     public event Action OnCardDealingComplete;
+    public event Action OnAnyCardDealt;
 
     private List<CardSO> _pokerDeck = new();
     private List<CardSO> _discardPile = new();
@@ -157,6 +158,7 @@ public class PokerDeckManager : MonoBehaviour
         {
             _communityCards.AddCard(card1);
             CardVisualsManager.Instance.SpawnCardObject(card1, card1.CardParent);
+            OnAnyCardDealt?.Invoke();
             yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card1));
         }
 
@@ -165,6 +167,7 @@ public class PokerDeckManager : MonoBehaviour
         {
             _communityCards.AddCard(card2);
             CardVisualsManager.Instance.SpawnCardObject(card2, card2.CardParent);
+            OnAnyCardDealt?.Invoke();
             yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card2));
         }
 
@@ -173,6 +176,7 @@ public class PokerDeckManager : MonoBehaviour
         {
             _communityCards.AddCard(card3);
             CardVisualsManager.Instance.SpawnCardObject(card3, card3.CardParent);
+            OnAnyCardDealt?.Invoke();
             yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card3));
         }
         OnCardDealingComplete?.Invoke();
@@ -191,6 +195,7 @@ public class PokerDeckManager : MonoBehaviour
         {
             _communityCards.AddCard(card);
             CardVisualsManager.Instance.SpawnCardObject(card, card.CardParent);
+            OnAnyCardDealt?.Invoke();
             yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card));
         }
         OnCardDealingComplete?.Invoke();
@@ -210,6 +215,7 @@ public class PokerDeckManager : MonoBehaviour
             {
                 hand.AddCard(card1);
                 CardVisualsManager.Instance.SpawnCardObject(card1, card1.CardParent);
+                OnAnyCardDealt?.Invoke();
                 yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card1));
             }
 
@@ -218,6 +224,7 @@ public class PokerDeckManager : MonoBehaviour
             {
                 hand.AddCard(card2);
                 CardVisualsManager.Instance.SpawnCardObject(card2, card2.CardParent);
+                OnAnyCardDealt?.Invoke();
                 yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card2));
             }
         }

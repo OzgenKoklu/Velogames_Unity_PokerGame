@@ -104,9 +104,11 @@ Firebase integration was a simple adaptation, yet none of us had any prior exper
 <!-- Known-Bugs -->
 ## Known-Bugs
 
-Known Bugs to adress for the ??.05.2024 - Final Commit: 
+Known Bugs to adress for the 18.05.2024 - Final Commit: 
 
-1) 
+See "Bugs To Adress" Column for current known bugs
+
+https://docs.google.com/spreadsheets/d/1jQAPprVrJPeO368_9v2G62CslmwMBqhsNotKzJfGaVM/edit?usp=sharing
 
 
 ----------
@@ -203,7 +205,7 @@ Photo by Tuấn Kiệt Jr.: https://www.pexels.com/photo/woman-posing-for-photo-
 
 **Sounds Assets:**
 
-Unused
+54 Casino sound effects (cards, dice, chips) - https://opengameart.org/content/54-casino-sound-effects-cards-dice-chips
 
 **UI Assets:**
 
