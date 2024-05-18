@@ -1271,7 +1271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxThinkTime: 2
+  _maxThinkTime: 10
   _playerName: Scarlet (P2)
   _playerAction: 0
   _playerHand: {fileID: 1230832290}
@@ -1556,7 +1556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxThinkTime: 2
+  _maxThinkTime: 10
   _playerName: Otto (P4)
   _playerAction: 0
   _playerHand: {fileID: 2010368667}
@@ -1843,7 +1843,7 @@ MonoBehaviour:
   PotsList: []
   _potsList: []
   _baseRaiseAmount: 10
-  showdownPots: []
+  _showdownPots: []
   _winningResultText: {fileID: 1336243867}
   _potAmountResultText: {fileID: 474126207}
 --- !u!1 &185640585
@@ -2224,11 +2224,11 @@ MonoBehaviour:
   _handFollowTransform: {fileID: 264449916}
   _aiPlayerBehavior: {fileID: 1074086710}
   initialXOffset: -0.6
-  xOffsetMultiplier: 1.2
-  initialRotationAngle: 15
-  rotationAngleMultiplier: -30
-  initialYPosition: -4
-  aiScaleMultiplier: 0.6
+  _xOffsetMultiplier: 1.2
+  _initialRotationAngle: 15
+  _rotationAngleMultiplier: -30
+  _initialYPosition: -4
+  _aiScaleMultiplier: 0.6
 --- !u!1 &269550448
 GameObject:
   m_ObjectHideFlags: 0
@@ -2400,11 +2400,11 @@ MonoBehaviour:
   _handFollowTransform: {fileID: 276828755}
   _aiPlayerBehavior: {fileID: 292966329}
   initialXOffset: -0.6
-  xOffsetMultiplier: 1.2
-  initialRotationAngle: 15
-  rotationAngleMultiplier: -30
-  initialYPosition: -4
-  aiScaleMultiplier: 0.6
+  _xOffsetMultiplier: 1.2
+  _initialRotationAngle: 15
+  _rotationAngleMultiplier: -30
+  _initialYPosition: -4
+  _aiScaleMultiplier: 0.6
 --- !u!1 &282021218
 GameObject:
   m_ObjectHideFlags: 0
@@ -2561,7 +2561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxThinkTime: 2
+  _maxThinkTime: 10
   _playerName: Richard (P5)
   _playerAction: 0
   _playerHand: {fileID: 276828756}
@@ -4417,7 +4417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxThinkTime: 10
+  _maxThinkTime: 10
   _playerName: Player (P3)
   _playerAction: 0
   _playerHand: {fileID: 1199791274}
@@ -7738,7 +7738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7e471ce9857642861ddc152a02db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxThinkTime: 2
+  _maxThinkTime: 10
   _playerName: Catherina (P1)
   _playerAction: 0
   _playerHand: {fileID: 264449917}
@@ -8420,11 +8420,11 @@ MonoBehaviour:
   _handFollowTransform: {fileID: 1199791273}
   _aiPlayerBehavior: {fileID: 0}
   initialXOffset: -2.5
-  xOffsetMultiplier: 1.2
-  initialRotationAngle: 15
-  rotationAngleMultiplier: -30
-  initialYPosition: -4
-  aiScaleMultiplier: 0.6
+  _xOffsetMultiplier: 1.2
+  _initialRotationAngle: 15
+  _rotationAngleMultiplier: -30
+  _initialYPosition: -4
+  _aiScaleMultiplier: 0.6
 --- !u!1 &1201120063
 GameObject:
   m_ObjectHideFlags: 0
@@ -8866,11 +8866,11 @@ MonoBehaviour:
   _handFollowTransform: {fileID: 1230832289}
   _aiPlayerBehavior: {fileID: 134982087}
   initialXOffset: -0.6
-  xOffsetMultiplier: 1.2
-  initialRotationAngle: 15
-  rotationAngleMultiplier: -30
-  initialYPosition: -4
-  aiScaleMultiplier: 0.6
+  _xOffsetMultiplier: 1.2
+  _initialRotationAngle: 15
+  _rotationAngleMultiplier: -30
+  _initialYPosition: -4
+  _aiScaleMultiplier: 0.6
 --- !u!1 &1269879461
 GameObject:
   m_ObjectHideFlags: 0
@@ -11279,6 +11279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardPrefab: {fileID: 8744064188238326437, guid: 86bc92bc7f37cfb4b82e2397d4dc4f64, type: 3}
+  _dealerCardPosition: {fileID: 2078270148}
 --- !u!1 &1765587310
 GameObject:
   m_ObjectHideFlags: 0
@@ -12747,11 +12748,11 @@ MonoBehaviour:
   _handFollowTransform: {fileID: 2010368666}
   _aiPlayerBehavior: {fileID: 145876575}
   initialXOffset: -0.6
-  xOffsetMultiplier: 1.2
-  initialRotationAngle: 15
-  rotationAngleMultiplier: -30
-  initialYPosition: -4
-  aiScaleMultiplier: 0.6
+  _xOffsetMultiplier: 1.2
+  _initialRotationAngle: 15
+  _rotationAngleMultiplier: -30
+  _initialYPosition: -4
+  _aiScaleMultiplier: 0.6
 --- !u!1 &2049111478
 GameObject:
   m_ObjectHideFlags: 0
@@ -12946,6 +12947,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &2078270147
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2078270148}
+  m_Layer: 0
+  m_Name: DealerCardPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2078270148
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078270147}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2081631785
 GameObject:
   m_ObjectHideFlags: 0

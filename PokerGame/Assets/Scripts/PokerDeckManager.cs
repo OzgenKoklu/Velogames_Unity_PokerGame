@@ -1,9 +1,13 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PokerDeckManager : MonoBehaviour
 {
     public static PokerDeckManager Instance { get; private set; }
+
+    public event Action OnCardDealingComplete;
 
     private List<CardSO> _pokerDeck = new();
     private List<CardSO> _discardPile = new();
@@ -95,7 +99,7 @@ public class PokerDeckManager : MonoBehaviour
         for (int i = 0; i < _pokerDeck.Count; i++)
         {
             CardSO temp = _pokerDeck[i];
-            int randomIndex = Random.Range(0, _pokerDeck.Count);
+            int randomIndex = UnityEngine.Random.Range(0, _pokerDeck.Count);
             _pokerDeck[i] = _pokerDeck[randomIndex];
             _pokerDeck[randomIndex] = temp;
         }
@@ -142,55 +146,82 @@ public class PokerDeckManager : MonoBehaviour
 
     private void DrawInitialCommunityCards()
     {
-        CardSO card1 = DrawCardFromDeck();
-        CardSO card2 = DrawCardFromDeck();
-        CardSO card3 = DrawCardFromDeck();
+        StartCoroutine(DrawCommunityCardsCoroutine());
+    }
 
+    private IEnumerator DrawCommunityCardsCoroutine()
+    {
+
+        CardSO card1 = DrawCardFromDeck();
         if (card1 != null)
         {
             _communityCards.AddCard(card1);
             CardVisualsManager.Instance.SpawnCardObject(card1, card1.CardParent);
-
+            yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card1));
         }
+
+        CardSO card2 = DrawCardFromDeck();
         if (card2 != null)
         {
             _communityCards.AddCard(card2);
             CardVisualsManager.Instance.SpawnCardObject(card2, card2.CardParent);
+            yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card2));
         }
+
+        CardSO card3 = DrawCardFromDeck();
         if (card3 != null)
         {
             _communityCards.AddCard(card3);
             CardVisualsManager.Instance.SpawnCardObject(card3, card3.CardParent);
+            yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card3));
         }
+        OnCardDealingComplete?.Invoke();
+
     }
+
     private void DrawOneMoreCommunityCard()
+    {
+        StartCoroutine(DrawOneMoreCommunityCardCoroutine());
+    }
+
+    private IEnumerator DrawOneMoreCommunityCardCoroutine()
     {
         CardSO card = DrawCardFromDeck();
         if (card != null)
         {
             _communityCards.AddCard(card);
             CardVisualsManager.Instance.SpawnCardObject(card, card.CardParent);
+            yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card));
         }
     }
 
     private void DealCardsToPlayers()
     {
-        //Draws 2 cards for each player. 
-        foreach (PokerPlayerHand hand in _playerHands)
-        {
-            CardSO card1 = DrawCardFromDeck(); // Draw the first card
-            CardSO card2 = DrawCardFromDeck(); // Draw the second card
-
-            if (card1 != null)
-                hand.AddCard(card1); // Add the first card to the player's hand
-            CardVisualsManager.Instance.SpawnCardObject(card1, card1.CardParent);
-
-            if (card2 != null)
-                hand.AddCard(card2); // Add the second card to the player's hand
-            CardVisualsManager.Instance.SpawnCardObject(card2, card2.CardParent);
-        }
+        StartCoroutine(DealCardsToPlayersCoroutine());
     }
 
+    private IEnumerator DealCardsToPlayersCoroutine()
+    {
+        foreach (PokerPlayerHand hand in _playerHands)
+        {
+            CardSO card1 = DrawCardFromDeck();
+            if (card1 != null)
+            {
+                hand.AddCard(card1);
+                CardVisualsManager.Instance.SpawnCardObject(card1, card1.CardParent);
+                yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card1));
+            }
+
+            CardSO card2 = DrawCardFromDeck();
+            if (card2 != null)
+            {
+                hand.AddCard(card2);
+                CardVisualsManager.Instance.SpawnCardObject(card2, card2.CardParent);
+                yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card2));
+            }
+        }
+        OnCardDealingComplete?.Invoke();
+    }
     private CardSO DrawCardFromDeck()
     {
         return DrawCard();

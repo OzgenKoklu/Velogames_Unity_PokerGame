@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class CardVisualsManager : MonoBehaviour
     public static CardVisualsManager Instance { get; private set; }
 
     [SerializeField] private Transform _cardPrefab;
+    [SerializeField] private Transform _dealerCardPosition;
     private List<CardBehaviour> _allActiveCards = new List<CardBehaviour>();
     private List<CardBehaviour> _allSpawnedCards = new List<CardBehaviour>();
 
@@ -30,16 +32,28 @@ public class CardVisualsManager : MonoBehaviour
         Transform cardObjectTransform = Instantiate(_cardPrefab);
         CardBehaviour cardObject = cardObjectTransform.GetComponent<CardBehaviour>();
         cardObject.SetCardScriptableObject(cardSO);
-        cardObject.SetCardTransform(cardParent.GetCardFollowTransform());
+        StartCoroutine(AnimateCardSpawn(cardObject, cardParent.GetCardFollowTransform()));
         _allSpawnedCards.Add(cardObject);
         _allActiveCards.Add(cardObject);
         return cardObject;
+    }
+    private IEnumerator AnimateCardSpawn(CardBehaviour cardObject, Transform targetTransform)
+    {
+        cardObject.SetCardTransform(targetTransform);
+        yield return new WaitUntil(() => cardObject.IsLerpComplete());
+    }
+
+    public bool IsCardLerpComplete(CardSO cardSO)
+    {
+        CardBehaviour cardObject = _allActiveCards.Find(card => card.GetCardScriptableObject() == cardSO);
+        return cardObject != null && cardObject.IsLerpComplete();
     }
 
     public bool IsThereAnySpawnedCards()
     {
         return _allSpawnedCards.Count != 0;
     }
+    public Vector3 GetDealerCardPosition() => _dealerCardPosition.position;
 
     public void DestroyAllActiveCards()
     {

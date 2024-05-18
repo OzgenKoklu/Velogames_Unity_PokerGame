@@ -386,4 +386,5 @@ MonoBehaviour:
   _cardFaceSpriteRenderer: {fileID: 5204173383747271934}
   _cardBackSpriteRenderer: {fileID: 6475788524605929423}
   _selectedVisualGameObject: {fileID: 4579979882701848}
+  lerpDuration: 0.3
   CardSO: {fileID: 0}

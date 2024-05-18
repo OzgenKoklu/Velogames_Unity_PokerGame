@@ -35,7 +35,7 @@ public class TurnManager : MonoBehaviour
             case GameManager.GameState.PreFlop:
                 _isPreFlop = true;
                 SetFirstPlayer(IsPreFlop); //true for IsPreFlop
-                GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
+                                           // GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
                 break;
             case GameManager.GameState.PlayerTurn:
                 OnPlayerTurn?.Invoke(CurrentPlayer);

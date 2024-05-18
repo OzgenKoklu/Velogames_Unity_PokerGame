@@ -46,15 +46,16 @@ public class GameManager : MonoBehaviour
         _roundCount = 0;
     }
 
-    private void Update()
-    {
-        //Debug.Log(_currentGameState);
-    }
-
     private void Start()
     {
         PlayerManager.OnPlayerFolded += PlayerManager_OnPlayerFolded;
+        PokerDeckManager.Instance.OnCardDealingComplete += PokerDeckManager_OnCardDealingComplete;
         StartGame();
+    }
+
+    private void PokerDeckManager_OnCardDealingComplete()
+    {
+        SetGameState(GameManager.GameState.PlayerTurn);
     }
 
     public void SetTimeScale(bool isGamePaused)
