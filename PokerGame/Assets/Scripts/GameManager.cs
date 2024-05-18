@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
 
     private void PokerDeckManager_OnCardDealingComplete()
     {
-        SetGameState(GameManager.GameState.PlayerTurn);
+        SetGameState(GameState.PlayerTurn);
     }
 
     public void SetTimeScale(bool isGamePaused)

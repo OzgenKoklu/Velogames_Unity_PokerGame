@@ -57,7 +57,7 @@ public class PokerDeckManager : MonoBehaviour
             //Turn manager'da kalsa muhtemelen 3 community card çekilmeden playerTurn'e geçirirdi.
 
             GameManager.Instance.SetGameState(GameManager.GameState.PostFlop);
-            GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
+            //GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
 
             return;
         }
@@ -68,7 +68,7 @@ public class PokerDeckManager : MonoBehaviour
             DrawOneMoreCommunityCard();
 
             GameManager.Instance.SetGameState(GameManager.GameState.PostTurn);
-            GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
+            // GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
 
             return;
         }
@@ -79,7 +79,7 @@ public class PokerDeckManager : MonoBehaviour
             DrawOneMoreCommunityCard();
 
             GameManager.Instance.SetGameState(GameManager.GameState.PostRiver);
-            GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
+            // GameManager.Instance.SetGameState(GameManager.GameState.PlayerTurn);
             return;
         }
     }
@@ -193,6 +193,7 @@ public class PokerDeckManager : MonoBehaviour
             CardVisualsManager.Instance.SpawnCardObject(card, card.CardParent);
             yield return new WaitUntil(() => CardVisualsManager.Instance.IsCardLerpComplete(card));
         }
+        OnCardDealingComplete?.Invoke();
     }
 
     private void DealCardsToPlayers()
