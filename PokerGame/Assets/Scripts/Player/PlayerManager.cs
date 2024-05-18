@@ -335,7 +335,6 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // ------- !!!! REFACTOR EDILECEK !!! -----------
     IEnumerator TenSecondTimerForMainPlayer()
     {
         float startTime = Time.time;
@@ -351,18 +350,21 @@ public class PlayerManager : MonoBehaviour
             yield return null; // Wait until next frame
         }
 
-        // if (main player didn't make a move)
-        //      if (can check):  => check
-        //      else:            => fold
+        // Automatic actions for the main player when time runs out without any input
+        int currentHighestBet = BetManager.Instance.CurrentHighestBetAmount;
+        if (TotalBetInThisRound < currentHighestBet)
+        {
+            Debug.Log("Our Player has made the move to: " + PlayerAction);
 
-        PlayerAction = PlayerAction.Call;
-        var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - BetAmount;
-        BetManager.Instance.SetBet(this, callBetAmount);
-        HasActedSinceLastRaise = true;
-        //Debug.Log("Our Player has made the move to: " + PlayerAction);
-        UIManager.Instance.ResetFunctionsAndHideButtons();
-        _isPlayerFolded = false;
-        TurnManager.Instance.ChangePlayerTurn(_isPlayerFolded);
+            FoldAction();
+        }
+        else
+        {
+            Debug.Log("Our Player has made the move to: " + PlayerAction);
+
+            CheckAction();
+        }
+
     }
 
     IEnumerator AiBotMoveWithRandomWait()

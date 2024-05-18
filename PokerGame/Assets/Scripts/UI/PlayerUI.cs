@@ -103,6 +103,7 @@ public class PlayerUI : MonoBehaviour
     {
         if (_player.IsPlayerDealer && _player == player)
         {
+            _checkIcon.SetActive(false);
             _dealerIcon.SetActive(true);
         }
         else
@@ -115,6 +116,7 @@ public class PlayerUI : MonoBehaviour
     {
         if (_player == smallBlindPlayer)
         {
+            _checkIcon.SetActive(false);
             _smallBlindIcon.SetActive(true);
         }
         else
@@ -122,10 +124,12 @@ public class PlayerUI : MonoBehaviour
             _smallBlindIcon.SetActive(false);
         }
     }
+
     private void DealerManager_OnBigBlindChanged(PlayerManager bigBlindPlayer)
     {
         if (_player == bigBlindPlayer)
         {
+            _checkIcon.SetActive(false);
             _bigBlindIcon.SetActive(true);
         }
         else

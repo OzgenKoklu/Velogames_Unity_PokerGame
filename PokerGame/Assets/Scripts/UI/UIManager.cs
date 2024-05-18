@@ -30,49 +30,55 @@ public class UIManager : MonoBehaviour
 
     public void SetActionButtonsForPlayer()
     {
+        // Show buttons and betting window on the UI
         ShowButtons();
         ShowBettingWindow();
 
+        // Get player information
         PlayerManager player = GameManager.Instance.MainPlayer;
+        int totalBet = player.TotalBetInThisRound;
+        int currentHighestBet = BetManager.Instance.CurrentHighestBetAmount;
+        int remainingStack = player.TotalStackAmount - totalBet;
 
+        // Set the smallest bet amount
         GetBetAmounts(player);
         _bettingPanelBetAmountText.text = $"${_smallestBetAmount:N0}";
         _selectedBetAmount = _smallestBetAmount;
 
+        // Set the fold button
         _foldButton.onClick.AddListener(player.FoldAction);
 
-        if (_smallestBetAmount - player.TotalBetInThisRound > player.TotalStackAmount)
+        // Set the call/check button based on current bet
+        if (totalBet < currentHighestBet)
+        {
+            var callBetAmount = currentHighestBet - player.BetAmount;
+            _callOrCheckButtonText.text = "CALL ${" + (currentHighestBet - totalBet).ToString("N0") + "}";
+
+            _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CallAction);
+        }
+        else
+        {
+            _callOrCheckButtonText.text = "CHECK";
+            _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CheckAction);
+        }
+
+        // Set the raise/bet button based on remaining stack and current bet
+        if (remainingStack <= 0)
         {
             _raiseOrBetButtonText.text = "ALL IN";
             _raiseOrBetButton.onClick.AddListener(PlayerAllIn);
-
         }
-        else //player can bet or raise naturally
+        else
         {
-            _raiseOrBetButton.onClick.AddListener(ShowBettingWindow);
-            _bettingPanelCloseButton.onClick.AddListener(HideBettingWindow);
-            _bettingPanelBetButton.onClick.AddListener(OnBetButtonClick);
-            _bettingPanelSlider.onValueChanged.AddListener(Slider_OnValueChanged);
-
-            if (player.TotalBetInThisRound < BetManager.Instance.CurrentHighestBetAmount)
-            {
-                _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CallAction);
-
-                var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - player.BetAmount;
-                _callOrCheckButtonText.text = "CALL" + "(" + callBetAmount.ToString() + ")";
-                _raiseOrBetButtonText.text = "RAISE";
-            }
-            else  //player is big blind, biggest bet == current bet 
-            {
-                _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CheckAction);
-
-                _callOrCheckButtonText.text = "CHECK";
-                _raiseOrBetButtonText.text = "BET";
-            }
+            _raiseOrBetButtonText.text = totalBet < currentHighestBet ? "RAISE" : "BET";
+            _raiseOrBetButton.onClick.AddListener(ShowBettingWindow); // Show window on first click
         }
-        //hem burada, hem de SetActionbuttons'ý cagirdigimiz yerde ayný karþýlaþtýrmayý yapmamýz mantiksiz
-        //bu yüzden daha iyi bir sekilde halledilmeli, ayni sekilde callbetAmountu da tek yerde hesaplasak daha iyi
 
+        _bettingPanelBetButton.onClick.AddListener(OnBetButtonClick);
+        _bettingPanelSlider.onValueChanged.AddListener(Slider_OnValueChanged);
+        _bettingPanelCloseButton.onClick.AddListener(HideBettingWindow);
+
+        // Hide betting window initially
         HideBettingWindow();
     }
 
