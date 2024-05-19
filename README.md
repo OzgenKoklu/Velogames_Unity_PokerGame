@@ -207,5 +207,7 @@ Photo by Tuấn Kiệt Jr.: https://www.pexels.com/photo/woman-posing-for-photo-
 
 54 Casino sound effects (cards, dice, chips) - https://opengameart.org/content/54-casino-sound-effects-cards-dice-chips
 
+Check Sound Effect - https://pixabay.com/sound-effects/light-switch-81967/
+
 **UI Assets:**
 

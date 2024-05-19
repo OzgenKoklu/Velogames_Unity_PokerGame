@@ -4435,6 +4435,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardDealingSound: {fileID: 8300000, guid: 65ea91f84758c7441b246487e64f5df5, type: 3}
+  _smallAmountOfChipsClip: {fileID: 8300000, guid: 0608ea8b9586ac94cb82da0f32513f9b, type: 3}
+  _mediumAmountOfChipsClip: {fileID: 8300000, guid: 183109390771b494da6b28c1c0d0646f, type: 3}
+  _bigAmountOfChipsClip: {fileID: 8300000, guid: 5cc7ad1c6eb9e5e4eb3abf77faaf6eba, type: 3}
+  _foldSoundClip: {fileID: 8300000, guid: 104866d7325121d4fa539ae381c9623d, type: 3}
+  _checkSoundClip: {fileID: 8300000, guid: c99aa9a052095fc4ba86f2e1df81c7a2, type: 3}
 --- !u!1 &580236035
 GameObject:
   m_ObjectHideFlags: 0

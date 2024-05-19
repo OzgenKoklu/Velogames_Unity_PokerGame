@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -5,6 +6,7 @@ public class AiPlayerBehaviour : MonoBehaviour
 {
     [SerializeField] private PlayerManager _playerManager;
     [SerializeField] private PokerPlayerHand _pokerPlayerHand;
+
     public enum HandStrength { Amazing, Strong, Medium, WeakPlus, Weak }
 
     // *** POSTFLOP DECISIONS ***
@@ -254,6 +256,7 @@ public class AiPlayerBehaviour : MonoBehaviour
         int maxCallAmount = _playerManager.TotalStackAmount;
 
         BetManager.Instance.SetBet(_playerManager, Mathf.Min(callBetAmount, maxCallAmount));
+
         _playerManager.IsPlayerAllIn = callBetAmount >= maxCallAmount;
     }
 

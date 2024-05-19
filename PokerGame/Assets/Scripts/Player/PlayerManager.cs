@@ -9,6 +9,7 @@ public enum PlayerAction { Fold, Check, Bet, Raise, Call }
 public class PlayerManager : MonoBehaviour
 {
     public static event Action<PlayerManager> OnPlayerFolded;
+    public static event Action<PlayerAction, int> OnPlayersPokerMove;
     public event Action<PlayerAction> OnPlayerActionChanged;
     public event Action<bool> OnPlayerActiveChanged;
 
@@ -238,6 +239,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             OnPlayerFolded?.Invoke(this);
+            OnPlayersPokerMove?.Invoke(PlayerAction, 0);
             IsPlayerActive = false;
             _isPlayerFolded = true;
             _isPlayerAllIn = false;
@@ -251,9 +253,10 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayerAction = PlayerAction.Call;
+            
             Debug.Log("current highest bet: " + BetManager.Instance.CurrentHighestBetAmount);
             var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - TotalBetInThisRound;
-
+            
             int maxCallAmount = TotalStackAmount;
             if (callBetAmount >= maxCallAmount)
             {
@@ -268,6 +271,7 @@ public class PlayerManager : MonoBehaviour
                 _isPlayerAllIn = false;
             }
 
+            OnPlayersPokerMove?.Invoke(PlayerAction, BetAmount);
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;
 
@@ -286,6 +290,7 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayerAction = PlayerAction.Bet;
+            
 
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;
@@ -304,6 +309,8 @@ public class PlayerManager : MonoBehaviour
                 _isPlayerAllIn = false;
             }
 
+            OnPlayersPokerMove?.Invoke(PlayerAction, BetAmount);
+
             BetManager.Instance.CurrentHighestBetAmount = TotalBetInThisRound + betAmount;
             UIManager.Instance.ResetFunctionsAndHideButtons();
 
@@ -321,6 +328,7 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayerAction = PlayerAction.Check;
+            OnPlayersPokerMove?.Invoke(PlayerAction, 0);
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;
             _isPlayerAllIn = false;
@@ -395,10 +403,12 @@ public class PlayerManager : MonoBehaviour
         if (TurnManager.Instance.IsPreFlop)
         {
             PlayerAction = PlayerHand.AiBotActionPreFlop();
+            OnPlayersPokerMove?.Invoke(PlayerAction, BetAmount);
         }
         else //post flop, river, etc
         {
             PlayerAction = PlayerHand.AiBotActionPostFlop();
+            OnPlayersPokerMove?.Invoke(PlayerAction, BetAmount);
         }
 
         // Reset the previous player action to fold or null after each betting round ends
@@ -473,5 +483,6 @@ public class PlayerManager : MonoBehaviour
     public static void ResetStaticData()
     {
         OnPlayerFolded = null;
+        OnPlayersPokerMove = null;
     }
 }
