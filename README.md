@@ -120,6 +120,10 @@ https://docs.google.com/spreadsheets/d/1jQAPprVrJPeO368_9v2G62CslmwMBqhsNotKzJfG
 
 [![Youtube Link](https://img.youtube.com/vi/wYx2yHuBuBg/0.jpg)](https://youtu.be/wYx2yHuBuBg)
 
+19.05.2024 - Polished and now has animation & sound - Working in editor.
+
+[![Youtube Link](https://img.youtube.com/vi/dDLQjoOPKK8/0.jpg)](https://youtu.be/dDLQjoOPKK8)
+
 ----------
 
 <!-- Project-Management -->
