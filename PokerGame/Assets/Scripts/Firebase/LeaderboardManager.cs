@@ -43,13 +43,18 @@ public class LeaderboardManager : MonoBehaviour
             {
                 DataSnapshot child = snapshot.Children.ElementAt(i);
 
+                if (child == null)
+                {
+                    continue; // Skip to the next iteration if child is null
+                }
+
                 // Deserialize the leaderboard entry data
                 LeaderboardEntry entry = new LeaderboardEntry
                 {
-                    PlayerName = child.Child("playerName").Value.ToString(),
-                    HandWinRatio = float.Parse(child.Child("handWinRatio").Value.ToString()),
-                    ShowdownWinRatio = float.Parse(child.Child("showdownWinRatio").Value.ToString()),
-                    AllInWinRatio = float.Parse(child.Child("allInWinRatio").Value.ToString())
+                    PlayerName = child?.Child("playerName").Value?.ToString() ?? "",
+                    HandWinRatio = float.TryParse(child.Child("handWinRatio").Value.ToString(), out float valueHandWinRatio) ? valueHandWinRatio : 0f,
+                    ShowdownWinRatio = float.TryParse(child.Child("showdownWinRatio").Value.ToString(), out float valueShowdownWinRatio) ? valueShowdownWinRatio : 0f,
+                    AllInWinRatio = float.TryParse(child.Child("allInWinRatio").Value.ToString(), out float valueAllInWinRatio) ? valueAllInWinRatio : 0f
                 };
 
                 entries.Add(entry);
