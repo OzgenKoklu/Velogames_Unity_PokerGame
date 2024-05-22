@@ -12,6 +12,7 @@ public class PlayerManager : MonoBehaviour
     public static event Action<PlayerAction, int> OnPlayersPokerMove;
     public event Action<PlayerAction> OnPlayerActionChanged;
     public event Action<bool> OnPlayerActiveChanged;
+    public event Action OnPlayerBusted;
 
     [SerializeField] private float _maxThinkTime = 10f; // Maximum time for make a move
     private Coroutine _runningCoroutine;
@@ -116,6 +117,7 @@ public class PlayerManager : MonoBehaviour
             OnPlayerActiveChanged?.Invoke(!value);
             if (value == true)
             {
+                OnPlayerBusted?.Invoke();
                 IsPlayerActive = false;
             }
             else
@@ -253,10 +255,10 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayerAction = PlayerAction.Call;
-            
+
             Debug.Log("current highest bet: " + BetManager.Instance.CurrentHighestBetAmount);
             var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - TotalBetInThisRound;
-            
+
             int maxCallAmount = TotalStackAmount;
             if (callBetAmount >= maxCallAmount)
             {
@@ -290,7 +292,7 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayerAction = PlayerAction.Bet;
-            
+
 
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;

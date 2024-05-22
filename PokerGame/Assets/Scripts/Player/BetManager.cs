@@ -43,6 +43,7 @@ public class BetManager : MonoBehaviour
 
     //GECICI BURDA
     [SerializeField] private TextMeshProUGUI _winningResultText;
+    [SerializeField] private GameObject _winningResultGameObject;
     [SerializeField] private TextMeshProUGUI _potAmountResultText;
 
     private Coroutine _runningCoroutine;
@@ -120,6 +121,7 @@ public class BetManager : MonoBehaviour
     {
         float startTime = Time.time;
 
+        _winningResultGameObject.SetActive(true);
         _winningResultText.text = winningResult;
 
         while (Time.time - startTime < _resultsTimer)
@@ -128,6 +130,7 @@ public class BetManager : MonoBehaviour
         }
 
         _winningResultText.text = "";
+        _winningResultGameObject.SetActive(false);
 
         GameManager.Instance.StartGameRound();
     }
@@ -246,6 +249,41 @@ public class BetManager : MonoBehaviour
         UpdatePotAmountText(true);
     }
 
+    private void GiveRemainderBetToPlayer(PlayerManager player, int remainderValue)
+    {
+        player.TotalBetInThisRound -= remainderValue;
+        player.TotalStackAmount += remainderValue;
+    }
+
+    private bool AreBiggestContributionsNotEqual(Dictionary<PlayerManager, int> potContributionDictionary)
+    {
+        // Use OrderByDescending to sort with highest value first
+        var orderedContributions = potContributionDictionary.OrderByDescending(entry => entry.Value);
+
+        // Get the top two contributions
+        int firstContribution = orderedContributions.First().Value;
+        int secondContribution = orderedContributions.Skip(1).First().Value;
+
+        // Return true if they are equal
+        return firstContribution != secondContribution;
+    }
+
+    private void GiveRemainderToBiggestBetOwner()
+    {
+        var orderedContributions = PotContributionDictionary.OrderByDescending(entry => entry.Value);
+
+        int firstContribution = orderedContributions.First().Value;
+        int secondContribution = orderedContributions.Skip(1).First().Value;
+
+        int remainder = firstContribution - secondContribution;
+
+        PlayerManager biggestBetOwner = orderedContributions.First().Key;
+
+        Debug.Log("Biggest bet owner recieved back the remainder: " + remainder.ToString());
+        PotContributionDictionary[biggestBetOwner] -= remainder;
+
+        GiveRemainderBetToPlayer(biggestBetOwner, remainder);
+    }
 
     public List<Pot> DevideIntoPots()
     {
@@ -255,11 +293,14 @@ public class BetManager : MonoBehaviour
 
         // From there onwards we will create main pots and side pots if necessary. 
 
-        int playerCount = GameManager.Instance.Players.Count;
+        if (AreBiggestContributionsNotEqual(PotContributionDictionary))
+        {
+            GiveRemainderToBiggestBetOwner();
+        }
 
         List<int> potDefiningBetValues = new List<int>();
 
-        //potDefiningBetValues = potContributionDictionary.Values.ToList();
+        //potDefiningBetValues = potContributionDictionary.Values.ToList();   
 
         foreach (var playerContribution in PotContributionDictionary)
         {
