@@ -30,7 +30,9 @@ A classic Texas Hold'em Poker Game made with Unity (with AI bots).
 
 The project includes Firebase integration, which utilizes Authentication for login, Realtime Database for player save data and leaderboards, and Analytics/events for user behavior tracking.
 
-ZIP file for the newest Android build: TBA TBA
+Android builts can be found under releases tab:
+
+https://github.com/OzgenKoklu/Velogames_Unity_PokerGame/releases
 
 ----------
 
