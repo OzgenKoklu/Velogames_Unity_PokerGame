@@ -2744,6 +2744,7 @@ MonoBehaviour:
   _isPlayerUs: 0
   _handFollowTransform: {fileID: 264449916}
   _aiPlayerBehavior: {fileID: 1074086710}
+  _playerManager: {fileID: 1074086709}
   initialXOffset: -0.6
   _xOffsetMultiplier: 1.2
   _initialRotationAngle: 15
@@ -2920,6 +2921,7 @@ MonoBehaviour:
   _isPlayerUs: 0
   _handFollowTransform: {fileID: 276828755}
   _aiPlayerBehavior: {fileID: 292966329}
+  _playerManager: {fileID: 292966328}
   initialXOffset: -0.6
   _xOffsetMultiplier: 1.2
   _initialRotationAngle: 15
@@ -9558,6 +9560,7 @@ MonoBehaviour:
   _isPlayerUs: 1
   _handFollowTransform: {fileID: 1199791273}
   _aiPlayerBehavior: {fileID: 0}
+  _playerManager: {fileID: 606718410}
   initialXOffset: -2.5
   _xOffsetMultiplier: 1.2
   _initialRotationAngle: 15
@@ -10004,6 +10007,7 @@ MonoBehaviour:
   _isPlayerUs: 0
   _handFollowTransform: {fileID: 1230832289}
   _aiPlayerBehavior: {fileID: 134982087}
+  _playerManager: {fileID: 134982086}
   initialXOffset: -0.6
   _xOffsetMultiplier: 1.2
   _initialRotationAngle: 15
@@ -14083,6 +14087,7 @@ MonoBehaviour:
   _isPlayerUs: 0
   _handFollowTransform: {fileID: 2010368666}
   _aiPlayerBehavior: {fileID: 145876575}
+  _playerManager: {fileID: 145876574}
   initialXOffset: -0.6
   _xOffsetMultiplier: 1.2
   _initialRotationAngle: 15

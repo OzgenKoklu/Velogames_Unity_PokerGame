@@ -9,6 +9,7 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     [SerializeField] private bool _isPlayerUs;
     [SerializeField] private Transform _handFollowTransform;
     [SerializeField] private AiPlayerBehaviour _aiPlayerBehavior;
+    [SerializeField] private PlayerManager _playerManager;
 
     [Header("Card Transform Values:")]
     private Vector3 _initialHandTransformPosition;
@@ -67,6 +68,8 @@ public class PokerPlayerHand : MonoBehaviour, ICardParent
     {
         return HoleCardsList;
     }
+
+    public PlayerManager GetPlayerManager() => _playerManager;
 
     public List<CardSO> GetCardListWithCommunityCardsAdded()
     {

@@ -106,9 +106,7 @@ Firebase integration was a simple adaptation, yet none of us had any prior exper
 <!-- Known-Bugs -->
 ## Known-Bugs
 
-Known Bugs to adress for the 18.05.2024 - Final Commit: 
-
-See "Bugs To Adress" Column for current known bugs
+For known bugs and issues, see "Bugs To Adress" Column in the spreadsheet:
 
 https://docs.google.com/spreadsheets/d/1jQAPprVrJPeO368_9v2G62CslmwMBqhsNotKzJfGaVM/edit?usp=sharing
 
@@ -180,9 +178,13 @@ https://github.com/travisstaloch/PokerHandEvaluator.cs
 
 # In Game Assets:
 
-Main Background:
+**Main Background:**
 
 AI image generation. Dall-E - GPT4
+
+**Game Logo:**
+
+Canva Pro Template - Black Red Flat Modern Illustrated Casino Logo by VectorPanther
 
 **Playing Cards:**
 

@@ -210,6 +210,8 @@ public class PokerDeckManager : MonoBehaviour
     {
         foreach (PokerPlayerHand hand in _playerHands)
         {
+            if (hand.GetPlayerManager().IsBusted) continue;
+
             CardSO card1 = DrawCardFromDeck();
             if (card1 != null)
             {

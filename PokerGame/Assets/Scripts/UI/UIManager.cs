@@ -52,8 +52,15 @@ public class UIManager : MonoBehaviour
         if (totalBet < currentHighestBet)
         {
             var callBetAmount = currentHighestBet - player.BetAmount;
-            _callOrCheckButtonText.text = "CALL ${" + (currentHighestBet - totalBet).ToString("N0") + "}";
 
+            if (callBetAmount > player.TotalStackAmount)
+            {
+                _callOrCheckButtonText.text = "CALL ${" + (player.TotalStackAmount).ToString("N0") + "}";
+            }
+            else
+            {
+                _callOrCheckButtonText.text = "CALL ${" + (currentHighestBet - totalBet).ToString("N0") + "}";
+            }
             _callOrCheckButton.onClick.AddListener(GameManager.Instance.MainPlayer.CallAction);
         }
         else
