@@ -62,12 +62,12 @@ public class FirebaseAuthManager : MonoBehaviour
             bool signedIn = _user != _auth.CurrentUser && _auth.CurrentUser != null;
             if (!signedIn && _user != null)
             {
-                Debug.Log("Signed out " + _user.UserId);
+             //   Debug.Log("Signed out " + _user.UserId);
             }
             _user = _auth.CurrentUser;
             if (signedIn)
             {
-                Debug.Log("Signed in " + _user.UserId);
+             //   Debug.Log("Signed in " + _user.UserId);
             }
 
             OnAuthStateChanged?.Invoke(signedIn);

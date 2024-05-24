@@ -101,6 +101,10 @@ Image: Pot split, winner selection, game loop completed. 30.04.2024
   
 Firebase integration was a simple adaptation, yet none of us had any prior experience with this specific API, so it was new for us. We had some knowledge of working with JSON files or other SQL types, so it wasn't entirely unfamiliar. Some documentation we found offered sample methods on how to use functions offered by Firebase. However, some of them did not work due to MonoBehaviour scripting. We had to navigate through with async methods and integrate them with Unity. All in all, in our opinion, it was the most "obscure" part of this project. The reasons being that we don't always understand what goes wrong when things don't work or what goes right when things do work. In typical game development, we generally have these "causal" behaviors we can generally observe, but online is a little different.
 
+**8) Notes on refactoring **
+
+
+
 ----------
 
 <!-- Known-Bugs -->

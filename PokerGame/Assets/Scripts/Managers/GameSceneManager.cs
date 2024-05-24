@@ -29,7 +29,6 @@ public class GameSceneManager : MonoBehaviour
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log("Scene " + scene.name + " has loaded!");
 
         if (scene.buildIndex == _mainGameSceneIndex && GameManager.Instance != null)
         {

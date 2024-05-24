@@ -150,13 +150,11 @@ public class PlayerDataManager : MonoBehaviour
             if (snapshot.Exists)
             {
                 string downloadedJson = snapshot.GetValue(true).ToString();  // Use GetValue(true)
-                _playerData = JsonUtility.FromJson<PlayerData>(downloadedJson);
-                Debug.Log("Downloaded player data from Firebase.");
+                _playerData = JsonUtility.FromJson<PlayerData>(downloadedJson);            
                 IsPlayerDataHandlingSuccessful = true;
             }
             else
             {
-                Debug.Log("No player data found for user. Creating new one locally and on Firebase.");
                 _playerData = GenerateNewPlayerData();
                 UploadPlayerDataToFirebase();
                 IsPlayerDataHandlingSuccessful = true;
@@ -219,7 +217,6 @@ public class PlayerDataManager : MonoBehaviour
 
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
-        Debug.Log("Player Data Manager State Changed -sub");
         if (state == GameManager.GameState.Showdown)
         {
             if (_mainPlayer.IsPlayerActive)
