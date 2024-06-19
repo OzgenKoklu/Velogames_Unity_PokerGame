@@ -42,6 +42,7 @@ public class BetManager : MonoBehaviour
     [SerializeField] private List<Pot> _showdownPots;
 
     //GECICI BURDA
+    [SerializeField] private GameObject _winningResultParent;
     [SerializeField] private TextMeshProUGUI _winningResultText;
     [SerializeField] private TextMeshProUGUI _potAmountResultText;
 
@@ -60,6 +61,8 @@ public class BetManager : MonoBehaviour
     {
         GameManager.OnGameStateChanged += GameManager_OnGameStateChanged;
         DealerManager.Instance.OnDealerChanged += DealerManager_OnDealerChanged;
+
+        _winningResultParent.SetActive(false);
     }
     private void GameManager_OnGameStateChanged(GameManager.GameState state)
     {
@@ -120,6 +123,7 @@ public class BetManager : MonoBehaviour
     {
         float startTime = Time.time;
 
+        _winningResultParent.SetActive(true);
         _winningResultText.text = winningResult;
 
         while (Time.time - startTime < _resultsTimer)
@@ -128,6 +132,7 @@ public class BetManager : MonoBehaviour
         }
 
         _winningResultText.text = "";
+        _winningResultParent.SetActive(false);
 
         GameManager.Instance.StartGameRound();
     }

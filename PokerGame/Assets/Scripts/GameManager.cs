@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -40,6 +41,8 @@ public class GameManager : MonoBehaviour
     public PlayerManager MainPlayer => _mainPlayer;
     [SerializeField] private PlayerManager _mainPlayer;
 
+    public bool IsGamePaused { get; private set; }
+
     private void Awake()
     {
         Instance = this;
@@ -60,6 +63,7 @@ public class GameManager : MonoBehaviour
 
     public void SetTimeScale(bool isGamePaused)
     {
+        IsGamePaused = isGamePaused;
         Time.timeScale = isGamePaused ? 0 : 1;
     }
 
@@ -157,4 +161,9 @@ public class GameManager : MonoBehaviour
     }
 
     public static void ResetStaticData() => OnGameStateChanged = null;
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }

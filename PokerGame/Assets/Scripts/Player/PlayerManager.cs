@@ -173,7 +173,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
-        _playerTotalStackText.text = _totalStackAmount.ToString() + " " + "$";
+        _playerTotalStackText.text = $"${_totalStackAmount:N0}";
         DealerManager.Instance.OnDealerChanged += OnDealerChanged;
         TurnManager.Instance.OnPlayerTurn += TurnManager_OnPlayerTurn;
         OnDealerChanged(this);
@@ -253,10 +253,10 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayerAction = PlayerAction.Call;
-            
+
             Debug.Log("current highest bet: " + BetManager.Instance.CurrentHighestBetAmount);
             var callBetAmount = BetManager.Instance.CurrentHighestBetAmount - TotalBetInThisRound;
-            
+
             int maxCallAmount = TotalStackAmount;
             if (callBetAmount >= maxCallAmount)
             {
@@ -290,7 +290,7 @@ public class PlayerManager : MonoBehaviour
         if (this == GameManager.Instance.MainPlayer)
         {
             PlayerAction = PlayerAction.Bet;
-            
+
 
             HasActedSinceLastRaise = true;
             _isPlayerFolded = false;

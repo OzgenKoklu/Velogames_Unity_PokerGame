@@ -98,7 +98,6 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-
     public void ChangePlayerTurn(bool isPreviousPlayerFolded)
     {
         if (GameManager.Instance.GetState() != GameManager.GameState.PlayerTurn) return;

@@ -20,7 +20,33 @@ public class GameSceneManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
 
+    private void Update()
+    {
+        if (Application.platform != RuntimePlatform.Android)
+            return;
+
+        if (!Input.GetKey(KeyCode.Escape))
+            return;
+
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        if (currentSceneIndex == _mainMenuSceneIndex)
+        {
+            QuitGame();
+        }
+        else if (currentSceneIndex == _mainGameSceneIndex)
+        {
+            if (GameManager.Instance.IsGamePaused)
+            {
+                PauseMenuUI.Instance.HidePauseMenuPanel();
+            }
+            else
+            {
+                SceneManager.LoadSceneAsync(_mainMenuSceneIndex);
+            }
+        }
     }
 
     private void OnEnable()
@@ -48,5 +74,10 @@ public class GameSceneManager : MonoBehaviour
         {
             SceneManager.LoadScene(_mainGameSceneIndex);
         }
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

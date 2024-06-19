@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PauseMenuUI : MonoBehaviour
 {
+    public static PauseMenuUI Instance;
+
     [SerializeField] private GameObject _pauseMenuPanel;
     [SerializeField] private Button _pauseMenuButton;
 
@@ -14,6 +16,8 @@ public class PauseMenuUI : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
+
         _pauseMenuButton.onClick.AddListener(ShowPauseMenuPanel);
         _continueGameButton.onClick.AddListener(HidePauseMenuPanel);
         _newRoundButton.onClick.AddListener(InitiateNewRound);
@@ -27,7 +31,7 @@ public class PauseMenuUI : MonoBehaviour
         _pauseMenuPanel.SetActive(true);
     }
 
-    private void HidePauseMenuPanel()
+    public void HidePauseMenuPanel()
     {
         bool isGamePaused = false;
         GameManager.Instance.SetTimeScale(isGamePaused);
